@@ -36,7 +36,11 @@ void setup() {
 
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
-
+  
+  //test trackpoint
+  TrackPoint testTrack = new TrackPoint(BEIJING_CENTRAL);
+  map.addMarker(testTrack);
+  
   //pan and zoom to study location
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);
 

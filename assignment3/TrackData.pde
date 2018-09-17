@@ -11,12 +11,12 @@ class TrackData {
     return td;
   }
   /* replace this object data from another */
-  public replace(TrackData td) {
+  public void replace(TrackData td) {
     if (td != null) {
       this.x = td.x;
       this.y = td.y;
       this.altitude = td.altitude;
-      this.dateStamp = td.dateStamp
+      this.dateStamp = td.dateStamp;
     }
   }
   

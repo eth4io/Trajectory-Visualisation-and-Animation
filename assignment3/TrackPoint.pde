@@ -16,4 +16,16 @@ class TrackPoint extends SimplePointMarker {
       this.trackData.add(data.get(i));
     }
   }
+  
+  /* new location only */
+  public TrackPoint(Location l) {
+    super(l);
+    trackData = new ArrayList<TrackData>();
+  }
+  
+  /* new empty */
+  public TrackPoint() {
+    super(new Location(0,0));
+  }
+  
 }
