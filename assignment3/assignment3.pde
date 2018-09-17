@@ -19,19 +19,13 @@ import java.util.List;
 static final Location BEIJING_CENTRAL =            /* study location */
   new Location(39.907614, 116.397334);
 
-<<<<<<< HEAD
-     MapUtils.createDefaultEventDispatcher(this, map);
-//test of loadPlt method
-     String[][] tracklog = loadPlt("20081023025304.plt");
-     println(tracklog[0]);
-}
-=======
+
+
 //-----------------------  Global Variables ------------------------
 
 UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 
->>>>>>> 880890754f4a4ebe9e9ff3c0e2c97989d00c2a63
 
 void setup() {
   size(800, 600);
@@ -45,6 +39,9 @@ void setup() {
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);
   
   MapUtils.createDefaultEventDispatcher(this, map);
+  //test of loadPlt method
+     String[][] tracklog = loadPlt("20081023025304.plt");
+     println(tracklog[0]);
   
 }
  
@@ -55,7 +52,7 @@ void draw() {
 
 
 String[][] loadPlt(String filename) {
-<<<<<<< HEAD
+
      //loads a plt file, and returns a 2D String Array of tracklog
      //where tracklog[i] is a single trace line
      //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
@@ -71,18 +68,6 @@ String[][] loadPlt(String filename) {
           tracklog[i-6] = split(trackfile[i], ",");
      }
      return tracklog;
-=======
-  //loads a plt file, and returns a 2D String Array of tracklog
-  //where tracklog[i] is a single trace line
-  //tracklog[i][0] is the x coord and tracklog[i][1] is the y coord
 
-  //tracklog starts from line 6 in trackfile
-  String[] trackfile = loadStrings(filename);
-  String[][] tracklog = new String[trackfile.length-6][7];
-  for (int i =6; i<trackfile.length; i++) {
-    tracklog[i-6] = split(trackfile[i], ",");
-  }
-  return tracklog;
->>>>>>> 880890754f4a4ebe9e9ff3c0e2c97989d00c2a63
 }
 
