@@ -17,7 +17,7 @@ import java.util.List;
 
 
 static final Location BEIJING_CENTRAL =            /* study location */
-  new Location(39.907614, 116.397334);
+new Location(39.907614, 116.397334);
 
 
 
@@ -28,26 +28,25 @@ BarScaleUI barScale;                      /* bar scale object */
 
 
 void setup() {
-  size(800, 600);
-  map = new UnfoldingMap(this, 0, 0, width, 
-    height, new OpenStreetMap.OpenStreetMapProvider());
-  
-  //create bar scale
-  barScale = new BarScaleUI(this, map, 10, height - 20);
-  
-  //pan and zoom to study location
-  map.zoomAndPanTo(BEIJING_CENTRAL, 11);
-  
-  MapUtils.createDefaultEventDispatcher(this, map);
-  //test of loadPlt method
+     size(800, 600);
+     map = new UnfoldingMap(this, 0, 0, width, 
+     height, new OpenStreetMap.OpenStreetMapProvider());
+
+     //create bar scale
+     barScale = new BarScaleUI(this, map, 10, height - 20);
+
+     //pan and zoom to study location
+     map.zoomAndPanTo(BEIJING_CENTRAL, 11);
+
+     MapUtils.createDefaultEventDispatcher(this, map);
+     //test of loadPlt method
      String[][] tracklog = loadPlt("20081023025304.plt");
      println(tracklog[0]);
-  
 }
- 
+
 void draw() {
-  map.draw();
-  barScale.draw();
+     map.draw();
+     barScale.draw();
 }
 
 
@@ -60,7 +59,7 @@ String[][] loadPlt(String filename) {
      //[4] is the date as a number (no. of days since 12/30/1899, w/ a fraction for time
      //[5] is the date as a string "YEAR/MONTH/DAY"
      //[6] is the time as a string "HR:MN:SE"
-     
+
      //tracklog starts from line 6 in trackfile
      String[] trackfile = loadStrings(filename);
      String[][] tracklog = new String[trackfile.length-6][7];
@@ -68,6 +67,5 @@ String[][] loadPlt(String filename) {
           tracklog[i-6] = split(trackfile[i], ",");
      }
      return tracklog;
-
 }
 
