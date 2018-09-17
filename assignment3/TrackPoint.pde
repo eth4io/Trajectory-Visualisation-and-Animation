@@ -6,8 +6,8 @@ class TrackPoint extends SimplePointMarker {
   List<TrackData> trackData;
   
   /* creates new TrackPoint. pass in all associated data for this point as TrackData */
-  public TrackPoint(Location l, List<TrackData> data) {
-    super(l);
+  public TrackPoint(List<TrackData> data) {
+    super();
     this.trackData = new ArrayList<TrackData>();
     
     /* add passed in data to this point's trackData variable */
@@ -16,7 +16,7 @@ class TrackPoint extends SimplePointMarker {
     }
   }
   
-  /* new location only */
+  /* new from location */
   public TrackPoint(Location l) {
     super(l);
     trackData = new ArrayList<TrackData>();
