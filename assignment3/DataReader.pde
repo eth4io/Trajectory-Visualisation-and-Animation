@@ -14,6 +14,37 @@ public class DataReader {
   }
 
   private void initVariables() {
+    /**
+     * structure of GeoLife Data folder
+     *
+     * assignment3/
+     * |
+     * --data/
+     *   |
+     *   --Geolife Trajectories 1.3/
+     *     |
+     *     --Data/
+     *       |
+     *       |--000/
+     *       |  |
+     *       |  --Trajectory/
+     *       |      |
+     *       |      --20081023025304.plt
+     *       |      --20090413213935.plt
+     *       |      --20090521231053.plt
+     *       |      --..
+     *       | 
+     *       |--001/
+     *       |  |
+     *       |  --Trajectory/
+     *       |      |
+     *       |      --20081023055305.plt
+     *       |      --20081106233404.plt
+     *       |      --20081203000505.plt
+     *       |      --..
+     *       ..
+     */
+     
     /* get OS correspoding file separator
      * MacOS: '/'    Windows: '\' 
      * reference: [The Java™ Tutorials - System Properties](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html)
