@@ -17,8 +17,8 @@ class TrackPoint extends SimplePointMarker {
   }
   
   /* new from location */
-  public TrackPoint(Location l) {
-    super(l);
+  public TrackPoint(Location location) {
+    super(location);
     trackData = new ArrayList<TrackData>();
   }
   
