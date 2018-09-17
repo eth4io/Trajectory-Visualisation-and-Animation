@@ -14,6 +14,10 @@ public class DataReader {
   }
 
   private void initVariables() {
+    /* get OS correspoding file separator
+     * MacOS: '/'    Windows: '\' 
+     * reference: [The Java™ Tutorials - System Properties](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html)
+     */
     fileSeparator = System.getProperty(SYSTEM_PROPERTY_FILE_SEPARATOR);
     
     /* get absolute path for the real data directory */
@@ -32,7 +36,13 @@ public class DataReader {
     }
   }
   
-  String[][][] loadPltByFolder(int folderIndex) { // folderIndex range from 0 ("000") to 181 ("181")
+  /**
+   * Returns a String[][][] object contains all .plt files belongs to the tester
+   *
+   * @param folderIndex An int contains the index of the tester
+   *                    range from 0 ("000") to 181 ("181")
+   */
+  public String[][][] loadPltByFolder(int folderIndex) { 
     String folderName = folderIndex + "";
 
     /* fulfill the name for folder
@@ -52,7 +62,14 @@ public class DataReader {
     return new String[1][1][1];
   }
 
-  String[][] loadPlt(String folderIndex, String filename) {    
+  /**
+   * Returns a String[][] object contains selected .plt files belongs to the tester
+   *
+   * @param folderIndex An int contains the index of the tester
+   *                    range from 0 ("000") to 181 ("181")
+   * @param fileName A String contains the name of the file need to be loaded
+   */
+  public String[][] loadPlt(String folderIndex, String filename) {    
     //loads a plt file, and returns a 2D String Array of tracklog
     //where tracklog[i] is a single trace line
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
