@@ -85,13 +85,14 @@ public class DataReader {
       
     File directory = new File(folderPath);
 
-    String[][][] = new String[directory.listFiles ().length][][]
+    String[][][] result = new String[directory.listFiles().length][1][1];
     for (final File fileEntry : directory.listFiles ()) {
       if (fileEntry.isFile()) {
-        getPltByFilePath(folderPath + fileEntry.getName());
+        String[][] data = getPltByFilePath(folderPath + fileEntry.getName());
+        println(data.length);
       }
     }
-    return new String[1][1][1];
+    return result;
   }
 
   /**
@@ -111,8 +112,8 @@ public class DataReader {
     //tracklog starts from line 6 in trackfile
     String[] trackfile = loadStrings(filePath);
     String[][] tracklog = new String[trackfile.length-6][7];
-    for (int i =6; i<trackfile.length; i++) {
-      tracklog[i-6] = split(trackfile[i], ",");
+    for (int i = 6; i < trackfile.length; i++) {
+      tracklog[i - 6] = split(trackfile[i], ",");
     }
     return tracklog;
   }
