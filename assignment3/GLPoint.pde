@@ -1,6 +1,6 @@
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 
-GLPoint extends SimplePointMarker {
+class GLPoint extends SimplePointMarker {
   //is Y, X
   float altitude;
   int days;
