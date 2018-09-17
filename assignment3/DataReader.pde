@@ -10,7 +10,8 @@ public class DataReader {
 
   public DataReader() {
     initVariables();
-    loadPltByFolder(0);
+    
+    loadPltByFolder(15);
   }
 
   private void initVariables() {
@@ -44,29 +45,32 @@ public class DataReader {
      *       |      --..
      *       ..
      */
-     
+
     /* get OS correspoding file separator
      * MacOS: '/'    Windows: '\' 
      * reference: [The Java™ Tutorials - System Properties](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html)
      */
     fileSeparator = System.getProperty(SYSTEM_PROPERTY_FILE_SEPARATOR);
-    
+
     /* get absolute path for the real data directory */
     dataDir = dataPath(GEOLIFE_DIR + fileSeparator + GEOLIFE_DATA_DIR);
   }
 
-  public void listFilesForFolder(String dirName) {
+  public void listFilesByFolder(String dirName) {
     File directory = new File(dirName);
 
     for (final File fileEntry : directory.listFiles ()) {
-      if (fileEntry.isDirectory()) {
-        listFilesForFolder(fileEntry.getAbsolutePath());
-      } else {
-        System.out.println(fileEntry.getName());
+      if (fileEntry.isFile()) {
+        
       }
+//      else if (fileEntry.isDirectory()) {
+//        listFilesByFolder(fileEntry.getAbsolutePath());
+//      } else {
+//        System.out.println(fileEntry.getName());
+//      }
     }
   }
-  
+
   /**
    * Returns a String[][][] object contains all .plt files belongs to the tester
    *
@@ -74,34 +78,29 @@ public class DataReader {
    *                    range from 0 ("000") to 181 ("181")
    */
   public String[][][] loadPltByFolder(int folderIndex) { 
-    String folderName = folderIndex + "";
+    String folderName = getFullFolderNameByIndex(folderIndex);
 
-    /* fulfill the name for folder
-     * example: 
-     *   0 -> "000"
-     *   13 -> "013"
-     */
-    if (folderName.length() == 1) {
-      folderName = "00" + folderName;
-    }
-    else if (folderName.length() == 2) {
-      folderName = "0" + folderName;
-    }
+    String folderPath = dataDir + fileSeparator + folderName +
+      fileSeparator + GEOLIFE_DATA_TRAJECTORY_DIR + fileSeparator;
+      
+    File directory = new File(folderPath);
 
-    String folderDir = dataDir + fileSeparator + folderName +
-      fileSeparator + GEOLIFE_DATA_TRAJECTORY_DIR;
+    String[][][] = new String[directory.listFiles ().length][][]
+    for (final File fileEntry : directory.listFiles ()) {
+      if (fileEntry.isFile()) {
+        getPltByFilePath(folderPath + fileEntry.getName());
+      }
+    }
     return new String[1][1][1];
   }
 
   /**
    * Returns a String[][] object contains selected .plt files belongs to the tester
    *
-   * @param folderIndex An int contains the index of the tester
-   *                    range from 0 ("000") to 181 ("181")
    * @param fileName A String contains the name of the file need to be loaded
    */
-  public String[][] loadPlt(String folderIndex, String filename) {    
-    //loads a plt file, and returns a 2D String Array of tracklog
+  public String[][] getPltByFilePath(String filePath) {   
+      //loads a plt file, and returns a 2D String Array of tracklog
     //where tracklog[i] is a single trace line
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
     //[2] is empty (always 0), [3] is altitude in feet (always an int)
@@ -110,12 +109,30 @@ public class DataReader {
     //[6] is the time as a string "HR:MN:SE"
 
     //tracklog starts from line 6 in trackfile
-    String[] trackfile = loadStrings(filename);
+    String[] trackfile = loadStrings(filePath);
     String[][] tracklog = new String[trackfile.length-6][7];
     for (int i =6; i<trackfile.length; i++) {
       tracklog[i-6] = split(trackfile[i], ",");
     }
     return tracklog;
+  }
+
+  private String getFullFolderNameByIndex(int folderIndex) {
+    /* fulfill the name for folder
+     * example: 
+     *   0 -> "000"
+     *   13 -> "013"
+     *   100 -> "100"
+     */
+     
+    String folderName = folderIndex + "";
+    
+    if (folderName.length() == 1) {
+      folderName = "00" + folderName;
+    } else if (folderName.length() == 2) {
+      folderName = "0" + folderName;
+    }
+    return folderName;
   }
 }
 
