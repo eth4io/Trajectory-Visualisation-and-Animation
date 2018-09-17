@@ -3,15 +3,17 @@ import java.util.Date;
 import java.text.*;
 
 class TrackPoint extends SimplePointMarker {
-  //is Y, X
-  float altitude;
-  Date dateStamp;
+  List<TrackData> trackData;
   
-  
-  /* default constructor, will default to system date/time */
-  public TrackPoint(Location l) {
+  /* creates new TrackPoint. pass in all associated data for this point as TrackData */
+  public TrackPoint(Location l, List<TrackData> data) {
     super(l);
-    Date = new Date();
-  
+    
+    this.trackData = new ArrayList<TrackData>();
+    
+    /* add passed in data to this point's trackData variable */
+    for (int i = 0; i < data.size(); i++) {
+      this.trackData.add(data.get(i));
+    }
   }
 }
