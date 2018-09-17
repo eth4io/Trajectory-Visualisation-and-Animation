@@ -15,7 +15,6 @@ import java.util.List;
 
 //-----------------------  Global Constants ------------------------
 
-
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
 
