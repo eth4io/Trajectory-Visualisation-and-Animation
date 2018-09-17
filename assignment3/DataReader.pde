@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.*; 
 
 public class DataReader {
   private static final String SYSTEM_PROPERTY_FILE_SEPARATOR = "file.separator";
@@ -9,12 +10,6 @@ public class DataReader {
   private String dataDir;
 
   public DataReader() {
-    initVariables();
-    
-    loadPltByFolder(15);
-  }
-
-  private void initVariables() {
     /**
      * structure of GeoLife Data folder
      *
@@ -56,40 +51,25 @@ public class DataReader {
     dataDir = dataPath(GEOLIFE_DIR + fileSeparator + GEOLIFE_DATA_DIR);
   }
 
-  public void listFilesByFolder(String dirName) {
-    File directory = new File(dirName);
-
-    for (final File fileEntry : directory.listFiles ()) {
-      if (fileEntry.isFile()) {
-        
-      }
-//      else if (fileEntry.isDirectory()) {
-//        listFilesByFolder(fileEntry.getAbsolutePath());
-//      } else {
-//        System.out.println(fileEntry.getName());
-//      }
-    }
-  }
 
   /**
-   * Returns a String[][][] object contains all .plt files belongs to the tester
+   * Returns a List of String[][] contains all .plt files belongs to the tester
    *
    * @param folderIndex An int contains the index of the tester
    *                    range from 0 ("000") to 181 ("181")
    */
-  public String[][][] loadPltByFolder(int folderIndex) { 
+  public List<String[][]> getTesterDataByIndex(int folderIndex) { 
     String folderName = getFullFolderNameByIndex(folderIndex);
 
     String folderPath = dataDir + fileSeparator + folderName +
       fileSeparator + GEOLIFE_DATA_TRAJECTORY_DIR + fileSeparator;
-      
+
     File directory = new File(folderPath);
 
-    String[][][] result = new String[directory.listFiles().length][1][1];
+    List<String[][]> result = new ArrayList<String[][]>(); 
     for (final File fileEntry : directory.listFiles ()) {
       if (fileEntry.isFile()) {
-        String[][] data = getPltByFilePath(folderPath + fileEntry.getName());
-        println(data.length);
+        result.add(getPltByFilePath(folderPath + fileEntry.getName()));
       }
     }
     return result;
@@ -101,7 +81,7 @@ public class DataReader {
    * @param fileName A String contains the name of the file need to be loaded
    */
   public String[][] getPltByFilePath(String filePath) {   
-      //loads a plt file, and returns a 2D String Array of tracklog
+    //loads a plt file, and returns a 2D String Array of tracklog
     //where tracklog[i] is a single trace line
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
     //[2] is empty (always 0), [3] is altitude in feet (always an int)
@@ -125,9 +105,9 @@ public class DataReader {
      *   13 -> "013"
      *   100 -> "100"
      */
-     
+
     String folderName = folderIndex + "";
-    
+
     if (folderName.length() == 1) {
       folderName = "00" + folderName;
     } else if (folderName.length() == 2) {
