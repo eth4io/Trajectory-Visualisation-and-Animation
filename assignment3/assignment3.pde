@@ -14,6 +14,7 @@ import de.fhpotsdam.unfolding.ui.BarScaleUI;
 import java.util.List;
 
 //-----------------------  Global Constants ------------------------
+
 static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
 "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
@@ -35,7 +36,11 @@ void setup() {
 
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
-
+  
+  //test trackpoint
+  TrackPoint testTrack = new TrackPoint(BEIJING_CENTRAL);
+  map.addMarker(testTrack);
+  
   //pan and zoom to study location
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);
 
