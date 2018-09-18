@@ -18,6 +18,7 @@ import java.util.List;
 static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
 "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
+static final int MAX_TESTER_INDEX = 181;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
@@ -27,7 +28,7 @@ new Location(39.907614, 116.397334);
 
 UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
-
+DataReader dataReader;
 
 void setup() {
   size(800, 600);
@@ -45,10 +46,21 @@ void setup() {
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);
 
   MapUtils.createDefaultEventDispatcher(this, map);
-  //test of loadPlt method
-  String[][] tracklog = loadPlt(DATA_DIR + "000" +
-    FILE_SEPARATOR + "Trajectory" + FILE_SEPARATOR + "20081023025304.plt");
-  println(tracklog[0]);
+  
+  
+  /* test of DataReader method */
+  dataReader = new DataReader();
+  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
+    int trackPointCount = 0;
+    List<String[][]> testerData = dataReader.getTesterDataByIndex(i);
+    for (String[][] data : testerData) {
+      trackPointCount += data.length;
+    }
+    print("[" + i + "]: " + trackPointCount + " points\t");
+    if ((i + 1) % 10 == 0)
+      println();
+  }
+  
 }
 
 void draw() {
@@ -57,21 +69,4 @@ void draw() {
 }
 
 
-String[][] loadPlt(String filename) {
-  //loads a plt file, and returns a 2D String Array of tracklog
-  //where tracklog[i] is a single trace line
-  //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
-  //[2] is empty (always 0), [3] is altitude in feet (always an int)
-  //[4] is the date as a number (no. of days since 12/30/1899, w/ a fraction for time
-  //[5] is the date as a string "YEAR/MONTH/DAY"
-  //[6] is the time as a string "HR:MN:SE"
-
-  //tracklog starts from line 6 in trackfile
-  String[] trackfile = loadStrings(filename);
-  String[][] tracklog = new String[trackfile.length-6][7];
-  for (int i =6; i<trackfile.length; i++) {
-    tracklog[i-6] = split(trackfile[i], ",");
-  }
-  return tracklog;
-}
 
