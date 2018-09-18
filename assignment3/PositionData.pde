@@ -15,7 +15,7 @@ class PositionData {
   }
   
   /* to protect unwanted changes, use coplng to pass object */
-  public PositionData coplng() {
+  public PositionData copy() {
     PositionData td = new PositionData();
     td.lat = this.lat;
     td.lng = this.lng;
