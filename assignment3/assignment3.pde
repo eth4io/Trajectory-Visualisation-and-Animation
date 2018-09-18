@@ -31,7 +31,8 @@ BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
 //test
-Trajectory testTraj;
+TrajectoryManager trajectoryManager;
+List<Trajectory> testTraj;
 
 void setup() {
   size(800, 600);
@@ -56,22 +57,27 @@ void setup() {
 
   print("[" + 0 + "]: " + testerData.size() + " points\t");
   println(testerData.get(0).getLat(), testerData.get(0).getLng());
-    //test trackpoint
-  testTraj = new Trajectory(testerData);
-  //testTraj.next();
-  //testTraj.update();
-  println(testTraj.currentPosition.getLat(),testTraj.currentPosition.getLng());
-  map.addMarker(testTraj);
   
+  //test trajectory manager
+  testTraj = new ArrayList<Trajectory>();
+  testTraj.add(new Trajectory(testerData));
+  trajectoryManager = new TrajectoryManager(testTraj);
+  trajectoryManager.setMap(map);
 }
 
 void draw() {
   map.draw();
-  
-  testTraj.next();
+  //test radius variable
+  trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
+  //some colors testing
+  trajectoryManager.setAllColor(color(150,150,200));
+
+  trajectoryManager.draw();
+
+  trajectoryManager.nextAll();
   barScale.draw();
   
-  testTraj.update();
+  trajectoryManager.updateAll();
 }
 
 

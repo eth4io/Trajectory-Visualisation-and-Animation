@@ -3,23 +3,24 @@
 // student number: 928428
 
 import java.util.Map;
+import de.fhpotsdam.unfolding.marker.*;
 
-class ExtManager extends MarkerManager {
+class TrajectoryManager extends MarkerManager {
   
   private final int DEFAULT_DRAW = 10;    //default draw level if not set
   private int drawLevel;                  //the draw level control
   
-  public ExtManager(List<Marker> m) {
+  public TrajectoryManager(List<Trajectory> m) {
     super(m);
     drawLevel = DEFAULT_DRAW;
   }
   
-  public ExtManager(List<Marker> m, int drawLevel) {
+  public TrajectoryManager(List<Trajectory> m, int drawLevel) {
     super(m);
     this.drawLevel = drawLevel;
   }
   
-  public ExtManager() {
+  public TrajectoryManager() {
     super();
     drawLevel = DEFAULT_DRAW;
   }
@@ -45,6 +46,7 @@ class ExtManager extends MarkerManager {
     }
     this.setMarkers(temp);
   }
+  
   /* set stroke colour for all */
   public void setAllStrokeColor(color strokeColor) {
     List<Marker> temp = this.getMarkers();
@@ -70,7 +72,7 @@ class ExtManager extends MarkerManager {
     List<Marker> temp = this.getMarkers();
     
     for (Marker m : temp) {
-      m.setRadius(radius);
+      ((SimplePointMarker)m).setRadius(radius);
     }
     this.setMarkers(temp);
   }
@@ -83,7 +85,7 @@ class ExtManager extends MarkerManager {
       // check for invert, map value, min, max, radius low, radius high
       float rad = invert ? map(value, max, min, 1.0, 10.0) 
         : map(value, min, max, 1.0, 10.0);
-      m.setRadius(rad);
+      ((SimplePointMarker)m).setRadius(rad);
     } 
     this.setMarkers(temp);
   }
@@ -139,6 +141,22 @@ class ExtManager extends MarkerManager {
       m.setSelected(false);
     }
   this.setMarkers(temp);
+  }
+  
+  //call update for all trajectories
+  public void updateAll() {
+     List<Marker> temp = this.getMarkers();
+     for (Marker m : temp) {
+       ((Trajectory)m).update();
+     }
+  }
+  
+  //call next for all trajectories
+  public void nextAll() {
+    List<Marker> temp = this.getMarkers();
+    for (Marker m : temp) {
+      ((Trajectory)m).next();
+    }
   }
   
   //get and set the draw level
