@@ -50,7 +50,8 @@ void setup() {
   
   /* test of DataReader method */
   dataReader = new DataReader();
-  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
+//  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
+  for (int i = 0; i <= 0; i++) {
     int trackPointCount = 0;
     List<String[][]> testerData = dataReader.getTesterDataByIndex(i);
     for (String[][] data : testerData) {

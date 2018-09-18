@@ -94,11 +94,15 @@ public class DataReader {
     //[6] is the time as a string "HR:MN:SE"
 
     //tracklog starts from line 6 in trackfile
+    
     String[] trackfile = loadStrings(filePath);
     String[][] tracklog = new String[trackfile.length-6][7];
     for (int i = 6; i < trackfile.length; i++) {
       tracklog[i - 6] = split(trackfile[i], ",");
     }
+    float latitude = slipt(trackfile[
+
+    TrackData trackData = new TrackData(trackLog[0]);
     return tracklog;
   }
 
