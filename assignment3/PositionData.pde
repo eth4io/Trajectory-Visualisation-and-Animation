@@ -32,5 +32,21 @@ class PositionData {
       this.createdTime = td.createdTime;
     }
   }
+  
+  public float getLat() {
+    return lat;
+  }
+  
+  public float getLon() {
+    return lon;
+  }
+  
+  public float getAltitude() {
+    return altitude;
+  }
+  
+  public Date getCreatedTime() {
+    return createdTime;
+  }
 }
 
