@@ -10,6 +10,7 @@ public class DataReader {
   private static final String GEOLIFE_DIR = "Geolife Trajectories 1.3";
   private static final String GEOLIFE_DATA_DIR = "Data";
   private static final String GEOLIFE_DATA_TRAJECTORY_DIR = "Trajectory";
+  private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private String fileSeparator;
   private String dataDir;
 
@@ -57,12 +58,12 @@ public class DataReader {
 
 
   /**
-   * Returns a List of String[][] contains all .plt files belongs to the tester
+   * Returns a List of PositionData contains all .plt files belongs to the tester
    *
    * @param folderIndex An int contains the index of the tester
    *                    range from 0 ("000") to 181 ("181")
    */
-  public List<String[][]> getTesterDataByIndex(int folderIndex) { 
+  public List<PositionData> getTesterDataByIndex(int folderIndex) {
     String folderName = getFullFolderNameByIndex(folderIndex);
 
     String folderPath = dataDir + fileSeparator + folderName +
@@ -70,36 +71,51 @@ public class DataReader {
 
     File directory = new File(folderPath);
 
-    List<String[][]> result = new ArrayList<String[][]>(); 
+    List<PositionData> result = new ArrayList<PositionData>();
     for (final File fileEntry : directory.listFiles ()) {
       if (fileEntry.isFile()) {
-        result.add(getPltByFilePath(folderPath + fileEntry.getName()));
+        result.addAll(getPositionDataListByFilePath(folderPath + fileEntry.getName()));
       }
     }
     return result;
   }
 
   /**
-   * Returns a String[][] object contains selected .plt files belongs to the tester
+   * Returns a List of PositionData object contains data
+   * from all .plt files belongs to the selected tester
    *
    * @param fileName A String contains the name of the file need to be loaded
    */
-  public String[][] getPltByFilePath(String filePath) {   
+  public List<PositionData> getPositionDataListByFilePath(String filePath) {
     //loads a plt file, and returns a 2D String Array of tracklog
     //where tracklog[i] is a single trace line
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
     //[2] is empty (always 0), [3] is altitude in feet (always an int)
     //[4] is the date as a number (no. of days since 12/30/1899, w/ a fraction for time
-    //[5] is the date as a string "YEAR/MONTH/DAY"
-    //[6] is the time as a string "HR:MN:SE"
+    //[5] is the date as a string "yyyy-MM-dd"
+    //[6] is the time as a string "HH:mm:ss"
 
     //tracklog starts from line 6 in trackfile
+    List<PositionData> pointTrack = new ArrayList<PositionData>();
     String[] trackfile = loadStrings(filePath);
-    String[][] tracklog = new String[trackfile.length-6][7];
+    String[] tracklog = new String[7];
     for (int i = 6; i < trackfile.length; i++) {
-      tracklog[i - 6] = split(trackfile[i], ",");
+      tracklog = split(trackfile[i], ",");
+
+      float lat = Float.valueOf(tracklog[0]);
+      float lon = Float.valueOf(tracklog[1]);
+      float altitude = Float.valueOf(tracklog[3]);
+      SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
+      try {
+        Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
+        PositionData positionData = new PositionData(lat, lon, altitude, date);
+        pointTrack.add(positionData);
+      }
+      catch (Exception e) {
+        println(ERROR_PARSING_DATE);
+      }
     }
-    return tracklog;
+    return pointTrack;
   }
 
   private String getFullFolderNameByIndex(int folderIndex) {

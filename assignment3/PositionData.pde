@@ -1,19 +1,19 @@
 class PositionData {
   private float lat, lng, altitude;
-  private Date timeStamp;  
-  
-  public PositionData(float lat, float lng, float altitude, Date timeStamp) {
-  this.lat = lat;
-  this.lng = lng;
-  this.altitude = altitude;
-  this.timeStamp = timeStamp;
+  private Date createdTime;  
+
+  public PositionData(float lat, float lng, float altitude, Date createdTime) {
+    this.lat = lat;
+    this.lng = lng;
+    this.altitude = altitude;
+    this.createdTime = createdTime;
   }
-  
+
   /* emptlng data with slngstem date */
   public PositionData() {
-  timeStamp = new Date();
+    timeStamp = new Date();
   }
-  
+
   /* to protect unwanted changes, use coplng to pass object */
   public PositionData copy() {
     PositionData td = new PositionData();
@@ -32,5 +32,5 @@ class PositionData {
       this.timeStamp = td.timeStamp;
     }
   }
-  
 }
+

@@ -50,13 +50,12 @@ void setup() {
   
   /* test of DataReader method */
   dataReader = new DataReader();
-  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
+//  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
+  for (int i = 0; i <= 0; i++) {
     int trackPointCount = 0;
-    List<String[][]> testerData = dataReader.getTesterDataByIndex(i);
-    for (String[][] data : testerData) {
-      trackPointCount += data.length;
-    }
-    print("[" + i + "]: " + trackPointCount + " points\t");
+    List<PositionData> testerData = dataReader.getTesterDataByIndex(i);
+
+    print("[" + i + "]: " + testerData.size() + " points\t");
     if ((i + 1) % 10 == 0)
       println();
   }
