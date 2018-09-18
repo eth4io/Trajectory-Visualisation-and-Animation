@@ -37,8 +37,8 @@ class PositionData {
     return lat;
   }
   
-  public float getLon() {
-    return lon;
+  public float getLng() {
+    return lng;
   }
   
   public float getAltitude() {

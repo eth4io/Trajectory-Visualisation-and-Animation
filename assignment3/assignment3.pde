@@ -52,10 +52,11 @@ void setup() {
   List<PositionData> testerData = dataReader.getTesterDataByIndex(0);
 
   print("[" + 0 + "]: " + testerData.size() + " points\t");
-  println()
+  println(testerData.get(0).getLat(), testerData.get(0).getLng());
     //test trackpoint
   Trajectory testTraj = new Trajectory(testerData);
   testTraj.update();
+  println(testTraj.currentPosition.getLat(),testTraj.currentPosition.getLng());
   map.addMarker(testTraj);
   
 }
