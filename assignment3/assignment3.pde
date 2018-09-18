@@ -38,9 +38,7 @@ void setup() {
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
   
-  //test trackpoint
-  Trajectory testTrack = new Trajectory(BEIJING_CENTRAL);
-  map.addMarker(testTrack);
+
   
   //pan and zoom to study location
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);
@@ -50,15 +48,15 @@ void setup() {
   
   /* test of DataReader method */
   dataReader = new DataReader();
-//  for (int i = 0; i <= MAX_TESTER_INDEX; i++) {
-  for (int i = 0; i <= 0; i++) {
-    int trackPointCount = 0;
-    List<PositionData> testerData = dataReader.getTesterDataByIndex(i);
 
-    print("[" + i + "]: " + testerData.size() + " points\t");
-    if ((i + 1) % 10 == 0)
-      println();
-  }
+  List<PositionData> testerData = dataReader.getTesterDataByIndex(0);
+
+  print("[" + 0 + "]: " + testerData.size() + " points\t");
+  println()
+    //test trackpoint
+  Trajectory testTraj = new Trajectory(testerData);
+  testTraj.update();
+  map.addMarker(testTraj);
   
 }
 

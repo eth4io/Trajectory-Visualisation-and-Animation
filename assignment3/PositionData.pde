@@ -11,7 +11,7 @@ class PositionData {
 
   /* emptlng data with slngstem date */
   public PositionData() {
-    timeStamp = new Date();
+    createdTime = new Date();
   }
 
   /* to protect unwanted changes, use coplng to pass object */
@@ -20,7 +20,7 @@ class PositionData {
     td.lat = this.lat;
     td.lng = this.lng;
     td.altitude = this.altitude;
-    td.timeStamp = this.timeStamp;
+    td.createdTime = this.createdTime;
     return td;
   }
   /* replace this object data from another */
@@ -29,7 +29,7 @@ class PositionData {
       this.lat = td.lat;
       this.lng = td.lng;
       this.altitude = td.altitude;
-      this.timeStamp = td.timeStamp;
+      this.createdTime = td.createdTime;
     }
   }
 }
