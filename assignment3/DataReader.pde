@@ -90,7 +90,7 @@ public class DataReader {
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
     //[2] is empty (always 0), [3] is altitude in feet (always an int)
     //[4] is the date as a number (no. of days since 12/30/1899, w/ a fraction for time
-    //[5] is the date as a string "YEAR/MONTH/DAY"
+    //[5] is the date as a string "YEAR-MONTH-DAY"
     //[6] is the time as a string "HR:MN:SE"
 
     //tracklog starts from line 6 in trackfile
@@ -100,9 +100,13 @@ public class DataReader {
     for (int i = 6; i < trackfile.length; i++) {
       tracklog[i - 6] = split(trackfile[i], ",");
     }
-    float latitude = slipt(trackfile[
+    float latitude = Float.valueOf(tracklog[0]);
+    float longitude = Float.valueOf(tracklog[1]);
+    float altitude = Float.valueOf(tracklog[3]);
+    SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Date date = dataFormat.parse(tracklog[5]);
 
-    TrackData trackData = new TrackData(trackLog[0]);
+    PositionData positionData = new PositionData(latitude, longitude, altitude);
     return tracklog;
   }
 
