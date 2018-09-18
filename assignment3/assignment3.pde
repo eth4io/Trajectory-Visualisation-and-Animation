@@ -30,6 +30,9 @@ UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
+//test
+Trajectory testTraj;
+
 void setup() {
   size(800, 600);
   map = new UnfoldingMap(this, 0, 0, width, 
@@ -54,8 +57,9 @@ void setup() {
   print("[" + 0 + "]: " + testerData.size() + " points\t");
   println(testerData.get(0).getLat(), testerData.get(0).getLng());
     //test trackpoint
-  Trajectory testTraj = new Trajectory(testerData);
-  testTraj.update();
+  testTraj = new Trajectory(testerData);
+  //testTraj.next();
+  //testTraj.update();
   println(testTraj.currentPosition.getLat(),testTraj.currentPosition.getLng());
   map.addMarker(testTraj);
   
@@ -63,7 +67,11 @@ void setup() {
 
 void draw() {
   map.draw();
+  
+  testTraj.next();
   barScale.draw();
+  
+  testTraj.update();
 }
 
 

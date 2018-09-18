@@ -10,7 +10,7 @@ class Trajectory extends SimplePointMarker {
   
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
   public Trajectory(List<PositionData> data) {
-    super();
+    super(new Location(0,0));
     nextPosition = new PositionData();
     currentPosition = new PositionData();
     this.positionData = new ArrayList<PositionData>();
@@ -21,6 +21,8 @@ class Trajectory extends SimplePointMarker {
     }
     //set to position 0 by default
     this.currentPosition = positionData.get(currentPositionIndex);
+    //set initial loaction
+    this.setLocation(currentPosition.lat, currentPosition.lng);
   }
   
   /* new from location */
