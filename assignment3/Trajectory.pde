@@ -1,3 +1,7 @@
+// trajectory class
+// created by Michael Holmes, September 2018
+// student number: 928428
+
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import java.util.Date;
 import java.text.*;
