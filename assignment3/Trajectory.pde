@@ -31,7 +31,11 @@ class Trajectory extends SimplePointMarker {
   }
   
   public void update() {
+<<<<<<< HEAD
     this.set
+=======
+  
+>>>>>>> master
   }
   
 }
