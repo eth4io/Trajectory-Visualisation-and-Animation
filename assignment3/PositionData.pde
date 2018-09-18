@@ -1,24 +1,24 @@
 class PositionData {
-  private float x, y, altitude;
+  private float lat, lng, altitude;
   private Date timeStamp;  
   
-  public PositionData(float x, float y, float altitude, Date timeStamp) {
-  this.x = x;
-  this.y = y;
+  public PositionData(float lat, float lng, float altitude, Date timeStamp) {
+  this.lat = lat;
+  this.lng = lng;
   this.altitude = altitude;
   this.timeStamp = timeStamp;
   }
   
-  /* empty data with system date */
+  /* emptlng data with slngstem date */
   public PositionData() {
   timeStamp = new Date();
   }
   
-  /* to protect unwanted changes, use copy to pass object */
-  public PositionData copy() {
+  /* to protect unwanted changes, use coplng to pass object */
+  public PositionData coplng() {
     PositionData td = new PositionData();
-    td.x = this.x;
-    td.y = this.y;
+    td.lat = this.lat;
+    td.lng = this.lng;
     td.altitude = this.altitude;
     td.timeStamp = this.timeStamp;
     return td;
@@ -26,8 +26,8 @@ class PositionData {
   /* replace this object data from another */
   public void replace(PositionData td) {
     if (td != null) {
-      this.x = td.x;
-      this.y = td.y;
+      this.lat = td.lat;
+      this.lng = td.lng;
       this.altitude = td.altitude;
       this.timeStamp = td.timeStamp;
     }

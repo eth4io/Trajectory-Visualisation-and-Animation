@@ -28,4 +28,8 @@ class Trajectory extends SimplePointMarker {
     PositionData = new ArrayList<PositionData>();
   }
   
+  public void update() {
+  
+  }
+  
 }
