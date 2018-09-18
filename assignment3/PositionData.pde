@@ -1,8 +1,8 @@
-class TrackData {
+class PositionData {
   private float x, y, altitude;
   private Date timeStamp;  
   
-  public TrackData(float x, float y, float altitude, Date timeStamp) {
+  public PositionData(float x, float y, float altitude, Date timeStamp) {
   this.x = x;
   this.y = y;
   this.altitude = altitude;
@@ -10,13 +10,13 @@ class TrackData {
   }
   
   /* empty data with system date */
-  public TrackData() {
+  public PositionData() {
   timeStamp = new Date();
   }
   
   /* to protect unwanted changes, use copy to pass object */
-  public TrackData copy() {
-    TrackData td = new TrackData();
+  public PositionData copy() {
+    PositionData td = new PositionData();
     td.x = this.x;
     td.y = this.y;
     td.altitude = this.altitude;
@@ -24,7 +24,7 @@ class TrackData {
     return td;
   }
   /* replace this object data from another */
-  public void replace(TrackData td) {
+  public void replace(PositionData td) {
     if (td != null) {
       this.x = td.x;
       this.y = td.y;
