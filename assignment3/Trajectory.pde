@@ -4,10 +4,12 @@ import java.text.*;
 
 class Trajectory extends SimplePointMarker {
   List<PositionData> PositionData;
-  
+  PositionData nextPosition;
+  PositionData currentPosition;
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
   public Trajectory(List<PositionData> data) {
     super();
+    nextPosition = new PositionData();
     this.PositionData = new ArrayList<PositionData>();
     
     /* add passed in data to this point's PositionData variable */
@@ -26,6 +28,10 @@ class Trajectory extends SimplePointMarker {
   public Trajectory() {
     super(new Location(0,0));
     PositionData = new ArrayList<PositionData>();
+  }
+  
+  public void update() {
+    this.set
   }
   
 }
