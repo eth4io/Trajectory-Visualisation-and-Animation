@@ -39,7 +39,9 @@ class Trajectory extends SimplePointMarker {
     this(new Location(0, 0));
   }
   
-  //call at the end of the cycle
+  /* call at the end of the cycle
+   * attention: check if the list `hasNext()` before invoke update()
+   */
   public void update() {
     currentPositionIndex++;
     currentPosition = positionData.get(currentPositionIndex);
