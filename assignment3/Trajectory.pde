@@ -9,7 +9,7 @@ import java.text.*;
 class Trajectory extends SimplePointMarker {
   List<PositionData> positionData;
   PositionData currentPosition;
-  int currentPositionIndex = 0;  //PositionData iterator
+  private int currentPositionIndex = 0;  //PositionData iterator
   
   //speed variables
   private float currentSpeed = 0;
@@ -55,7 +55,7 @@ class Trajectory extends SimplePointMarker {
     this.setLocation(currentPosition.lat, currentPosition.lng);
     //update speed
     this.updateSpeed();
-    println(this, "moving ave speed:", movingAverageSpeed);
+    //println(this, "moving ave speed:", movingAverageSpeed);
   }
   
   /* updates current speed based on previous position record */
@@ -65,7 +65,7 @@ class Trajectory extends SimplePointMarker {
     if (currentPositionIndex > 0) {
       //temporary position for calulating
       PositionData lastPos = new PositionData();
-      lastPos = positionData.get(currentPositionIndex - 1).copy();
+      lastPos = positionData.get(currentPositionIndex - 1);
       //get time difference in milliseconds from current time - last time
       float timeDiff = abs(currentPosition.getCreatedTime().getTime()
                        - lastPos.getCreatedTime().getTime());
@@ -106,9 +106,36 @@ class Trajectory extends SimplePointMarker {
     else
       return false;
   }
+  //returns an array on float for speed at every position
+  //CAUTION: heavy processing power required. do not call frequently
+  public float[] getSpeedData() {
+    float[] temp = new float[positionData.size()];
+    int i, j;
+    
+    i = 1;
+    j = 0;
+    for (; i < positionData.size(); i++, j++) {
+      PositionData p1 = new PositionData();
+      PositionData p2 = new PositionData();
+      float diff = 0;
+      
+      p1 = positionData.get(i);
+      p2 = positionData.get(i-1);
+      Location l = new Location(p1.getLat(), p1.getLng());
+      diff = abs(p1.getCreatedTime().getTime() -
+                 p2.getCreatedTime().getTime());
+      diff /= 1000;
+      diff /= 3600;
+      temp[j] = (float) l.getDistance(new Location(p2.getLat(), p2.getLng())) / diff;
+    }
+    return temp;
+  }
   
-  //returns current speed in km/h
+  //getters
   public float getCurrentSpeed() { return this.currentSpeed; }
   public float getMovingAverageSpeed() { return this.movingAverageSpeed; }
   public float getMovingMaxSpeed() { return this.movingMaxSpeed; }
+  public int getCurrentPositionIndex() { return currentPositionIndex; }
+  //setters
+  public void setCurrentPositionIndex(int i) { this.currentPositionIndex = i; }
 }

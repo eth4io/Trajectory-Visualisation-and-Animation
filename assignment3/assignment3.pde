@@ -63,6 +63,12 @@ void setup() {
   testTraj.add(new Trajectory(testerData));
   trajectoryManager = new TrajectoryManager(testTraj);
   trajectoryManager.setMap(map);
+  
+  List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
+  testSpeedGraph = trajectoryManager.getMarkers();
+  float[] test;
+  test = testSpeedGraph.get(0).getSpeedData();
+  println(test);
 }
 
 void draw() {
