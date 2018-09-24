@@ -4,18 +4,21 @@
 
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import java.util.Date;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.text.*;
 
 class Trajectory extends SimplePointMarker {
-  List<PositionData> positionData;
-  PositionData currentPosition;
+  private static final int SPEED_SMOOTHING_SIZE = 10;
+  private List<PositionData> positionData;
+  private PositionData currentPosition;
   private int currentPositionIndex = 0;  //PositionData iterator
 
   //speed variables
   private float currentSpeed = 0;
   private float movingAverageSpeed = 0;
   private float movingMaxSpeed = 0;
-  private float[] speedArray = new float[10];
+  private Queue<Float> speedQueue = new LinkedList();
   //end speed variables
 
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
@@ -55,33 +58,34 @@ class Trajectory extends SimplePointMarker {
     this.setLocation(currentPosition.lat, currentPosition.lng);
     //update speed
     this.updateSpeed();
-    //println(this, "moving ave speed:", movingAverageSpeed);
   }
 
   /* updates current speed based on previous position record */
 
   private void updateSpeed() {
+    // update current speed
     float currentSpeed = getSpeedByIndex(currentPositionIndex);
 
-    //move down speed array and bump elements up
-    for (int i = speedArray.length - 1; i > 0; i--) {
-      speedArray[i] = speedArray[i - 1];
+    // update average speed
+    float speedSum = movingAverageSpeed * speedQueue.size();
+    if (speedQueue.size() == 0) {
+      movingMaxSpeed = 0;
+      movingAverageSpeed = 0;
     }
-    //load new current speed into first element
-    speedArray[0] = currentSpeed;
+    else if (speedQueue.size() >= SPEED_SMOOTHING_SIZE) {
+      speedSum -= speedQueue.remove();
+    }
+    speedQueue.add(currentSpeed);
+    speedSum += currentSpeed;
+    movingAverageSpeed = speedSum / speedQueue.size();
 
-    //calculate moving average speed and moving max speed from speed array
-    movingAverageSpeed = movingMaxSpeed = 0;
-    for (int i = 0; i < speedArray.length; i++) {
-      //sum for average
-      movingAverageSpeed += speedArray[i];
-      //check max
-      if (speedArray[i] > movingMaxSpeed) {
-        movingMaxSpeed = speedArray[i];
-      }
-    }
-    //divide sum by n to get average
-    movingAverageSpeed /= speedArray.length;
+    // update max speed
+    if (currentSpeed > movingMaxSpeed)
+      movingMaxSpeed = currentSpeed;
+
+    // log for debugging
+    // println(currentPositionIndex, "curSpeed: ", currentSpeed, '\t',
+    //   "moving ave speed: ", movingAverageSpeed, '\t', "size: ", speedQueue.size());
   }
 
   // check if has next
@@ -96,14 +100,16 @@ class Trajectory extends SimplePointMarker {
     if (index == 0) {
       return 0;
     }
-    PositionData lastPos = positionData.get(index - 1);
-    PositionData curPos = positionData.get(index);
+    PositionData lastPosition = positionData.get(index - 1);
     //get time difference in milliseconds from current time - last time
-    float timeDiff = abs(curPos.getCreatedTime().getTime()
-      - lastPos.getCreatedTime().getTime());
+    float timeDiff = abs(currentPosition.getCreatedTime().getTime()
+      - lastPosition.getCreatedTime().getTime());
     //remove miliseconds and seconds
     timeDiff /= 1000 * 3600;
-    distanceDiff = (float) curPos.getDistanceTo(new Location(lastPos.getLat(), lastPos.getLng()));
+    float distanceDiff = (float) this.getDistanceTo(new Location(lastPosition.getLat(), lastPosition.getLng()));
+
+    if (Float.isNaN(distanceDiff) || timeDiff == 0)
+      return 0;
     //calculate distance / speed to get km per hour
     return distanceDiff / timeDiff;
   }
@@ -113,7 +119,7 @@ class Trajectory extends SimplePointMarker {
   public float[] getSpeedData() {
     float[] speedArray = new float[positionData.size()];
 
-    for (i = 0; i < positionData.size (); i++, j++) {
+    for (int i = 0; i < positionData.size(); i++) {
       speedArray[i] = getSpeedByIndex(i);
     }
     return speedArray;

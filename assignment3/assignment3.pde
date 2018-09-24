@@ -81,7 +81,7 @@ void draw() {
   trajectoryManager.draw();
 
   barScale.draw();
-  
+
   trajectoryManager.updateAll();
 }
 
