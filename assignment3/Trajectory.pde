@@ -14,7 +14,7 @@ class Trajectory extends SimplePointMarker {
   //speed variables
   private float currentSpeed = 0;
   private float movingAverageSpeed = 0;
-  private float[] speedArray = new float[]{0,0,0};
+  private float[] speedArray = new float[10];
   //end speed variables
   
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
@@ -54,10 +54,11 @@ class Trajectory extends SimplePointMarker {
     this.setLocation(currentPosition.lat, currentPosition.lng);
     //update speed
     this.updateSpeed();
-    println(currentSpeed);
+    println("crtspd: " + currentSpeed);
   }
   
   /* updates current speed based on previous position record */
+  
   private void updateSpeed() {
     //do not check if first element
     if (currentPositionIndex > 0) {
@@ -73,21 +74,25 @@ class Trajectory extends SimplePointMarker {
       timeDiff /= 3600;
       //calculate distance / speed to get km per hour
       currentSpeed = (float) this.getDistanceTo(new Location(lastPos.getLat(), lastPos.getLng()))/timeDiff;
+      
       //copy down speed array
-      for (int i = speedArray.length; i > 0 ; i--) {
-        speedArray[i - 1] = speedArray[i];
+      for (int i = speedArray.length - 1; i > 0; i--) {
+        speedArray[i] = speedArray[i - 1];
       }
       //load new current speed
-      speedArray[speedArray.length] = currentSpeed;
+      speedArray[0] = currentSpeed;
       
-      //calculate average speed from speed array
+      //calculate moving average speed from speed array
       movingAverageSpeed = 0;
       for (int i = 0; i < speedArray.length; i++) {
         movingAverageSpeed += speedArray[i];
       }
-      
+      movingAverageSpeed /= speedArray.length;
     }
+    println("mvAvSpd: " + movingAverageSpeed);
+    println(speedArray);
   }
+  
   // check if has next
   public boolean hasNext() {
     if (currentPositionIndex < positionData.size() - 1)
