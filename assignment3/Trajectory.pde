@@ -11,6 +11,12 @@ class Trajectory extends SimplePointMarker {
   PositionData currentPosition;
   int currentPositionIndex = 0;  //PositionData iterator
   
+  //speed variables
+  private float currentSpeed = 0;
+  private float movingAverageSpeed = 0;
+  private float[] speedArray = new float[]{0,0,0};
+  //end speed variables
+  
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
   public Trajectory(List<PositionData> data) {
     super(new Location(0,0));
@@ -46,15 +52,53 @@ class Trajectory extends SimplePointMarker {
     currentPositionIndex++;
     currentPosition = positionData.get(currentPositionIndex);
     this.setLocation(currentPosition.lat, currentPosition.lng);
+    //update speed
+    this.updateSpeed();
+    println(currentSpeed);
   }
   
-  
+  /* updates current speed based on previous position record */
+  private void updateSpeed() {
+    //do not check if first element
+    if (currentPositionIndex > 0) {
+      //temporary position for calulating
+      PositionData lastPos = new PositionData();
+      lastPos = positionData.get(currentPositionIndex - 1).copy();
+      //get time difference in milliseconds from current time - last time
+      float timeDiff = abs(currentPosition.getCreatedTime().getTime()
+                       - lastPos.getCreatedTime().getTime());
+      //remove miliseconds
+      timeDiff /= 1000;
+      //seconds to hours
+      timeDiff /= 3600;
+      //calculate distance / speed to get km per hour
+      currentSpeed = (float) this.getDistanceTo(new Location(lastPos.getLat(), lastPos.getLng()))/timeDiff;
+      //copy down speed array
+      for (int i = speedArray.length; i > 0 ; i--) {
+        speedArray[i - 1] = speedArray[i];
+      }
+      //load new current speed
+      speedArray[speedArray.length] = currentSpeed;
+      
+      //calculate average speed from speed array
+      movingAverageSpeed = 0;
+      for (int i = 0; i < speedArray.length; i++) {
+        movingAverageSpeed += speedArray[i];
+      }
+      
+    }
+  }
   // check if has next
   public boolean hasNext() {
     if (currentPositionIndex < positionData.size() - 1)
       return true;
     else
       return false;
+  }
+  
+  //returns current speed in km/h
+  public float getCurrentSpeed() {
+    return this.currentSpeed;
   }
   
 }
