@@ -1,5 +1,5 @@
 // extention class for Marker Manager for working with trajectories
-// created by Michael Holmes, September 2018
+// created September 2018
 // student number: 928428
 
 import java.util.Map;
