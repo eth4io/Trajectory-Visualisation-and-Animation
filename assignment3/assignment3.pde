@@ -68,10 +68,10 @@ void setup() {
 void draw() {
   map.draw();
   //test radius variable
-  trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
+  //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
-  trajectoryManager.setAllColor(color(150,150,200));
-
+  //trajectoryManager.setAllColor(color(150,150,200));
+  
   trajectoryManager.draw();
 
   barScale.draw();

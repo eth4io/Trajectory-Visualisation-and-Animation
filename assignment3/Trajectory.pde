@@ -14,6 +14,7 @@ class Trajectory extends SimplePointMarker {
   //speed variables
   private float currentSpeed = 0;
   private float movingAverageSpeed = 0;
+  private float movingMaxSpeed = 0;
   private float[] speedArray = new float[10];
   //end speed variables
   
@@ -54,7 +55,7 @@ class Trajectory extends SimplePointMarker {
     this.setLocation(currentPosition.lat, currentPosition.lng);
     //update speed
     this.updateSpeed();
-    println("crtspd: " + currentSpeed);
+    println(this, "moving ave speed:", movingAverageSpeed);
   }
   
   /* updates current speed based on previous position record */
@@ -73,24 +74,29 @@ class Trajectory extends SimplePointMarker {
       //seconds to hours
       timeDiff /= 3600;
       //calculate distance / speed to get km per hour
-      currentSpeed = (float) this.getDistanceTo(new Location(lastPos.getLat(), lastPos.getLng()))/timeDiff;
+      currentSpeed = (float) this.getDistanceTo(new Location(lastPos.getLat(), lastPos.getLng())) / timeDiff;
       
-      //copy down speed array
+      //move down speed array and bump elements up
       for (int i = speedArray.length - 1; i > 0; i--) {
         speedArray[i] = speedArray[i - 1];
       }
-      //load new current speed
+      //load new current speed into first element
       speedArray[0] = currentSpeed;
       
-      //calculate moving average speed from speed array
-      movingAverageSpeed = 0;
+      //calculate moving average speed and moving max speed from speed array
+      movingAverageSpeed = movingMaxSpeed = 0;
       for (int i = 0; i < speedArray.length; i++) {
+        //sum for average
         movingAverageSpeed += speedArray[i];
+        //check max
+        if (speedArray[i] > movingMaxSpeed) {
+          movingMaxSpeed = speedArray[i];
+        }
       }
+      //divide sum by n to get average
       movingAverageSpeed /= speedArray.length;
+
     }
-    println("mvAvSpd: " + movingAverageSpeed);
-    println(speedArray);
   }
   
   // check if has next
@@ -102,8 +108,7 @@ class Trajectory extends SimplePointMarker {
   }
   
   //returns current speed in km/h
-  public float getCurrentSpeed() {
-    return this.currentSpeed;
-  }
-  
+  public float getCurrentSpeed() { return this.currentSpeed; }
+  public float getMovingAverageSpeed() { return this.movingAverageSpeed; }
+  public float getMovingMaxSpeed() { return this.movingMaxSpeed; }
 }
