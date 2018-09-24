@@ -8,14 +8,12 @@ import java.text.*;
 
 class Trajectory extends SimplePointMarker {
   List<PositionData> positionData;
-  PositionData nextPosition;
   PositionData currentPosition;
   int currentPositionIndex = 0;  //PositionData iterator
   
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
   public Trajectory(List<PositionData> data) {
     super(new Location(0,0));
-    nextPosition = new PositionData();
     currentPosition = new PositionData();
     this.positionData = new ArrayList<PositionData>();
     
@@ -33,32 +31,30 @@ class Trajectory extends SimplePointMarker {
   public Trajectory(Location location) {
     super(location);
     positionData = new ArrayList<PositionData>();
-    nextPosition = new PositionData();
     currentPosition = new PositionData();
   }
   
   /* new empty */
   public Trajectory() {
-    super(new Location(0,0));
-    positionData = new ArrayList<PositionData>();
-    nextPosition = new PositionData();
-    currentPosition = new PositionData();
+    this(new Location(0, 0));
   }
   
-  //call at the end of the cycle
+  /* call at the end of the cycle
+   * attention: check if the list `hasNext()` before invoke update()
+   */
   public void update() {
-    currentPosition = nextPosition;
+    currentPositionIndex++;
+    currentPosition = positionData.get(currentPositionIndex);
     this.setLocation(currentPosition.lat, currentPosition.lng);
   }
   
-  //pushes next location in List to nextPosition
-  public void next() {
-    if (currentPositionIndex < positionData.size()) {
-      currentPositionIndex++;
-      nextPosition = positionData.get(currentPositionIndex);
-    }
-    
-    
+  
+  // check if has next
+  public boolean hasNext() {
+    if (currentPositionIndex < positionData.size() - 1)
+      return true;
+    else
+      return false;
   }
   
 }

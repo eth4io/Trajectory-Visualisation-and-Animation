@@ -147,17 +147,11 @@ class TrajectoryManager extends MarkerManager {
   public void updateAll() {
      List<Marker> temp = this.getMarkers();
      for (Marker m : temp) {
-       ((Trajectory)m).update();
+       if (((Trajectory)m).hasNext())
+         ((Trajectory)m).update();
      }
   }
   
-  //call next for all trajectories
-  public void nextAll() {
-    List<Marker> temp = this.getMarkers();
-    for (Marker m : temp) {
-      ((Trajectory)m).next();
-    }
-  }
   
   //get and set the draw level
   public void setDrawLevel(int x) { this.drawLevel = x; }
