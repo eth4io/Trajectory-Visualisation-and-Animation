@@ -63,6 +63,10 @@ void setup() {
   testTraj.add(new Trajectory(testerData));
   trajectoryManager = new TrajectoryManager(testTraj);
   trajectoryManager.setMap(map);
+  
+  //test histogram
+  float[] hist = new float[]{0.1,1.4,3.2,7,9.2};
+  Histogram histoTest = new Histogram(0.5,hist);
 }
 
 void draw() {
