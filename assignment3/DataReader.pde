@@ -82,7 +82,7 @@ public class DataReader {
     List<PositionData> result = new ArrayList<PositionData>();
     for (final File fileEntry : files) {
       if (fileEntry.isFile()) {
-        println(fileEntry.getName());
+        //println(fileEntry.getName());
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
       }
     }
@@ -124,7 +124,7 @@ public class DataReader {
         positionData.setSpeed(speed);
         lastPosition = currentPosition;
         
-        println(positionData.toString());
+//        println(positionData.toString());
         pointTrack.add(positionData);
       }
       catch (Exception e) {
@@ -165,7 +165,7 @@ public class DataReader {
     float smoothedSpeed = speedSum / speedQueue.size();
 
     // log for debugging
-    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
+    //println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
     return smoothedSpeed;
   }
     
@@ -174,16 +174,13 @@ public class DataReader {
       return 0;
     }
     //get time difference in milliseconds from current time - last time
-    float timeDiff = abs(currentPosition.getCreatedTime().getTime()
-      - lastPosition.getCreatedTime().getTime());
-    //remove miliseconds and seconds
-    timeDiff /= 1000 * 3600;
-    float distanceDiff = getDistance(lastPosition, currentPosition);
+    float timeDiffInHour = getTimeDiffInHour(lastPosition, currentPosition);
+    float distanceDiffInKm = getDistance(lastPosition, currentPosition);
 
-    if (Float.isNaN(distanceDiff) || timeDiff == 0)
+    if (Float.isNaN(distanceDiffInKm) || timeDiffInHour == 0)
       return 0;
     //calculate distance / speed to get km per hour
-    return distanceDiff / timeDiff;
+    return distanceDiffInKm / timeDiffInHour;
   }
  
   /**
@@ -210,6 +207,14 @@ public class DataReader {
     double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     double distance = R * c ; // in kilomete
     return (float) Math.abs(distance);
+  }
+
+  private float getTimeDiffInHour(PositionData lastPosition, PositionData currentPosition) {
+    float diff = abs(currentPosition.getCreatedTime().getTime()
+      - lastPosition.getCreatedTime().getTime());
+    //remove miliseconds and seconds
+    diff /= 1000 * 3600;
+    return diff;
   }
 }
 
