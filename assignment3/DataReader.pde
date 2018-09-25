@@ -11,8 +11,14 @@ public class DataReader {
   private static final String GEOLIFE_DATA_DIR = "Data";
   private static final String GEOLIFE_DATA_TRAJECTORY_DIR = "Trajectory";
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
+  private static final int SPEED_SMOOTHING_SIZE = 10;
   private String fileSeparator;
   private String dataDir;
+  
+  private Queue<Float> speedQueue = new LinkedList();
+  private PositionData currentPosition = null;
+  private PositionData lastPosition = null;
+  private float speedSum = 0.0;
 
   public DataReader() {
     /**
@@ -89,7 +95,7 @@ public class DataReader {
    *
    * @param fileName A String contains the name of the file need to be loaded
    */
-  public List<PositionData> getPositionDataListByFilePath(String filePath) {
+  private List<PositionData> getPositionDataListByFilePath(String filePath) {
     //loads a plt file, and returns a 2D String Array of tracklog
     //where tracklog[i] is a single trace line
     //tracklog[i][0] is the latitude and tracklog[i][1] is the longitude
@@ -111,7 +117,14 @@ public class DataReader {
       SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
       try {
         Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
+        
         PositionData positionData = new PositionData(lat, lon, altitude, date);
+        currentPosition = positionData;
+        float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
+        positionData.setSpeed(speed);
+        lastPosition = currentPosition;
+        
+        println(positionData.toString());
         pointTrack.add(positionData);
       }
       catch (Exception e) {
@@ -137,6 +150,66 @@ public class DataReader {
       folderName = "0" + folderName;
     }
     return folderName;
+  }
+  
+  private float getSmoothedSpeed(Queue<Float> speedQueue,
+    PositionData lastPosition, PositionData currentPosition) {
+    // update current speed
+    float currentSpeed = getSimpleSpeed(lastPosition, currentPosition);
+
+    if (speedQueue.size() >= SPEED_SMOOTHING_SIZE) {
+      speedSum -= speedQueue.remove();
+    }
+    speedQueue.add(currentSpeed);
+    speedSum += currentSpeed;
+    float smoothedSpeed = speedSum / speedQueue.size();
+
+    // log for debugging
+    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
+    return smoothedSpeed;
+  }
+    
+  private float getSimpleSpeed(PositionData lastPosition, PositionData currentPosition) {
+    if (lastPosition == null || currentPosition == null) {
+      return 0;
+    }
+    //get time difference in milliseconds from current time - last time
+    float timeDiff = abs(currentPosition.getCreatedTime().getTime()
+      - lastPosition.getCreatedTime().getTime());
+    //remove miliseconds and seconds
+    timeDiff /= 1000 * 3600;
+    float distanceDiff = getDistance(lastPosition, currentPosition);
+
+    if (Float.isNaN(distanceDiff) || timeDiff == 0)
+      return 0;
+    //calculate distance / speed to get km per hour
+    return distanceDiff / timeDiff;
+  }
+ 
+  /**
+   * Calculate distance between two points in latitude and longitude taking
+   * into account height difference. If you are not interested in height
+   * difference pass 0.0. Uses Haversine method as its base.
+   * 
+   * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+   * el2 End altitude in meters
+   * @returns Distance in Meters
+   */
+  private float getDistance(PositionData lastPosition, PositionData currentPosition) {
+    float lat1 = lastPosition.getLat();
+    float lat2 = currentPosition.getLat();
+    float lon1 = lastPosition.getLng();
+    float lon2 = lastPosition.getLng();
+    final int R = 6371; // Radius of the earth
+
+    double latDistance = Math.toRadians(lat2 - lat1);
+    double lonDistance = Math.toRadians(lon2 - lon1);
+    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+            + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+            * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    double distance = R * c ; // in kilomete
+    return (float) Math.abs(distance);
   }
 }
 

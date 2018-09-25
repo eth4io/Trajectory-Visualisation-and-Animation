@@ -12,6 +12,10 @@ class PositionData {
     this.speed = speed;
     this.createdTime = createdTime;
   }
+  
+  public PositionData(float lat, float lng, float altitude, Date createdTime) {
+    this(lat, lng, altitude, 0, createdTime);
+  }
 
   /* emptlng data with slngstem date */
   public PositionData() {
@@ -53,8 +57,17 @@ class PositionData {
     return speed;
   }
   
+  public void setSpeed(float speed) {
+    this.speed = speed;
+  }
+  
   public Date getCreatedTime() {
     return createdTime;
+  }
+  
+  public String toString() {
+    return "lat: " + lat + ",\tlng: " + lng + ",\taltitude: "
+      + altitude + ",\tspeed: " + speed + ",\ttime: " + createdTime;
   }
 }
 

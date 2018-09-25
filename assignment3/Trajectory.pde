@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.text.*;
 
 class Trajectory extends SimplePointMarker {
-  private static final int SPEED_SMOOTHING_SIZE = 10;
   private List<PositionData> positionData;
   private PositionData currentPosition;
   private int currentPositionIndex = 0;  //PositionData iterator
@@ -56,37 +55,10 @@ class Trajectory extends SimplePointMarker {
     currentPositionIndex++;
     currentPosition = positionData.get(currentPositionIndex);
     this.setLocation(currentPosition.lat, currentPosition.lng);
-    //update speed
-    this.updateSpeed();
   }
 
   /* updates current speed based on previous position record */
 
-  private void updateSpeed() {
-    // update current speed
-    float currentSpeed = getSpeedByIndex(currentPositionIndex);
-
-    // update average speed
-    float speedSum = movingAverageSpeed * speedQueue.size();
-    if (speedQueue.size() == 0) {
-      movingMaxSpeed = 0;
-      movingAverageSpeed = 0;
-    }
-    else if (speedQueue.size() >= SPEED_SMOOTHING_SIZE) {
-      speedSum -= speedQueue.remove();
-    }
-    speedQueue.add(currentSpeed);
-    speedSum += currentSpeed;
-    movingAverageSpeed = speedSum / speedQueue.size();
-
-    // update max speed
-    if (currentSpeed > movingMaxSpeed)
-      movingMaxSpeed = currentSpeed;
-
-    // log for debugging
-    // println(currentPositionIndex, "curSpeed: ", currentSpeed, '\t',
-    //   "moving ave speed: ", movingAverageSpeed, '\t', "size: ", speedQueue.size());
-  }
 
   // check if has next
   public boolean hasNext() {
@@ -94,35 +66,6 @@ class Trajectory extends SimplePointMarker {
       return true;
     else
       return false;
-  }
-
-  private float getSpeedByIndex(int index) {
-    if (index == 0) {
-      return 0;
-    }
-    PositionData lastPosition = positionData.get(index - 1);
-    //get time difference in milliseconds from current time - last time
-    float timeDiff = abs(currentPosition.getCreatedTime().getTime()
-      - lastPosition.getCreatedTime().getTime());
-    //remove miliseconds and seconds
-    timeDiff /= 1000 * 3600;
-    float distanceDiff = (float) this.getDistanceTo(new Location(lastPosition.getLat(), lastPosition.getLng()));
-
-    if (Float.isNaN(distanceDiff) || timeDiff == 0)
-      return 0;
-    //calculate distance / speed to get km per hour
-    return distanceDiff / timeDiff;
-  }
-
-  //returns an array on float for speed at every position
-  //CAUTION: heavy processing power required. do not call frequently
-  public float[] getSpeedData() {
-    float[] speedArray = new float[positionData.size()];
-
-    for (int i = 0; i < positionData.size(); i++) {
-      speedArray[i] = getSpeedByIndex(i);
-    }
-    return speedArray;
   }
 
   //getters
