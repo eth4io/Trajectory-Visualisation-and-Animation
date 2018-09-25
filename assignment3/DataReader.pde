@@ -71,10 +71,13 @@ public class DataReader {
 
     File directory = new File(folderPath);
 
+    File[] files = directory.listFiles();
+    Arrays.sort(files);
     List<PositionData> result = new ArrayList<PositionData>();
-    for (final File fileEntry : directory.listFiles ()) {
+    for (final File fileEntry : files) {
       if (fileEntry.isFile()) {
-        result.addAll(getPositionDataListByFilePath(folderPath + fileEntry.getName()));
+        println(fileEntry.getName());
+        result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
       }
     }
     return result;
