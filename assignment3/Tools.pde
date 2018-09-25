@@ -1,6 +1,8 @@
 class Tools {
 
 }
+
+
 /* histogram class for displaying data
  * ask Michael for questions
  */
@@ -18,7 +20,8 @@ class Histogram {
   private int[] bins;
   private float maxValue = 0;
   
-  public Histogram(float binSize, float[] data) {
+  public Histogram(float binSize, float[] data) 
+  {
     maxValue = max(data);                              /* get max value in data */
     this.binSize = binSize;                            /* set bin size */
     bins = new int[ceil(maxValue / this.binSize)];     /* set number of bins based on maxValue and binsize*/
