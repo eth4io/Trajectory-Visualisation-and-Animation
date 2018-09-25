@@ -63,19 +63,24 @@ void setup() {
   testTraj.add(new Trajectory(testerData));
   trajectoryManager = new TrajectoryManager(testTraj);
   trajectoryManager.setMap(map);
+  
+  List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
+  testSpeedGraph = trajectoryManager.getMarkers();
+
+
 }
 
 void draw() {
   map.draw();
   //test radius variable
-  trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
+  //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
-  trajectoryManager.setAllColor(color(150,150,200));
-
+  //trajectoryManager.setAllColor(color(150,150,200));
+  
   trajectoryManager.draw();
 
   barScale.draw();
-  
+
   trajectoryManager.updateAll();
 }
 
