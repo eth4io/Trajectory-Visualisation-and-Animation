@@ -66,9 +66,8 @@ void setup() {
   
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
   testSpeedGraph = trajectoryManager.getMarkers();
-  float[] test;
-  test = testSpeedGraph.get(0).getSpeedData();
-  println(test);
+
+
 }
 
 void draw() {
@@ -81,7 +80,7 @@ void draw() {
   trajectoryManager.draw();
 
   barScale.draw();
-  
+
   trajectoryManager.updateAll();
 }
 
