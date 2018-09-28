@@ -77,7 +77,7 @@ void setup() {
   0xffffffff);
   sliderW=350;
   sliderH=10;
-  sliderX = width/2 - sliderW/2;
+  sliderX = width / 2 - sliderW / 2;
   sliderY = height - 40;
   initialiseUI();
 }
@@ -103,7 +103,7 @@ void draw() {
 }
 
 void initialiseUI() {
-  cp5 =  new  ControlP5(this);
+  cp5 = new ControlP5(this);
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
@@ -118,12 +118,12 @@ void initialiseUI() {
 
 
   cp5.addIcon("play", 10)
-    .setPosition(sliderX +sliderW/2, sliderY-20)
+    .setPosition(sliderX + sliderW / 2, sliderY - 20)
     .setSize(10, 10)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
     .setFontIcons(#00f04C, #00f04B)
-    //.setScale(0.9,1)
+    //.setScale(0.9, 1)
     .setSwitch(true)
     .setColorBackground(color(255, 100))
     .hideBackground()
@@ -134,11 +134,11 @@ void drawIU() {
 
   fill(50, 150);
   noStroke();
-  rect(sliderX-40, sliderY-40, sliderW+80, sliderH+80, 7);
-  int hour = int(time/60);
-  int min = int(time%60);
+  rect(sliderX - 40, sliderY - 40, sliderW + 80, sliderH + 80, 7);
+  int hour = int(time / 60);
+  int min = int(time % 60);
   fill(255);
-  text(String.format("%02d:%02d", hour, min), sliderX, sliderY-10);
+  text(String.format("%02d:%02d", hour, min), sliderX, sliderY - 10);
 
   //not working for some reason..
   //cp5.getController("timeLine").setValue(time);
