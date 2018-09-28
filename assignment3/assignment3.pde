@@ -75,14 +75,14 @@ void setup() {
   println(testerData.get(0).getLat(), testerData.get(0).getLng());
 
   //test trajectory manager
-  testTraj = new ArrayList<Trajectory>();
-  testTraj.add(new Trajectory(testerData));
-  trajectoryManager = new TrajectoryManager(testTraj);
-  trajectoryManager.setMap(map);
+//  testTraj = new ArrayList<Trajectory>();
+//  testTraj.add(new Trajectory(testerData));
+//  trajectoryManager = new TrajectoryManager(testTraj);
+//  trajectoryManager.setMap(map);
 }
 
 void draw() {
-  map.draw();
+  //map.draw();
   //test radius variable
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
@@ -94,7 +94,10 @@ void draw() {
   //barScale.draw();
 
   //trajectoryManager.updateAll();
+    if (play) loop();
+  else noLoop();
   drawIU();
+
 }
 
 void initialiseUI() {
@@ -112,11 +115,17 @@ void initialiseUI() {
 
 
 
-  cp5.addButton("pause")
-    .setPosition(width/2, height/2)
-        //.setSize(10, 10)
-        .setImage(loadImage("playPause.png"))
-          .setSize(30,30);
+  cp5.addIcon("play",10)
+     .setPosition(sliderX +sliderW/2, sliderY-20)
+     .setSize(10,10)
+     .setRoundedCorners(20)
+     .setFont(createFont("fontawesome-webfont.ttf", 25))
+     .setFontIcons(#00f04C,#00f04B)
+     //.setScale(0.9,1)
+     .setSwitch(true)
+     .setColorBackground(color(255,100))
+     .hideBackground()
+     ;  
           
   ;
 
@@ -127,12 +136,8 @@ void initialiseUI() {
   //        .setColor(controlsColours);
 }
 
-void pause() {
-  play = false;
-}
-void play() {
-  play = true;
-}
+
+
 void drawIU() {
   fill(50, 50);
   noStroke();
