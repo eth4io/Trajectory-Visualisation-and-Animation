@@ -1,12 +1,20 @@
 class PositionData {
-  private float lat, lng, altitude;
+  private float lat;
+  private float lng;
+  private float altitude;
+  private float speed;
   private Date createdTime;  
 
-  public PositionData(float lat, float lng, float altitude, Date createdTime) {
+  public PositionData(float lat, float lng, float altitude, float speed, Date createdTime) {
     this.lat = lat;
     this.lng = lng;
     this.altitude = altitude;
+    this.speed = speed;
     this.createdTime = createdTime;
+  }
+  
+  public PositionData(float lat, float lng, float altitude, Date createdTime) {
+    this(lat, lng, altitude, 0, createdTime);
   }
 
   /* emptlng data with slngstem date */
@@ -45,8 +53,21 @@ class PositionData {
     return altitude;
   }
   
+  public float getSpeed() {
+    return speed;
+  }
+  
+  public void setSpeed(float speed) {
+    this.speed = speed;
+  }
+  
   public Date getCreatedTime() {
     return createdTime;
+  }
+  
+  public String toString() {
+    return "lat: " + lat + ",\tlng: " + lng + ",\taltitude: "
+      + altitude + ",\tspeed: " + speed + ",\ttime: " + createdTime;
   }
 }
 

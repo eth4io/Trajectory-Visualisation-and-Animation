@@ -41,5 +41,3 @@ class Histogram {
   
   public int[] getBins()  {return bins; }
 }
-
-
