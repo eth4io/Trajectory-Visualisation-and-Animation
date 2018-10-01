@@ -19,6 +19,8 @@ static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
 "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
 static final int MAX_TESTER_INDEX = 181;
+static final int MAX_LVL = 11;
+static final int MIN_LVL = 14;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
@@ -36,16 +38,20 @@ List<Trajectory> testTraj;
 
 void setup() {
   size(800, 600);
-  map = new UnfoldingMap(this, 0, 0, width, 
-  height, new OpenStreetMap.OpenStreetMapProvider());
-
+  
+  /* set up map */
+  map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
+  height, new OpenStreetMap.OpenStreetMapProvider());      
+  
+  map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
+  map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
+  map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
   
 
   
-  //pan and zoom to study location
-  map.zoomAndPanTo(BEIJING_CENTRAL, 11);
+
 
   MapUtils.createDefaultEventDispatcher(this, map);
   
