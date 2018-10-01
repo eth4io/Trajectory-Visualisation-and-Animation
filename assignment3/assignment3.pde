@@ -117,9 +117,9 @@ void initialiseUI() {
 
 
 
-  cp5.addIcon("isPlay", 10)
-    .setPosition(sliderX + sliderW / 2, sliderY - 20)
-    .setSize(10, 10)
+  cp5.addIcon("isPlay", 40)
+    .setPosition(sliderX + sliderW / 2, sliderY - 40)
+    .setSize(40, 40)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
     .setFontIcons(#00f04C, #00f04B)
