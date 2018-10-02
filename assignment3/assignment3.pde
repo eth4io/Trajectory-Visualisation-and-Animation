@@ -32,6 +32,8 @@ UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
+Trajectory inspectedTrajectory;              /* trajectory for inspection */
+
 //test
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
@@ -84,10 +86,28 @@ void draw() {
   //trajectoryManager.setAllColor(color(150,150,200));
   
   trajectoryManager.draw();
-
+  
+  
+  
   barScale.draw();
 
   trajectoryManager.updateAll();
+  
+  //draw inspector if there is a current selection
+  if (inspectedTrajectory != null) {
+    showInspector();
+  }
+}
+
+void mouseClicked() {
+  inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+
+}
+
+void showInspector() {
+  fill(30,20,20,150);
+  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  
 }
 
 
