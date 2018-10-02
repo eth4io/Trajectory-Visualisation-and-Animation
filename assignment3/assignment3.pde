@@ -94,7 +94,7 @@ void setup() {
   initialiseUI();
   
   //initialise histogram
-  histogram = new Histogram(10, new float[] {5 , 5, 15, 25, 25, 25, 35, 70}, this);
+  histogram = new Histogram(new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, new float[] {5 , 5, 15, 25, 25, 25, 35, 70}, this);
 }
 
 void draw() {

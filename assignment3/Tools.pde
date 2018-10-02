@@ -10,18 +10,18 @@ class Tools {
  */
 class Histogram {
    
-  private float binSize = 0;
   private float[] bins;
+  private float[] binValues;
   private float maxValue = 0;
   private String[] labels;
   private BarChart barChart;
   
-  public Histogram(float binSize, float[] data, PApplet PObj) 
+  public Histogram(float[] bins, float[] data, PApplet PObj) 
   {
-    update(binSize, data);
+    update(bins, data);
     
     barChart = new BarChart(PObj);
-    barChart.setData(bins);
+    barChart.setData(binValues);
     barChart.showValueAxis(true);
     barChart.setValueFormat("#.#");
     barChart.setBarLabels(labels);
@@ -30,23 +30,29 @@ class Histogram {
   }
   
   //private update function
-  private void update(float binSize, float[] data) 
+  private void update(float[] bins, float[] data) 
   {
     maxValue = max(data);                              /* get max value in data */
-    this.binSize = binSize;                            /* set bin size */
-    bins = new float[ceil(maxValue / this.binSize)];   /* set number of bins based on maxValue and binsize*/
+    //this.binSize = binSize;                            /* set bin size */
+    this.bins = bins;                                   /* set number of bins based on maxValue and binsize*/
     labels = new String[bins.length];                  /* set labels to length of bins array */
+    binValues = new float[bins.length];
     
-    for (int i = 0; i < bins.length; i++)              /* loop and set to zero */
-      bins[i] = 0;
+    for (int i = 0; i < binValues.length; i++)              /* loop and set to zero */
+      binValues[i] = 0;
     for (int i = 0; i < data.length; i++) {            /* loop over data */
-      int ceilData = ceil(data[i] / this.binSize);     /* find the ceiling for data[i] and the appropriate bin */
-      if (ceilData <= 0) 
-        ceilData = 1;                                  /* if negative value or 0, add to first bin (min bin) */
-      bins[ceilData - 1] += 1;                         /* add one frequency to the bin (accounting for n-1) */
+      float ceilData = ceil(data[i]);                    /* find the ceiling for data[i] and the appropriate bin */
+      for (int j = 0; j < binValues.length; j++) {
+        if (ceilData < bins[0]) {
+          binValues[0] += 1;
+        }
+        if (i > 0 && ceilData < bins[i] && ceilData > bins[i-1]) {
+          binValues[i] += 1;
+        }
+      }
     }
-    for (int i = 0; i < bins.length; i++) {            /* loop over bins to print */
-      println(i + 1, bins[i]);                         /* print bin number and frequency */
+    for (int i = 0; i < binValues.length; i++) {            /* loop over bins to print */
+      println(i + 1, binValues[i]);                         /* print bin number and frequency */
       labels[i] = Integer.toString(i) + "0 - " +       /* format value axis labels */
         Integer.toString(i) + "9" ;
     }
@@ -54,7 +60,7 @@ class Histogram {
   
   //public updater to be used at runtime
   public void update(float[] data) {
-    update(this.binSize, data);
+    update(this.bins, data);
     barChart.setData(bins);
   }
   
