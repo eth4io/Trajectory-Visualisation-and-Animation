@@ -55,6 +55,7 @@ class Histogram {
   //public updater to be used at runtime
   public void update(float[] data) {
     update(this.binSize, data);
+    barChart.setData(bins);
   }
   
   public void draw(int x, int y, int w, int h) {

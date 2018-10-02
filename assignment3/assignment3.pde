@@ -118,7 +118,7 @@ void draw() {
   if (inspectedTrajectory != null) {
     showInspector();
   }
-  
+  updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 100);
 }
 
@@ -129,9 +129,9 @@ void updateHistogram() {
   int i = 0;
   
   for (Trajectory m : t) {
-    //speeds[i++] = t.getCurrentPosition().getSpeed();
+    speeds[i++] =  m.getCurrentPosition().getSpeed();
   }
-  //histogram.update(speeds);
+  histogram.update(speeds);
 }
 
 void mouseClicked() {
