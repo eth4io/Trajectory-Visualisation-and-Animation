@@ -15,8 +15,8 @@ class Trajectory extends SimplePointMarker {
 
   //speed variables
   private float currentSpeed = 0;
-  private float movingAverageSpeed = 0;
-  private float movingMaxSpeed = 0;
+  //private float movingAverageSpeed = 0;
+  //private float movingMaxSpeed = 0;
   private Queue<Float> speedQueue = new LinkedList();
   //end speed variables
 
@@ -55,6 +55,12 @@ class Trajectory extends SimplePointMarker {
     currentPositionIndex++;
     currentPosition = positionData.get(currentPositionIndex);
     this.setLocation(currentPosition.lat, currentPosition.lng);
+    //set speed to 0 if at end of data
+    if (this.hasNext()) {
+      this.currentSpeed = this.currentPosition.getSpeed();                /* update speed variable */
+    } else {
+      currentSpeed = 0;
+    }
   }
 
   /* updates current speed based on previous position record */
@@ -70,8 +76,8 @@ class Trajectory extends SimplePointMarker {
 
   //getters
   public float getCurrentSpeed() { return this.currentSpeed; }
-  public float getMovingAverageSpeed() { return this.movingAverageSpeed; }
-  public float getMovingMaxSpeed() { return this.movingMaxSpeed; }
+  //public float getMovingAverageSpeed() { return this.movingAverageSpeed; }
+  //public float getMovingMaxSpeed() { return this.movingMaxSpeed; }
   public int getCurrentPositionIndex() { return currentPositionIndex; }
   public List<PositionData> getPositionData () { return this.positionData; }
   public PositionData getCurrentPosition() { return this.currentPosition; }

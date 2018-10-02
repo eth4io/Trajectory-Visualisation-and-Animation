@@ -50,10 +50,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
-final int HIST_X = 0;
-final int HIST_Y = 0;
-final int HIST_W = 50;
-final int HIST_H = 25;
+static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 
 void setup() {
   size(800, 600);
@@ -94,7 +91,7 @@ void setup() {
   initialiseUI();
   
   //initialise histogram
-  histogram = new Histogram(new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, new float[] {5 , 5, 15, 25, 25, 25, 35, 70}, this);
+  histogram = new Histogram(HIST_BINS, new float[]{0}, this);
 }
 
 void draw() {
@@ -119,7 +116,7 @@ void draw() {
     showInspector();
   }
   updateHistogram();
-  histogram.draw(width - 180, height - 200, 150, 100);
+  histogram.draw(width - 180, height - 200, 150, 110);
 }
 
 void updateHistogram() {
@@ -129,7 +126,7 @@ void updateHistogram() {
   int i = 0;
   
   for (Trajectory m : t) {
-    speeds[i++] =  m.getCurrentPosition().getSpeed();
+    speeds[i++] =  m.getCurrentSpeed();
   }
   histogram.update(speeds);
 }
