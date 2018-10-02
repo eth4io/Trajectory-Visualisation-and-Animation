@@ -93,17 +93,7 @@ void draw() {
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
-<<<<<<< HEAD
-  
   trajectoryManager.draw();
-  
-  
-  
-=======
-
-
-  trajectoryManager.draw();
->>>>>>> master
   barScale.draw();
   if (isPlay) {
     trajectoryManager.updateAll();
@@ -113,10 +103,7 @@ void draw() {
       time = 0;
   }
   drawIU();
-}
 
-<<<<<<< HEAD
-  trajectoryManager.updateAll();
   
   //draw inspector if there is a current selection
   if (inspectedTrajectory != null) {
@@ -140,8 +127,8 @@ void showInspector() {
   fill(255,255,255);
   text("Speed: " + speed + " km/h", x + 5, y - 50);
   text("altitude: " + alt + " km/h", x + 5, y - 35);
-  
-=======
+}
+
 void initialiseUI() {
   cp5 = new ControlP5(this);
   cp5.addSlider("timeLine")
@@ -155,8 +142,6 @@ void initialiseUI() {
      //.listen(true)
     ;
 
-
-
   cp5.addIcon("isPlay", 40)
     .setPosition(sliderX + sliderW / 2, sliderY - 40)
     .setSize(40, 40)
@@ -168,7 +153,6 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
->>>>>>> master
 }
 
 void drawIU() {
