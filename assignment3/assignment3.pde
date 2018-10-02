@@ -141,7 +141,7 @@ void showInspector() {
   println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
-  int speed = round(inspectedTrajectory.getCurrentPosition().getSpeed());
+  int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
