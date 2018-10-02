@@ -113,7 +113,21 @@ void draw() {
       time = 0;
   }
   drawIU();
+  
+  
   histogram.draw(width - 180, height - 200, 150, 100);
+}
+
+void updateHistogram() {
+  //histogram update and draw
+  List<Trajectory> t = trajectoryManager.getMarkers();
+  float[] speeds = new float[t.size()];
+  int i = 0;
+  
+  for (Marker m : t) {
+    speeds[i++] = t.getCurrentPosition().getSpeed();
+  }
+  histogram.update(speeds);
 }
 
 void initialiseUI() {
