@@ -24,6 +24,7 @@ static final int MIN_LVL = 14;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
+static final String STUDY_DATE = "20081106";
 
 
 //-----------------------  Global Variables ------------------------
@@ -66,15 +67,8 @@ void setup() {
   /* test of DataReader method */
   dataReader = new DataReader();
 
-  List<PositionData> testerData = dataReader.getTesterDataByIndex(0);
 
-  print("[" + 0 + "]: " + testerData.size() + " points\t");
-  println(testerData.get(0).getLat(), testerData.get(0).getLng());
-
-  //test trajectory manager
-  testTraj = new ArrayList<Trajectory>();
-  testTraj.add(new Trajectory(testerData));
-  trajectoryManager = new TrajectoryManager(testTraj);
+  trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
   trajectoryManager.setMap(map);
 
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
@@ -82,7 +76,7 @@ void setup() {
 
   //initialise UI
 
-  controlsColours  =  new  CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
+  controlsColours = new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
   0xffffffff);
   sliderW=350;
   sliderH=10;
