@@ -140,9 +140,6 @@ void drawIU() {
   int min = int(time % 60);
   fill(255);
   text(String.format("%02d:%02d", hour, min), sliderX, sliderY - 10);
-
-  //not working for some reason..
-  
   
   if(abs(time - previousUpdate) > 60){
     cp5.getController("timeLine").setValue(time);
