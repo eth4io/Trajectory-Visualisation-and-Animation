@@ -1,3 +1,5 @@
+import org.gicentre.utils.stat.*;                    /* for charts */
+
 class Tools {
 
 }
@@ -17,14 +19,17 @@ class Histogram {
    */
    
   private float binSize = 0;
-  private int[] bins;
+  private float[] bins;
   private float maxValue = 0;
+  private String[] labels;
+  private BarChart barChart;
   
-  public Histogram(float binSize, float[] data) 
+  public Histogram(float binSize, float[] data, PApplet PObj) 
   {
     maxValue = max(data);                              /* get max value in data */
     this.binSize = binSize;                            /* set bin size */
-    bins = new int[ceil(maxValue / this.binSize)];     /* set number of bins based on maxValue and binsize*/
+    bins = new float[ceil(maxValue / this.binSize)];     /* set number of bins based on maxValue and binsize*/
+    labels = new String[bins.length];
     
     for (int i = 0; i < bins.length; i++)              /* loop and set to zero */
       bins[i] = 0;
@@ -36,8 +41,21 @@ class Histogram {
     }
     for (int i = 0; i < bins.length; i++) {            /* loop over bins to print */
       println(i + 1, bins[i]);                         /* print bin number and frequency */
+      labels[i] = Integer.toString(i) + "0 - " + Integer.toString(i) + "9" ;
     }
+    
+    barChart = new BarChart(PObj);
+    barChart.setData(bins);
+    barChart.showValueAxis(true);
+    barChart.setValueFormat("#.#");
+    barChart.setBarLabels(labels);
+    barChart.showCategoryAxis(true);
+    barChart.transposeAxes(true);
   }
   
-  public int[] getBins()  {return bins; }
+  public void draw(int x, int y, int w, int h) {
+    this.barChart.draw(x, y, w, h);
+  }
+  
+  public float[] getBins()  {return bins; }
 }

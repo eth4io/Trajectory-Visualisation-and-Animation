@@ -46,6 +46,13 @@ int timeLine;
 int time;
 long previousUpdate = 0;
 
+//-----------Histogram Variables---------------
+Histogram histogram;
+final int HIST_X = 0;
+final int HIST_Y = 0;
+final int HIST_W = 50;
+final int HIST_H = 25;
+
 void setup() {
   size(800, 600);
   map = new UnfoldingMap(this, 0, 0, 800, 400, new EsriProvider.WorldGrayCanvas());
@@ -83,6 +90,9 @@ void setup() {
   sliderX = width / 2 - sliderW / 2;
   sliderY = height - 40;
   initialiseUI();
+  
+  //initialise histogram
+  histogram = new Histogram(10, new float[] {5 , 5, 15, 25, 25, 25, 35, 70}, this);
 }
 
 void draw() {
@@ -103,6 +113,7 @@ void draw() {
       time = 0;
   }
   drawIU();
+  histogram.draw(width - 180, height - 200, 150, 100);
 }
 
 void initialiseUI() {
@@ -149,7 +160,9 @@ void drawIU() {
   }
 }
 
+
 public void timeLine(int value) {
   time = value; 
 }
+
 
