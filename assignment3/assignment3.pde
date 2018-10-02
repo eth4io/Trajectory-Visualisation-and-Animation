@@ -20,7 +20,7 @@ static final String DATA_DIR = "data" + FILE_SEPARATOR +
 "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
 static final int MAX_TESTER_INDEX = 181;
 static final int MAX_LVL = 11;
-static final int MIN_LVL = 14;
+static final int MIN_LVL = 13;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
