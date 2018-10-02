@@ -138,7 +138,6 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
