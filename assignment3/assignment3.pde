@@ -33,6 +33,8 @@ UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
+Trajectory inspectedTrajectory;              /* trajectory for inspection */
+
 //test
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
@@ -101,8 +103,6 @@ void draw() {
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
-
-
   trajectoryManager.draw();
   barScale.draw();
   if (isPlay) {
@@ -114,6 +114,10 @@ void draw() {
   }
   drawIU();
   
+    //draw inspector if there is a current selection
+  if (inspectedTrajectory != null) {
+    showInspector();
+  }
   
   histogram.draw(width - 180, height - 200, 150, 100);
 }
@@ -124,10 +128,28 @@ void updateHistogram() {
   float[] speeds = new float[t.size()];
   int i = 0;
   
-  for (Marker m : t) {
-    speeds[i++] = t.getCurrentPosition().getSpeed();
+  for (Trajectory m : t) {
+    //speeds[i++] = t.getCurrentPosition().getSpeed();
   }
-  histogram.update(speeds);
+  //histogram.update(speeds);
+}
+
+void mouseClicked() {
+  inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+
+}
+
+void showInspector() {
+  fill(30,20,20,150);
+  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  float x = inspectedTrajectory.getX(map);
+  float y = inspectedTrajectory.getY(map);
+  int speed = round(inspectedTrajectory.getCurrentPosition().getSpeed());
+  int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
+  rect(x, y - 60, 125, 60, 7);
+  fill(255,255,255);
+  text("Speed: " + speed + " km/h", x + 5, y - 50);
+  text("altitude: " + alt + " km/h", x + 5, y - 35);
 }
 
 void initialiseUI() {
@@ -142,8 +164,6 @@ void initialiseUI() {
     .setLabelVisible(false)
      //.listen(true)
     ;
-
-
 
   cp5.addIcon("isPlay", 40)
     .setPosition(sliderX + sliderW / 2, sliderY - 40)

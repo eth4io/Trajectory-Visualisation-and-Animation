@@ -73,7 +73,21 @@ class Trajectory extends SimplePointMarker {
   public float getMovingAverageSpeed() { return this.movingAverageSpeed; }
   public float getMovingMaxSpeed() { return this.movingMaxSpeed; }
   public int getCurrentPositionIndex() { return currentPositionIndex; }
+  public List<PositionData> getPositionData () { return this.positionData; }
+  public PositionData getCurrentPosition() { return this.currentPosition; }
+  
+  public float getX(UnfoldingMap map) {
+    ScreenPosition sp = map.getScreenPosition(this.getLocation());
+    return sp.x;
+  }
+  
+  public float getY(UnfoldingMap map) {
+    ScreenPosition sp = map.getScreenPosition(this.getLocation());
+    return sp.y;
+  }
+  
   //setters
   public void setCurrentPositionIndex(int i) { this.currentPositionIndex = i; }
+
 }
 

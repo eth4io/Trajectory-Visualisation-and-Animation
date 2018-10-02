@@ -103,7 +103,7 @@ class TrajectoryManager extends MarkerManager {
   }
   
   /* checls if a marker has been clicked, selects marker and returns this marker */
-  public Marker checkClick(float x, float y) {
+  public Trajectory checkClick(float x, float y) {
     List<Marker> temp = this.getMarkers();
       
     for (Marker m : temp) {
@@ -112,7 +112,7 @@ class TrajectoryManager extends MarkerManager {
           m.setSelected(false);
         } else {
           m.setSelected(true);
-          return m;
+          return (Trajectory)m;
         }
       }
     }
