@@ -107,6 +107,14 @@ void mouseClicked() {
 void showInspector() {
   fill(30,20,20,150);
   println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  float x = inspectedTrajectory.getX(map);
+  float y = inspectedTrajectory.getY(map);
+  int speed = round(inspectedTrajectory.getCurrentPosition().getSpeed());
+  int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
+  rect(x, y - 60, 125, 60, 7);
+  fill(255,255,255);
+  text("Speed: " + speed + " km/h", x + 5, y - 50);
+  text("altitude: " + alt + " km/h", x + 5, y - 35);
   
 }
 
