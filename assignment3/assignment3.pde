@@ -53,7 +53,7 @@ void setup() {
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height, new OpenStreetMap.OpenStreetMapProvider());      
+  height, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
