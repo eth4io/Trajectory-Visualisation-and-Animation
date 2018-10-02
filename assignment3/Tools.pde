@@ -5,7 +5,7 @@ class Tools {
 }
 
 
-/* histogram class for displaying data
+/* histogram class for displaying data frequency
  * ask Michael for questions
  */
 class Histogram {
