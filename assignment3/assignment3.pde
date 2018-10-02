@@ -41,10 +41,11 @@ boolean isPlay = true;
 CColor  controlsColours;
 int timeLine;
 int time;
+long previousUpdate = 0;
 
 void setup() {
   size(800, 600);
-  map = new UnfoldingMap(this, 0, 0, 600, 600, new EsriProvider.WorldGrayCanvas());
+  map = new UnfoldingMap(this, 0, 0, 800, 400, new EsriProvider.WorldGrayCanvas());
 
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
@@ -95,7 +96,7 @@ void draw() {
   if (isPlay) {
     trajectoryManager.updateAll();
     if (time < 1440)
-      time++;
+      time ++;
     else
       time = 0;
   }
@@ -141,10 +142,15 @@ void drawIU() {
   text(String.format("%02d:%02d", hour, min), sliderX, sliderY - 10);
 
   //not working for some reason..
-  //cp5.getController("timeLine").setValue(time);
+  
+  
+  if(abs(time - previousUpdate) > 60){
+    cp5.getController("timeLine").setValue(time);
+    previousUpdate = time;
+  }
 }
 
 public void timeLine(int value) {
-  time = value;
+  time = value; 
 }
 
