@@ -105,20 +105,22 @@ class TrajectoryManager extends MarkerManager {
   /* checls if a marker has been clicked, selects marker and returns this marker */
   public Trajectory checkClick(float x, float y) {
     List<Marker> temp = this.getMarkers();
-      
+    boolean isClicked = false;
+    Trajectory t = new Trajectory();
+    
     for (Marker m : temp) {
       if (m.isInside(map, x, y)) {
-        if (m.isSelected()) {
-          m.setSelected(false);
-        } else {
           m.setSelected(true);
-          return (Trajectory)m;
-        }
+          t = (Trajectory) m;
+          isClicked = true;
+        } else {
+          m.setSelected(false);
+        } 
       }
-    }
-  this.setMarkers(temp);
-  return null;
+    this.setMarkers(temp);
+    return isClicked ? t : null;
   }
+  
   
   /* return all markers flagged selected */
   public List<Marker> getSelected() {
