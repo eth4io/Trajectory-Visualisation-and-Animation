@@ -12,6 +12,7 @@ public class DataReader {
   private static final String GEOLIFE_DATA_TRAJECTORY_DIR = "Trajectory";
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private static final int SPEED_SMOOTHING_SIZE = 10;
+  private static final int DATE_STRING_LENGTH = 8; // sample file name: "20090705025307.plt"
   private String fileSeparator;
   private String dataDir;
   
@@ -63,6 +64,38 @@ public class DataReader {
   }
 
 
+  public List<Trajectory> getTrajectoryListByDate(String date) {
+    List<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+
+    File directory = new File(dataDir);
+    File[] files = directory.listFiles();
+    for (final File fileEntry : files) {
+      if (fileEntry.isDirectory()) {
+        Trajectory trajectory = getTesterTrajectoryByDate(fileEntry.getName(), date);
+        if (trajectory != null)
+          trajectoryList.add(trajectory);
+      }
+    }
+
+    return trajectoryList;
+  }
+
+  public Trajectory getTesterTrajectoryByDate(String folderName, String Date) {
+    String folderPath = dataDir + fileSeparator + folderName +
+      fileSeparator + GEOLIFE_DATA_TRAJECTORY_DIR + fileSeparator;
+    File directory = new File(folderPath);
+    File[] files = directory.listFiles();
+    
+    for (final File fileEntry : files) {
+      if (fileEntry.isFile() && fileEntry.getName().substring(0, DATE_STRING_LENGTH).equals(Date)) {
+        List<PositionData> result = new ArrayList<PositionData>();
+        result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
+        return new Trajectory(result);
+      }
+    }
+    return null;    
+  }
+
   /**
    * Returns a List of PositionData contains all .plt files belongs to the tester
    *
@@ -82,7 +115,6 @@ public class DataReader {
     List<PositionData> result = new ArrayList<PositionData>();
     for (final File fileEntry : files) {
       if (fileEntry.isFile()) {
-        //println(fileEntry.getName());
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
       }
     }
