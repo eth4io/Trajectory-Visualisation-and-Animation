@@ -25,6 +25,11 @@ static final int MIN_LVL = 13;
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
 static final String STUDY_DATE = "20081106";
+static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
+static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
+static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
+static final String ERROR_PARSING_DATE = "Error while parsing Date";
+static final int SLIDER_MAX = 1440;
 
 
 //-----------------------  Global Variables ------------------------
@@ -54,12 +59,12 @@ static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}
 
 void setup() {
   size(800, 600);
-  map = new UnfoldingMap(this, 0, 0, 800, 400, new EsriProvider.WorldGrayCanvas());
+  
 
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height, new EsriProvider.WorldGrayCanvas());
+  height-200, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
@@ -76,6 +81,17 @@ void setup() {
 
   trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
   trajectoryManager.setMap(map);
+  
+  try {
+    SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
+    Date startTime = dataFormat.parse(STUDY_DATE_START_TIME);
+    Date endTime = dataFormat.parse(STUDY_DATE_END_TIME);
+    trajectoryManager.setTimeRange(startTime, endTime);
+  }
+  catch (Exception e) {
+    println(ERROR_PARSING_DATE);
+  }
+
 
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
   testSpeedGraph = trajectoryManager.getMarkers();
@@ -103,8 +119,9 @@ void draw() {
   trajectoryManager.draw();
   barScale.draw();
   if (isPlay) {
-    trajectoryManager.updateAll();
-    if (time < 1440)
+    float progress = (float)time / SLIDER_MAX;
+    trajectoryManager.updateAll(progress);
+    if (time < SLIDER_MAX)
       time ++;
     else
       time = 0;
@@ -146,7 +163,7 @@ void showInspector() {
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
   text("Speed: " + speed + " km/h", x + 5, y - 50);
-  text("altitude: " + alt + " km/h", x + 5, y - 35);
+  text("altitude: " + alt + " m", x + 5, y - 35);
 }
 
 void initialiseUI() {
@@ -154,7 +171,7 @@ void initialiseUI() {
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
-    .setRange(0, 1440)
+    .setRange(0, SLIDER_MAX)
     .showTickMarks(true)
     .setNumberOfTickMarks(23)
     .setColor(controlsColours)

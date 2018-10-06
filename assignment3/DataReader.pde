@@ -13,13 +13,14 @@ public class DataReader {
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private static final int SPEED_SMOOTHING_SIZE = 10;
   private static final int DATE_STRING_LENGTH = 8; // sample file name: "20090705025307.plt"
+  static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
   private String fileSeparator;
   private String dataDir;
   
-  private Queue<Float> speedQueue = new LinkedList();
+  private Queue<Float> speedQueue;
   private PositionData currentPosition = null;
   private PositionData lastPosition = null;
-  private float speedSum = 0.0;
+  private float speedSum;
 
   public DataReader() {
     /**
@@ -140,13 +141,15 @@ public class DataReader {
     List<PositionData> pointTrack = new ArrayList<PositionData>();
     String[] trackfile = loadStrings(filePath);
     String[] tracklog = new String[7];
+    speedSum = 0.0;
+    speedQueue = new LinkedList();
     for (int i = 6; i < trackfile.length; i++) {
       tracklog = split(trackfile[i], ",");
 
       float lat = Float.valueOf(tracklog[0]);
       float lon = Float.valueOf(tracklog[1]);
       float altitude = Float.valueOf(tracklog[3]);
-      SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
+      SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
       try {
         Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
         
@@ -197,7 +200,7 @@ public class DataReader {
     float smoothedSpeed = speedSum / speedQueue.size();
 
     // log for debugging
-    //println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
+    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
     return smoothedSpeed;
   }
     
