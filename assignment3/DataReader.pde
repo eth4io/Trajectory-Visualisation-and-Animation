@@ -17,10 +17,10 @@ public class DataReader {
   private String fileSeparator;
   private String dataDir;
   
-  private Queue<Float> speedQueue = new LinkedList();
+  private Queue<Float> speedQueue;
   private PositionData currentPosition = null;
   private PositionData lastPosition = null;
-  private float speedSum = 0.0;
+  private float speedSum;
 
   public DataReader() {
     /**
@@ -141,6 +141,8 @@ public class DataReader {
     List<PositionData> pointTrack = new ArrayList<PositionData>();
     String[] trackfile = loadStrings(filePath);
     String[] tracklog = new String[7];
+    speedSum = 0.0;
+    speedQueue = new LinkedList();
     for (int i = 6; i < trackfile.length; i++) {
       tracklog = split(trackfile[i], ",");
 
@@ -198,7 +200,7 @@ public class DataReader {
     float smoothedSpeed = speedSum / speedQueue.size();
 
     // log for debugging
-    //println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
+    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
     return smoothedSpeed;
   }
     

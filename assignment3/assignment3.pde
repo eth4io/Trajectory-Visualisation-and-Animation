@@ -143,7 +143,7 @@ void showInspector() {
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
   text("Speed: " + speed + " km/h", x + 5, y - 50);
-  text("altitude: " + alt + " km/h", x + 5, y - 35);
+  text("altitude: " + alt + " m", x + 5, y - 35);
 }
 
 void initialiseUI() {
