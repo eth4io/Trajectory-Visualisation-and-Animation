@@ -55,12 +55,12 @@ long previousUpdate = 0;
 
 void setup() {
   size(800, 600);
-  map = new UnfoldingMap(this, 0, 0, 800, 400, new EsriProvider.WorldGrayCanvas());
+  
 
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height, new EsriProvider.WorldGrayCanvas());
+  height-200, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
