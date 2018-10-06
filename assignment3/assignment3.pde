@@ -48,6 +48,10 @@ int timeLine;
 int time;
 long previousUpdate = 0;
 
+//-----------Histogram Variables---------------
+Histogram histogram;
+static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+
 void setup() {
   size(800, 600);
   map = new UnfoldingMap(this, 0, 0, 800, 400, new EsriProvider.WorldGrayCanvas());
@@ -85,6 +89,9 @@ void setup() {
   sliderX = width / 2 - sliderW / 2;
   sliderY = height - 40;
   initialiseUI();
+  
+  //initialise histogram
+  histogram = new Histogram(HIST_BINS, new float[]{0}, this);
 }
 
 void draw() {
@@ -103,12 +110,25 @@ void draw() {
       time = 0;
   }
   drawIU();
-
   
-  //draw inspector if there is a current selection
+    //draw inspector if there is a current selection
   if (inspectedTrajectory != null) {
     showInspector();
   }
+  updateHistogram();
+  histogram.draw(width - 180, height - 200, 150, 110);
+}
+
+void updateHistogram() {
+  //histogram update and draw
+  List<Trajectory> t = trajectoryManager.getMarkers();
+  float[] speeds = new float[t.size()];
+  int i = 0;
+  
+  for (Trajectory m : t) {
+    speeds[i++] =  m.getCurrentSpeed();
+  }
+  histogram.update(speeds);
 }
 
 void mouseClicked() {
@@ -121,7 +141,7 @@ void showInspector() {
   println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
-  int speed = round(inspectedTrajectory.getCurrentPosition().getSpeed());
+  int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
@@ -171,7 +191,9 @@ void drawIU() {
   }
 }
 
+
 public void timeLine(int value) {
   time = value; 
 }
+
 
