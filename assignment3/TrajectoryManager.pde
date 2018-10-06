@@ -9,6 +9,8 @@ class TrajectoryManager extends MarkerManager {
   
   private final int DEFAULT_DRAW = 10;    //default draw level if not set
   private int drawLevel;                  //the draw level control
+  private Date startTime;
+  private Date endTime;
   
   public TrajectoryManager(List<Trajectory> m) {
     super(m);
@@ -154,8 +156,29 @@ class TrajectoryManager extends MarkerManager {
      }
   }
   
-  
+  public void updateAll(float progress) {
+    float timeDiff = getTimeDiff(startTime, endTime);
+    float elapsedTime = timeDiff * progress;
+    Date currentTime = new Date();
+    currentTime.setTime(startTime.getTime() + (int)elapsedTime);
+    List<Marker> temp = this.getMarkers();
+     for (Marker m : temp) {
+       if (((Trajectory)m).hasNext())
+         ((Trajectory)m).update(currentTime);
+     }
+  }
+
+  private float getTimeDiff(Date date0, Date date1) {
+    float diff = abs(date0.getTime() - date1.getTime());
+    return diff;
+  }
+
   //get and set the draw level
   public void setDrawLevel(int x) { this.drawLevel = x; }
   public int getDrawLevel() { return this.drawLevel; }
+  
+  public void setTimeRange(Date startTime, Date endTime) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+  }
 }

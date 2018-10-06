@@ -13,6 +13,7 @@ public class DataReader {
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private static final int SPEED_SMOOTHING_SIZE = 10;
   private static final int DATE_STRING_LENGTH = 8; // sample file name: "20090705025307.plt"
+  static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
   private String fileSeparator;
   private String dataDir;
   
@@ -146,7 +147,7 @@ public class DataReader {
       float lat = Float.valueOf(tracklog[0]);
       float lon = Float.valueOf(tracklog[1]);
       float altitude = Float.valueOf(tracklog[3]);
-      SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
+      SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
       try {
         Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
         

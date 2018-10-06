@@ -25,6 +25,11 @@ static final int MIN_LVL = 13;
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
 static final String STUDY_DATE = "20081106";
+static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
+static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
+static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
+static final String ERROR_PARSING_DATE = "Error while parsing Date";
+static final int SLIDER_MAX = 1440;
 
 
 //-----------------------  Global Variables ------------------------
@@ -72,6 +77,17 @@ void setup() {
 
   trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
   trajectoryManager.setMap(map);
+  
+  try {
+    SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
+    Date startTime = dataFormat.parse(STUDY_DATE_START_TIME);
+    Date endTime = dataFormat.parse(STUDY_DATE_END_TIME);
+    trajectoryManager.setTimeRange(startTime, endTime);
+  }
+  catch (Exception e) {
+    println(ERROR_PARSING_DATE);
+  }
+
 
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
   testSpeedGraph = trajectoryManager.getMarkers();
@@ -96,8 +112,9 @@ void draw() {
   trajectoryManager.draw();
   barScale.draw();
   if (isPlay) {
-    trajectoryManager.updateAll();
-    if (time < 1440)
+    float progress = (float)time / SLIDER_MAX;
+    trajectoryManager.updateAll(progress);
+    if (time < SLIDER_MAX)
       time ++;
     else
       time = 0;
@@ -134,7 +151,7 @@ void initialiseUI() {
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
-    .setRange(0, 1440)
+    .setRange(0, SLIDER_MAX)
     .showTickMarks(true)
     .setNumberOfTickMarks(23)
     .setColor(controlsColours)
