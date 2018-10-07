@@ -146,6 +146,7 @@ void updateHistogram() {
   int i = 0;
   
   for (Trajectory m : t) {
+    print("Speed: " + speeds[i] + "\n");
     speeds[i++] =  m.getCurrentSpeed();
   }
   histogram.update(speeds);
