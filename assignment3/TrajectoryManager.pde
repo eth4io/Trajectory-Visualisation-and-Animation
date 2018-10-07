@@ -188,7 +188,7 @@ class TrajectoryManager extends MarkerManager {
     float elapsedTime = timeDiff * progress;
     Date currentTime = new Date();
     currentTime.setTime(startTime.getTime() + (int)elapsedTime);
-    List<Marker> temp = this.getMarkers();
+    List<Marker> markers = this.getMarkers();
     float speedSum = 0;
     for (Marker m : temp) {
       if (((Trajectory)m).hasNext()){
@@ -196,6 +196,6 @@ class TrajectoryManager extends MarkerManager {
         speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
       }
     } 
-    return speedSum/temp.size();
+    return speedSum / markers.size();
   }
 }
