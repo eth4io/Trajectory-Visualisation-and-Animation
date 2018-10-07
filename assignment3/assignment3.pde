@@ -55,7 +55,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
-
+static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 //-----------LineChart Variables----------------
 XYChart lineChart;
 
@@ -67,10 +67,10 @@ int chartY;
 int chartHeight;
 
 
-static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+
 
 void setup() {
-  size(800, 600);
+  size(800, 800);
   
 
   
@@ -237,10 +237,10 @@ public void initialiseLineGraph() {
   chartY = height-320;
   chartHeight = 110;
   //create speed array for y variable:
-  speeds = new float[SLIDER_MAX/timeBreakSize];
-  times = new float[SLIDER_MAX/timeBreakSize];
+  speeds = new float[SLIDER_MAX/timeBreakSize+1];
+  times = new float[SLIDER_MAX/timeBreakSize+1];
   int i = 0; 
-  for (int x = 0; x < SLIDER_MAX; x=x+timeBreakSize) {
+  for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
     speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
     times[i]=x/60;
@@ -269,7 +269,4 @@ public void updateLineGraph(){
   stroke(200,80,80);
  
   line(pointLocation.x, y, pointLocation.x, y2);
-
-
-  print("timeLine: " + timeLine + " i: " + i, " time: " + times[i] + " speed: " + speeds[i] + "\n");
 }

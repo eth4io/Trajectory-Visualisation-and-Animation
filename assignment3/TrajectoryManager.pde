@@ -194,7 +194,7 @@ class TrajectoryManager extends MarkerManager {
        if (((Trajectory)m).hasNext()){
          ((Trajectory)m).update(currentTime);
          speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
-       print("Speed: " + ((Trajectory)m).getCurrentSpeed() + "\n");
+      
        }
      }
      
