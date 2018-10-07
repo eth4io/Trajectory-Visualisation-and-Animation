@@ -191,8 +191,11 @@ class TrajectoryManager extends MarkerManager {
     List<Marker> temp = this.getMarkers();
     float speedSum = 0;
      for (Marker m : temp) {
-       speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
+       if (((Trajectory)m).hasNext()){
+         ((Trajectory)m).update(currentTime);
+         speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
        //print("Speed: " + ((Trajectory)m).getCurrentSpeed() + "\n");
+       }
      }
      
      return speedSum/temp.size();
