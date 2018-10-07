@@ -108,6 +108,9 @@ void setup() {
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
+  
+  //initialise Line Graph
+  initialiseLineGraph();
 }
 
 void draw() {
@@ -213,4 +216,15 @@ public void timeLine(int value) {
   time = value; 
 }
 
+public void initialiseLineGraph() {
+  int timeBreakSize = 15;
+  //create speed array for y variable:
+  float[] speeds = new float[SLIDER_MAX/timeBreakSize];
+  int i = 0; 
+  for (int x = 0; x < SLIDER_MAX; x=x+timeBreakSize) {
+    
+    speeds[i] = trajectoryManager.calcAvgSpeed(x/SLIDER_MAX);
+    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    i++;
+  }}
 
