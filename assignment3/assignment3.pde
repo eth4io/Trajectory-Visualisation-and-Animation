@@ -146,7 +146,7 @@ void updateHistogram() {
   int i = 0;
   
   for (Trajectory m : t) {
-    print("Speed: " + speeds[i] + "\n");
+    
     speeds[i++] =  m.getCurrentSpeed();
   }
   histogram.update(speeds);
@@ -224,8 +224,8 @@ public void initialiseLineGraph() {
   int i = 0; 
   for (int x = 0; x < SLIDER_MAX; x=x+timeBreakSize) {
     
-    speeds[i] = trajectoryManager.calcAvgSpeed(x/SLIDER_MAX);
-    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
+    print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
   }}
 
