@@ -55,6 +55,18 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
+
+//-----------LineChart Variables----------------
+XYChart lineChart;
+
+int timeBreakSize;
+float[] speeds;
+float[] times;
+
+int chartY;
+int chartHeight;
+
+
 static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 
 void setup() {
@@ -137,6 +149,9 @@ void draw() {
   }
   updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 110);
+  lineChart.draw(width - 180, chartY, 150, chartHeight);
+  updateLineGraph();
+
 }
 
 void updateHistogram() {
@@ -218,14 +233,43 @@ public void timeLine(int value) {
 }
 
 public void initialiseLineGraph() {
-  int timeBreakSize = 15;
+  timeBreakSize = 30;
+  chartY = height-320;
+  chartHeight = 110;
   //create speed array for y variable:
-  float[] speeds = new float[SLIDER_MAX/timeBreakSize];
+  speeds = new float[SLIDER_MAX/timeBreakSize];
+  times = new float[SLIDER_MAX/timeBreakSize];
   int i = 0; 
   for (int x = 0; x < SLIDER_MAX; x=x+timeBreakSize) {
     
     speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
-    print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    times[i]=x/60;
+    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
-  }}
+  }
+  lineChart = new XYChart(this);
+  lineChart.setData(times,speeds);
+  lineChart.showXAxis(true); 
+  lineChart.showYAxis(true); 
+  lineChart.setLineWidth(2);
+  lineChart.setMaxX(24);
+  lineChart.setMaxY(13);
+  lineChart.setXAxisLabel("Time");
+  lineChart.setYAxisLabel("Average Speed");
 
+}
+
+public void updateLineGraph(){
+  int i = time/timeBreakSize;
+
+  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
+  int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
+  int y2 = chartY;
+  strokeWeight(2);
+  stroke(200,80,80);
+ 
+  line(pointLocation.x, y, pointLocation.x, y2);
+
+
+  print("timeLine: " + timeLine + " i: " + i, " time: " + times[i] + " speed: " + speeds[i] + "\n");
+}
