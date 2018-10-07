@@ -181,4 +181,20 @@ class TrajectoryManager extends MarkerManager {
     this.startTime = startTime;
     this.endTime = endTime;
   }
+  
+    public float calcAvgSpeed(float progress) {
+    //return average speed of current array list
+    float timeDiff = getTimeDiff(startTime, endTime);
+    float elapsedTime = timeDiff * progress;
+    Date currentTime = new Date();
+    currentTime.setTime(startTime.getTime() + (int)elapsedTime);
+    List<Marker> temp = this.getMarkers();
+    float speedSum = 0;
+     for (Marker m : temp) {
+       speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
+       //print("Speed: " + ((Trajectory)m).getCurrentSpeed() + "\n");
+     }
+     
+     return speedSum/temp.size();
+  }
 }
