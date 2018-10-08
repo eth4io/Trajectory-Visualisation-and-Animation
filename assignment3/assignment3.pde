@@ -72,7 +72,7 @@ int chartHeight;
 
 
 void setup() {
-  size(800, 800);
+  size(1024, 768);
   
 
   
