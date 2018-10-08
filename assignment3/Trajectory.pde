@@ -74,6 +74,14 @@ class Trajectory extends SimplePointMarker {
       }
     }
   }
+  
+  public boolean isMoving(){
+    PositionData previousPosition = positionData.get(currentPositionIndex);
+    Location previousLocation = new Location(previousPosition.lat, previousPosition.lng);
+    double distance = this.getDistanceTo(previousLocation);
+    if (distance < 3) return false;
+    else return true;
+  }
 
   /* updates current speed based on previous position record */
 
@@ -106,6 +114,8 @@ class Trajectory extends SimplePointMarker {
   
   //setters
   public void setCurrentPositionIndex(int i) { this.currentPositionIndex = i; }
+  
+  
 
 }
 
