@@ -280,9 +280,11 @@ public void colourMarkers(){
   List<Trajectory> t = trajectoryManager.getMarkers();
   
   for (Trajectory m : t) {
+    if (m.isMoving()) {
+      float speed =  m.getCurrentSpeed();
+      m.setColor(markerColourTable.findColour(speed));
+    } else m.setColor(200);
     
-    float speed =  m.getCurrentSpeed();
-    m.setColor(markerColourTable.findColour(speed));
   }
     
   }
