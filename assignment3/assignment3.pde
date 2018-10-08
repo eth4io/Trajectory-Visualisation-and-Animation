@@ -56,9 +56,21 @@ long previousUpdate = 0;
 //-----------Histogram Variables---------------
 Histogram histogram;
 static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+//-----------LineChart Variables----------------
+XYChart lineChart;
+
+int timeBreakSize;
+float[] speeds;
+float[] times;
+
+int chartY;
+int chartHeight;
+
+
+
 
 void setup() {
-  size(800, 600);
+  size(800, 800);
   
 
   
@@ -108,6 +120,9 @@ void setup() {
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
+  
+  //initialise Line Graph
+  initialiseLineGraph();
 }
 
 void draw() {
@@ -134,6 +149,9 @@ void draw() {
   }
   updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 110);
+  lineChart.draw(width - 180, chartY, 150, chartHeight);
+  updateLineGraph();
+
 }
 
 void updateHistogram() {
@@ -143,6 +161,7 @@ void updateHistogram() {
   int i = 0;
   
   for (Trajectory m : t) {
+    
     speeds[i++] =  m.getCurrentSpeed();
   }
   histogram.update(speeds);
@@ -213,4 +232,41 @@ public void timeLine(int value) {
   time = value; 
 }
 
+public void initialiseLineGraph() {
+  timeBreakSize = 30;
+  chartY = height-320;
+  chartHeight = 110;
+  //create speed array for y variable:
+  speeds = new float[SLIDER_MAX/timeBreakSize+1];
+  times = new float[SLIDER_MAX/timeBreakSize+1];
+  int i = 0; 
+  for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
+    
+    speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
+    times[i]=x/60;
+    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    i++;
+  }
+  lineChart = new XYChart(this);
+  lineChart.setData(times,speeds);
+  lineChart.showXAxis(true); 
+  lineChart.showYAxis(true); 
+  lineChart.setLineWidth(2);
+  lineChart.setMaxX(24);
+  lineChart.setMaxY(13);
+  lineChart.setXAxisLabel("Time");
+  lineChart.setYAxisLabel("Average Speed");
 
+}
+
+public void updateLineGraph(){
+  int i = time/timeBreakSize;
+
+  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
+  int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
+  int y2 = chartY;
+  strokeWeight(2);
+  stroke(200,80,80);
+ 
+  line(pointLocation.x, y, pointLocation.x, y2);
+}
