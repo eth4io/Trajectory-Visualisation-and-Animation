@@ -276,6 +276,7 @@ public void updateLineGraph(){
   line(pointLocation.x, y, pointLocation.x, y2);
 }
 
+/* Colour markers according to speed */
 public void colourMarkers(){
   List<Trajectory> t = trajectoryManager.getMarkers();
   
@@ -283,7 +284,10 @@ public void colourMarkers(){
     if (m.isMoving()) {
       float speed =  m.getCurrentSpeed();
       m.setColor(markerColourTable.findColour(speed));
-    } else m.setColor(200);
+      m.setHidden(false);                                                 /* show if moving */
+    } else {
+      m.setHidden(true);                                                  /* Hide if not moving */
+    }
     
   }
     
