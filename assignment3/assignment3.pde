@@ -12,6 +12,7 @@ import de.fhpotsdam.unfolding.providers.*;
 import controlP5.*;
 import de.fhpotsdam.unfolding.ui.BarScaleUI;
 import java.util.List;
+import org.gicentre.utils.colour.*;
 
 //-----------------------  Global Constants ------------------------
 
@@ -43,6 +44,7 @@ Trajectory inspectedTrajectory;              /* trajectory for inspection */
 //test
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
+ColourTable markerColourTable;
 
 //----------- Slider Variables ----------------
 ControlP5  cp5;
@@ -90,6 +92,8 @@ void setup() {
   /* test of DataReader method */
   dataReader = new DataReader();
 
+  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN,0,50);
+  
 
   trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
   trajectoryManager.setMap(map);
@@ -132,6 +136,7 @@ void draw() {
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
   trajectoryManager.draw();
+  colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
@@ -270,3 +275,14 @@ public void updateLineGraph(){
  
   line(pointLocation.x, y, pointLocation.x, y2);
 }
+
+public void colourMarkers(){
+  List<Trajectory> t = trajectoryManager.getMarkers();
+  
+  for (Trajectory m : t) {
+    
+    float speed =  m.getCurrentSpeed();
+    m.setColor(markerColourTable.findColour(speed));
+  }
+    
+  }
