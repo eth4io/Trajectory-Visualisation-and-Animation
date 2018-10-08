@@ -154,7 +154,7 @@ void draw() {
   }
   updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 110);
-  lineChart.draw(width - 180, chartY, 150, chartHeight);
+  lineChart.draw(0, chartY, width, chartHeight);
   updateLineGraph();
 
 }
@@ -239,8 +239,8 @@ public void timeLine(int value) {
 
 public void initialiseLineGraph() {
   timeBreakSize = 30;
-  chartY = height-320;
   chartHeight = 110;
+  chartY = height-chartHeight;
   //create speed array for y variable:
   speeds = new float[SLIDER_MAX/timeBreakSize+1];
   times = new float[SLIDER_MAX/timeBreakSize+1];
