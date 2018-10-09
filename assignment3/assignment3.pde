@@ -68,6 +68,9 @@ float[] times;
 int chartY;
 int chartHeight;
 
+//----------- Radius Filter Variables----------
+RadiusFilter radiusFilter;
+
 
 
 
@@ -86,9 +89,16 @@ void setup() {
 
   //create bar scale
   barScale = new BarScaleUI(this, map, 10, height - 20);
+  
+ 
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
+   //create radius filter
+  radiusFilter = new RadiusFilter();
+  radiusFilter.setFilterRadius(map, 20);
+  map.addMarker(radiusFilter);
+  
   /* test of DataReader method */
   dataReader = new DataReader();
 
@@ -130,13 +140,16 @@ void setup() {
 }
 
 void draw() {
+
+  radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
+    radiusFilter.update(map);
   map.draw();
   //test radius variable
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
   trajectoryManager.draw();
-  colourMarkers();
+  //colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
@@ -152,6 +165,7 @@ void draw() {
   if (inspectedTrajectory != null) {
     showInspector();
   }
+  
   updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 110);
   lineChart.draw(width - 180, chartY, 150, chartHeight);
@@ -179,7 +193,7 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  //println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());

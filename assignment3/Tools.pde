@@ -1,7 +1,60 @@
-import org.gicentre.utils.stat.*;                    /* for charts */
+import org.gicentre.utils.stat.*;                          /* for charts */
+import de.fhpotsdam.unfolding.utils.GeoUtils.*; 
 
 class Tools {
 
+}
+
+class RadiusFilter extends SimplePointMarker  {
+  private float rad_km = 20;
+  
+  public RadiusFilter() {
+                                             
+    super(new Location(0,0));
+
+    this.setColor(color(255,0,0,50));
+    this.setStrokeWeight(0);
+
+  }
+  
+  public void update(UnfoldingMap map) 
+  {
+    this.setLocation(map.getLocation(mouseX, mouseY));
+  }
+  
+  public List<Marker> getWithinRadius(UnfoldingMap map, List<Marker> markers) 
+  {
+    List<Marker> found = new ArrayList<Marker>();
+    double dist = GeoUtils.getDistance(this.getLocation(), GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
+    
+    for (Marker m : markers) {
+      double diff = GeoUtils.getDistance( m.getLocation(), this.getLocation());
+      if (diff < dist/2.5) {
+        println(dist, diff);
+        m.setSelected(true);
+        found.add(m);
+      } else {
+        if (m.isSelected()) {
+          m.setSelected(false);
+        }
+      }
+    }
+    return found;
+  }
+  
+  public void setFilterRadius(UnfoldingMap map, float kms) {
+    this.rad_km = kms;
+    Location radPos = GeoUtils.getDestinationLocation(this.getLocation(), 0, kms);
+    ScreenPosition radScreen = map.getScreenPosition(radPos);
+    ScreenPosition centreScreen = map.getScreenPosition(this.getLocation());
+    
+    float actualRad = PApplet.dist(radScreen.x, radScreen.y, centreScreen.x, centreScreen.y);
+    this.setRadius(actualRad);
+    
+  }
+  
+  
+    
 }
 
 
