@@ -81,7 +81,7 @@ static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 XYChart lineChart;
 
 int timeBreakSize;
-float[] speeds;
+float[] avgSpeeds;
 float[] times;
 
 int chartY;
@@ -399,18 +399,18 @@ public void initialiseLineGraph() {
   chartHeight = 110;
   chartY = height-chartHeight-5;
   //create speed array for y variable:
-  speeds = new float[SLIDER_MAX/timeBreakSize+1];
+  avgSpeeds = new float[SLIDER_MAX/timeBreakSize+1];
   times = new float[SLIDER_MAX/timeBreakSize+1];
   int i = 0; 
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
-    speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
+    avgSpeeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
     times[i]=x;
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
-  lineChart.setData(times,speeds);
+  lineChart.setData(times,avgSpeeds);
   //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
@@ -431,7 +431,7 @@ public void initialiseLineGraph() {
 public void updateLineGraph(){
   int i = timeLine/timeBreakSize;
 
-  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
+  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],avgSpeeds[i]));
   int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
   int y2 = chartY;
   strokeWeight(2);
@@ -454,6 +454,7 @@ public void colourMarkers(){
     }
   }
 }
+
 
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(radioButton)) {
