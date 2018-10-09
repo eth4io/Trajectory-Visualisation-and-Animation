@@ -7,25 +7,38 @@ import de.fhpotsdam.unfolding.marker.*;
 
 class TrajectoryManager extends MarkerManager {
   
-  private final int DEFAULT_DRAW = 10;    //default draw level if not set
+  private List<List<Trajectory>> listOfTrajectoryList;
+  private static final int DEFAULT_DRAW = 10;    //default draw level if not set
+  private static final int DEFAULT_NUMBER_OF_DAYS = 10;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
-  
-  public TrajectoryManager(List<Trajectory> m) {
-    super(m);
-    drawLevel = DEFAULT_DRAW;
-  }
-  
-  public TrajectoryManager(List<Trajectory> m, int drawLevel) {
-    super(m);
-    this.drawLevel = drawLevel;
-  }
   
   public TrajectoryManager() {
     super();
     drawLevel = DEFAULT_DRAW;
   }
+  
+  public TrajectoryManager(List<List<Trajectory>> listOfTrajectoryList) {
+    this(listOfTrajectoryList, DEFAULT_DRAW, DEFAULT_NUMBER_OF_DAYS);
+  }
+  
+  public TrajectoryManager(List<List<Trajectory>> listOfTrajectoryList,
+      int drawLevel, int numberOfDays) {
+    this.listOfTrajectoryList = listOfTrajectoryList;
+    this.drawLevel = drawLevel;
+    setNumberOfDaysToDisplay(numberOfDays);
+  }
+  
+  
+  public void setNumberOfDaysToDisplay(int numberOfDays) {
+    List<Trajectory> trajectoryList = new ArrayList<Trajectory>();
+    for (int i = 0; i < numberOfDays && i < listOfTrajectoryList.size(); i++) {
+      trajectoryList.addAll(listOfTrajectoryList.get(i));
+    }
+    this.setMarkers(trajectoryList);
+  }
+  
   
   /* sets fill, stroke and stroke weight all at once */
   public void setStyle(color fillColor, color strokeColor, int strokeWeight) {

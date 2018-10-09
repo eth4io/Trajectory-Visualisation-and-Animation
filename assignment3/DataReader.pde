@@ -4,6 +4,10 @@
 
 import java.io.File;
 import java.util.*; 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class DataReader {
   private static final String SYSTEM_PROPERTY_FILE_SEPARATOR = "file.separator";
@@ -64,6 +68,13 @@ public class DataReader {
     dataDir = dataPath(GEOLIFE_DIR + fileSeparator + GEOLIFE_DATA_DIR);
   }
 
+  public List<List<Trajectory>> getListOfTrajectoryListByListOfDate(List<String> dates) {
+    List<List<Trajectory>> listOfTrajectoryList = new ArrayList<List<Trajectory>>();
+    for (String date : dates) {
+      listOfTrajectoryList.add(getTrajectoryListByDate(date));
+    }
+    return listOfTrajectoryList;
+  }
 
   public List<Trajectory> getTrajectoryListByDate(String date) {
     List<Trajectory> trajectoryList = new ArrayList<Trajectory>();
@@ -143,28 +154,36 @@ public class DataReader {
     String[] tracklog = new String[7];
     speedSum = 0.0;
     speedQueue = new LinkedList();
-    for (int i = 6; i < trackfile.length; i++) {
-      tracklog = split(trackfile[i], ",");
 
-      float lat = Float.valueOf(tracklog[0]);
-      float lon = Float.valueOf(tracklog[1]);
-      float altitude = Float.valueOf(tracklog[3]);
-      SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
-      try {
-        Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
-        
-        PositionData positionData = new PositionData(lat, lon, altitude, date);
-        currentPosition = positionData;
-        float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
-        positionData.setSpeed(speed);
-        lastPosition = currentPosition;
-        
-//        println(positionData.toString());
-        pointTrack.add(positionData);
+    String thisLine = null;
+    try {
+       // open input stream test.txt for reading purpose.
+       InputStream inputStream = new FileInputStream(filePath);
+       BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+
+       while ((thisLine = br.readLine()) != null) {
+         tracklog = split(thisLine, ",");
+         if (tracklog.length == 7) {
+           float lat = Float.valueOf(tracklog[0]);
+           float lon = Float.valueOf(tracklog[1]);
+           float altitude = Float.valueOf(tracklog[3]);
+           SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
+           try {
+             Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
+             PositionData positionData = new PositionData(lat, lon, altitude, date);
+             currentPosition = positionData;
+             float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
+             positionData.setSpeed(speed);
+             lastPosition = currentPosition;
+             pointTrack.add(positionData);
+           }
+           catch (Exception e) {
+             println(ERROR_PARSING_DATE);
+           }
+         }
       }
-      catch (Exception e) {
-        println(ERROR_PARSING_DATE);
-      }
+    } catch(Exception e) {
+       e.printStackTrace();
     }
     return pointTrack;
   }
@@ -200,7 +219,7 @@ public class DataReader {
     float smoothedSpeed = speedSum / speedQueue.size();
 
     // log for debugging
-    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
+//    println("curSpeed: ", currentSpeed, '\t', "size: ", speedQueue.size());
     return smoothedSpeed;
   }
     

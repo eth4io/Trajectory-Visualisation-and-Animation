@@ -25,19 +25,30 @@ static final int MIN_LVL = 13;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
+static final List<String> STUDY_DATES = Arrays.asList(
+  "20090220",
+  "20081116",
+  "20081106",
+  "20081105",
+  "20081203",
+  "20090312",
+  "20090219",
+  "20081111",
+  "20081112",
+  "20081205"
+);
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
 static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
 static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
-
 static final int FILTER_MAX = 20;                  /* kilometres */
 static final int FILTER_MIN = 5;                   /* kilometres */
-
 static final int HEIGHT = 768;
 static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
+
 
 //-----------------------  Global Variables ------------------------
 
@@ -54,6 +65,7 @@ ColourTable markerColourTable;
 
 //----------- UI Variables ----------------
 ControlP5  cp5;
+RadioButton radioButton;
 int sliderX, sliderY, sliderW, sliderH;
 boolean isPlay = true;
 int animationSpeed;
@@ -113,7 +125,8 @@ void setup() {
   markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN,0,50);
   
 
-  trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
+  trajectoryManager = new TrajectoryManager(
+    dataReader.getListOfTrajectoryListByListOfDate(STUDY_DATES));
   trajectoryManager.setMap(map);
   
   try {
@@ -274,6 +287,29 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
+
+  radioButton = cp5.addRadioButton("radioButton")
+         .setPosition(width-100,250)
+         .setSize(40,20)
+         //.setColorForeground(color(120))
+         ////.setColorActive(color(255))
+         .setColorLabel(color(0))
+         .setColor(controlsColours)
+         .setItemsPerRow(1)
+         .setSpacingColumn(50)
+         .addItem("1 day",1)
+         .addItem("5 days",2)
+         .addItem("10 days",3)
+         ;
+
+     for(Toggle t : radioButton.getItems()) {
+       t.getCaptionLabel().setColorBackground(color(255,80));
+       t.getCaptionLabel().getStyle().moveMargin(-7,0,0,-3);
+       t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
+       t.getCaptionLabel().getStyle().backgroundWidth = 45;
+       t.getCaptionLabel().getStyle().backgroundHeight = 13;
+     }
+
     
 
    cp5.addIcon("plusSpeed",1)
@@ -318,6 +354,7 @@ void filterSize(int size) {
   filterSize = size;
   cp5.getController("filterSize").setValue(size);
   println(filterSize);
+
 
 }
 
@@ -408,11 +445,26 @@ public void colourMarkers(){
     if (m.isMoving()) {
       float speed =  m.getCurrentSpeed();
       m.setColor(markerColourTable.findColour(speed));
-      m.setHidden(false);                                                 /* show if moving */
+      m.setHidden(false); /* show if moving */
     } else {
-      m.setHidden(true);                                                  /* Hide if not moving */
+      m.setHidden(true); /* Hide if not moving */
     }
-    
   }
-    
+}
+
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(radioButton)) {
+    trajectoryManager.clearMarkers();
+    switch(int(theEvent.getValue())) {
+      case 1:
+        trajectoryManager.setNumberOfDaysToDisplay(1);
+        break;
+      case 2:
+        trajectoryManager.setNumberOfDaysToDisplay(5);
+        break;
+      case 3:
+        trajectoryManager.setNumberOfDaysToDisplay(10);
+        break;
+    }
   }
+}
