@@ -78,14 +78,14 @@ void setup() {
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height-200, new EsriProvider.WorldGrayCanvas());
+  height-150, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
   map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
 
   //create bar scale
-  barScale = new BarScaleUI(this, map, 10, height - 20);
+  barScale = new BarScaleUI(this, map, 10, height - 170);
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
@@ -116,17 +116,15 @@ void setup() {
 
   controlsColours = new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
   0xffffffff);
-  sliderW=350;
-  sliderH=10;
-  sliderX = width / 2 - sliderW / 2;
-  sliderY = height - 40;
-  initialiseUI();
+
+
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
   
   //initialise Line Graph
   initialiseLineGraph();
+  initialiseUI();
 }
 
 void draw() {
@@ -135,6 +133,10 @@ void draw() {
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
+  //draw interface background
+  fill(50, 150);
+  noStroke();
+  rect(0, height-150, width, 150, 7);
   trajectoryManager.draw();
   colourMarkers();
   barScale.draw();
@@ -152,6 +154,7 @@ void draw() {
   if (inspectedTrajectory != null) {
     showInspector();
   }
+  fill(255);
   updateHistogram();
   histogram.draw(width - 180, height - 200, 150, 110);
   lineChart.draw(0, chartY, width, chartHeight);
@@ -191,6 +194,14 @@ void showInspector() {
 }
 
 void initialiseUI() {
+  PVector startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
+  
+  sliderW=width - (int)(lineChart.getLeftSpacing() + lineChart.getLeftSpacing());
+  sliderH=10;
+  sliderY = height - 130;
+  
+  sliderX = 2;
+  
   cp5 = new ControlP5(this);
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
@@ -218,9 +229,7 @@ void initialiseUI() {
 
 void drawIU() {
 
-  fill(50, 150);
-  noStroke();
-  rect(sliderX - 40, sliderY - 40, sliderW + 80, sliderH + 80, 7);
+
   int hour = int(time / 60);
   int min = int(time % 60);
   fill(255);
@@ -254,13 +263,19 @@ public void initialiseLineGraph() {
   }
   lineChart = new XYChart(this);
   lineChart.setData(times,speeds);
-  lineChart.showXAxis(true); 
+  //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(24);
   lineChart.setMaxY(13);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
+  lineChart.setAxisColour(255);
+  lineChart.setAxisLabelColour(255);
+  lineChart.setAxisValuesColour(255);
+  lineChart.setLineColour(255);
+  lineChart.setPointColour(255);
+ 
 
 }
 
