@@ -26,7 +26,6 @@ static final int MIN_LVL = 13;
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
 static final List<String> STUDY_DATES = Arrays.asList(
-  "20081106",
   "20090220",
   "20081116",
   "20081106",
