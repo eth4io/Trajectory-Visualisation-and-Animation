@@ -176,7 +176,7 @@ void draw() {
   rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
 
   trajectoryManager.draw();
-  colourMarkers();
+  
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
@@ -192,11 +192,14 @@ void draw() {
   if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
   }
-
+  trajectoryManager.setAllColor(200);
   fill(255);
   textSize(8);
   
-  if (!isFilterMode) updateHistogram(trajectoryManager.getMarkers());
+  if (!isFilterMode){
+    updateHistogram(trajectoryManager.getMarkers());
+    colourMarkers();
+  }
   
   histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
   lineChart.draw(0, chartY, width-5, chartHeight);
