@@ -229,16 +229,16 @@ void initialiseUI() {
     .setOn();
 
   radioButton = cp5.addRadioButton("radioButton")
-         .setPosition(100,180)
+         .setPosition(width-100,100)
          .setSize(40,20)
          .setColorForeground(color(120))
          .setColorActive(color(255))
          .setColorLabel(color(255))
-         .setItemsPerRow(3)
+         .setItemsPerRow(1)
          .setSpacingColumn(50)
-         .addItem("1",1)
-         .addItem("5",2)
-         .addItem("10",3)
+         .addItem("1 day",1)
+         .addItem("5 days",2)
+         .addItem("10 days",3)
          ;
 
      for(Toggle t : radioButton.getItems()) {
