@@ -17,6 +17,10 @@ public class DataReader {
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private static final int SPEED_SMOOTHING_SIZE = 10;
   private static final int DATE_STRING_LENGTH = 8; // sample file name: "20090705025307.plt"
+  private static final float BEIJING_X = 39.907614; 
+  private static final float BEIJING_Y = 116.397334;
+  private static final float STUDY_AREA_RADIUS = 20;
+  
   static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
   private String fileSeparator;
   private String dataDir;
@@ -175,7 +179,12 @@ public class DataReader {
              float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
              positionData.setSpeed(speed);
              lastPosition = currentPosition;
-             pointTrack.add(positionData);
+             
+            if ((lat > BEIJING_X - STUDY_AREA_RADIUS) & 
+            (lat < BEIJING_X + STUDY_AREA_RADIUS) &
+            (lon > BEIJING_Y - STUDY_AREA_RADIUS) &
+            (lon < BEIJING_Y + STUDY_AREA_RADIUS)) 
+             {pointTrack.add(positionData);}
            }
            catch (Exception e) {
              println(ERROR_PARSING_DATE);
