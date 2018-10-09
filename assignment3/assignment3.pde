@@ -31,6 +31,9 @@ static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
 static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
+static final int HEIGHT = 768;
+static final int UI_HEIGHT = 170;
+static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 
 
 //-----------------------  Global Variables ------------------------
@@ -72,20 +75,20 @@ int chartHeight;
 
 
 void setup() {
-  size(1024, 768);
+  size(1024, HEIGHT);
   
 
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height-150, new EsriProvider.WorldGrayCanvas());
+  MAP_HEIGHT, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
   map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
 
   //create bar scale
-  barScale = new BarScaleUI(this, map, 10, height - 170);
+  barScale = new BarScaleUI(this, map, 10, MAP_HEIGHT - 20);
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
@@ -136,17 +139,17 @@ void draw() {
   //draw interface background
   fill(50, 150);
   noStroke();
-  rect(0, height-150, width, 150, 7);
+  rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
   trajectoryManager.draw();
   colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
-    if (time < SLIDER_MAX)
-      time ++;
+    if (timeLine < SLIDER_MAX)
+      timeLine ++;
     else
-      time = 0;
+      timeLine = 0;
   }
   drawIU();
   
@@ -156,7 +159,7 @@ void draw() {
   }
   fill(255);
   updateHistogram();
-  histogram.draw(width - 180, height - 200, 150, 110);
+  histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
   lineChart.draw(0, chartY, width, chartHeight);
   updateLineGraph();
 
@@ -195,23 +198,23 @@ void showInspector() {
 
 void initialiseUI() {
   PVector startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
+  PVector endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
   
-  sliderW=width - (int)(lineChart.getLeftSpacing() + lineChart.getLeftSpacing());
   sliderH=10;
-  sliderY = height - 130;
-  
-  sliderX = 2;
+  sliderY = height - 130;  
+  sliderX =(int) startLineGraph.x;
+  sliderW = (int)(endLineGraph.x - startLineGraph.x);
   
   cp5 = new ControlP5(this);
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
     .setRange(0, SLIDER_MAX)
-    .showTickMarks(true)
-    .setNumberOfTickMarks(23)
+    //.showTickMarks(true)
+    //.setNumberOfTickMarks(98)
     .setColor(controlsColours)
     .setLabelVisible(false)
-     //.listen(true)
+     .listen(true)
     ;
 
   cp5.addIcon("isPlay", 40)
@@ -230,24 +233,32 @@ void initialiseUI() {
 void drawIU() {
 
 
-  int hour = int(time / 60);
-  int min = int(time % 60);
-  fill(255);
-  text(String.format("%02d:%02d", hour, min), sliderX, sliderY - 10);
-  
-  if(abs(time - previousUpdate) > 60){
-    cp5.getController("timeLine").setValue(time);
-    previousUpdate = time;
+  int rawHour = int(timeLine / 60) + 8;
+  int hour = rawHour;
+  String daytime = "am";
+  if (rawHour > 12){
+   hour = rawHour - 12;
+   daytime = "pm";
   }
+  if (rawHour >= 24) {
+    hour = rawHour - 24;
+    daytime = "am";
+  }
+  int min = int(timeLine % 60);
+  fill(255);
+  text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
+
 }
 
 
 public void timeLine(int value) {
-  time = value; 
+
+  timeLine = value; 
+  time = value;
 }
 
 public void initialiseLineGraph() {
-  timeBreakSize = 30;
+  timeBreakSize = 5;
   chartHeight = 110;
   chartY = height-chartHeight;
   //create speed array for y variable:
@@ -257,16 +268,16 @@ public void initialiseLineGraph() {
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
     speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
-    times[i]=x/60;
+    times[i]=x;
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
   lineChart.setData(times,speeds);
-  //lineChart.showXAxis(true); 
+  lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
-  lineChart.setMaxX(24);
+  lineChart.setMaxX(SLIDER_MAX);
   lineChart.setMaxY(13);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
@@ -275,12 +286,13 @@ public void initialiseLineGraph() {
   lineChart.setAxisValuesColour(255);
   lineChart.setLineColour(255);
   lineChart.setPointColour(255);
+  lineChart.draw(0, chartY, width, chartHeight);
  
 
 }
 
 public void updateLineGraph(){
-  int i = time/timeBreakSize;
+  int i = timeLine/timeBreakSize;
 
   PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
   int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
