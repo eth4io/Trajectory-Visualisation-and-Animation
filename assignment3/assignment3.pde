@@ -182,12 +182,11 @@ void draw() {
 
   fill(255);
   textSize(8);
-  updateHistogram();
   
   if (!isFilterMode) updateHistogram(trajectoryManager.getMarkers());
   
   histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
-  lineChart.draw(width - 180, chartY, 150, chartHeight);
+  lineChart.draw(0, chartY, width-5, chartHeight);
   updateLineGraph();
   
   //update zoom levels (leave last in draw)
