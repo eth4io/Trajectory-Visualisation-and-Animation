@@ -211,4 +211,18 @@ class TrajectoryManager extends MarkerManager {
     } 
     return speedSum / markers.size();
   }
+  
+  public ArrayList<PVector> getSpeedFromProgressVal(float progress) {
+  float timeDiff = getTimeDiff(startTime, endTime);
+  float elapsedTime = timeDiff * progress;
+  Date currentTime = new Date();
+  currentTime.setTime(startTime.getTime() + (int)elapsedTime);
+  List<Marker> currentMarkers = this.getMarkers();
+  ArrayList<PVector> speedTimeVectors= new ArrayList<PVector>();
+   for (Marker m : currentMarkers) {
+     float speed = ((Trajectory)m).getCurrentSpeed();
+     speedTimeVectors.add(new PVector(progress, speed));       
+   }
+   return speedTimeVectors;
+  }
 }
