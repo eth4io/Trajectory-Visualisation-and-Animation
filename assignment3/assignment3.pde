@@ -163,7 +163,7 @@ void draw() {
   rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
 
   trajectoryManager.draw();
-  //colourMarkers();
+  colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
@@ -191,6 +191,8 @@ void draw() {
   
   //update zoom levels (leave last in draw)
   previousZoomLevel = currentZoomLevel;
+  
+  drawIU();
 }
 
 void updateRadiusFilter() {
@@ -206,7 +208,7 @@ void updateRadiusFilter() {
     if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
   }
   
-  drawIU();
+  
 
 }
 
@@ -334,7 +336,8 @@ void drawIU() {
     daytime = "am";
   }
   int min = int(timeLine % 60);
-  fill(255);
+  fill(255,255,255,255);
+  strokeWeight(3);
   textSize(20);
   text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
   textSize(15);
