@@ -61,9 +61,6 @@ class RadiusFilter extends SimplePointMarker  {
     this.setRadius(actualRad);
     
   }
-  
-  
-    
 }
 
 
