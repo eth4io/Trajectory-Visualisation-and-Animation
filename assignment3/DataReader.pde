@@ -170,6 +170,12 @@ public class DataReader {
          if (tracklog.length == 7) {
            float lat = Float.valueOf(tracklog[0]);
            float lon = Float.valueOf(tracklog[1]);
+           
+           if (!((lat > BEIJING_X - STUDY_AREA_RADIUS) && 
+            (lat < BEIJING_X + STUDY_AREA_RADIUS) &&
+            (lon > BEIJING_Y - STUDY_AREA_RADIUS) &&
+            (lon < BEIJING_Y + STUDY_AREA_RADIUS))) break; 
+           
            float altitude = Float.valueOf(tracklog[3]);
            SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
            try {
@@ -180,11 +186,8 @@ public class DataReader {
              positionData.setSpeed(speed);
              lastPosition = currentPosition;
              
-            if ((lat > BEIJING_X - STUDY_AREA_RADIUS) & 
-            (lat < BEIJING_X + STUDY_AREA_RADIUS) &
-            (lon > BEIJING_Y - STUDY_AREA_RADIUS) &
-            (lon < BEIJING_Y + STUDY_AREA_RADIUS)) 
-             {pointTrack.add(positionData);}
+
+             pointTrack.add(positionData);
            }
            catch (Exception e) {
              println(ERROR_PARSING_DATE);
