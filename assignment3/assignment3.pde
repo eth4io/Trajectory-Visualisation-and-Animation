@@ -49,10 +49,11 @@ TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
 ColourTable markerColourTable;
 
-//----------- Slider Variables ----------------
+//----------- UI Variables ----------------
 ControlP5  cp5;
 int sliderX, sliderY, sliderW, sliderH;
 boolean isPlay = true;
+int animationSpeed;
 CColor  controlsColours;
 int timeLine;
 int time;
@@ -116,7 +117,7 @@ void setup() {
   testSpeedGraph = trajectoryManager.getMarkers();
 
   //initialise UI
-
+  frameRate(30);
   controlsColours = new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
   0xffffffff);
 
@@ -229,6 +230,30 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
+    
+   cp5.addIcon("plusSpeed",1)
+    .setPosition((width / 2) +50 , sliderY - 40)
+    .setSize(10, 10)
+    //.setRoundedCorners(20)
+    .setFont(createFont("fontawesome-webfont.ttf", 25))
+    .setFontIcon(#00f067)
+    //.setScale(0.9, 1)
+    //.setSwitch(true)
+    .setColorBackground(color(255, 100))
+    .hideBackground();
+    //.setOn();
+    
+   cp5.addIcon("minusSpeed",1)
+    .setPosition((width / 2) +50 , sliderY - 20)
+    .setSize(10, 10)
+    //.setRoundedCorners(20)
+    .setFont(createFont("fontawesome-webfont.ttf", 25))
+    .setFontIcon(#00f068)
+    //.setScale(0.9, 1)
+    //.setSwitch(true)
+    .setColorBackground(color(255, 100))
+    .hideBackground();
+    //.setOn();
 }
 
 void drawIU() {
@@ -294,7 +319,7 @@ public void initialiseLineGraph() {
 }
 
 public void updateLineGraph(){
-  int i = timeLine/timeBreakSize +1;
+  int i = timeLine/timeBreakSize;
 
   PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
   int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
