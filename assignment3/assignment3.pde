@@ -31,10 +31,13 @@ static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
 static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
+
+static final int FILTER_MAX = 20;                  /* kilometres */
+static final int FILTER_MIN = 5;                   /* kilometres */
+
 static final int HEIGHT = 768;
 static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
-
 
 //-----------------------  Global Variables ------------------------
 
@@ -61,7 +64,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
-static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
 
@@ -72,8 +75,12 @@ float[] times;
 int chartY;
 int chartHeight;
 
-
-
+//----------- Radius Filter Variables----------
+RadiusFilter radiusFilter;
+int currentZoomLevel = 0;
+int previousZoomLevel = 0;
+boolean isFilterMode = false;
+float filterSize = 5;
 
 void setup() {
   size(1024, HEIGHT);
@@ -89,10 +96,17 @@ void setup() {
   map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
 
   //create bar scale
+
   barScale = new BarScaleUI(this, map, 10, MAP_HEIGHT - 20);
+
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
+   //create radius filter
+  radiusFilter = new RadiusFilter();
+  radiusFilter.setFilterRadius(map, 20);
+  map.addMarker(radiusFilter);
+  
   /* test of DataReader method */
   dataReader = new DataReader();
 
@@ -132,7 +146,13 @@ void setup() {
 }
 
 void draw() {
+  //get new zoom level (leave at start of draw)
+  currentZoomLevel = map.getZoomLevel();
+  //main radius filter updater
+  updateRadiusFilter();
+  
   map.draw();
+
   //test radius variable
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
@@ -141,8 +161,9 @@ void draw() {
   fill(50, 150);
   noStroke();
   rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
+
   trajectoryManager.draw();
-  colourMarkers();
+  //colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
@@ -154,22 +175,44 @@ void draw() {
   }
   
   
-    //draw inspector if there is a current selection
-  if (inspectedTrajectory != null) {
+    //draw inspector if there is a current selection && if is not in filter mode
+  if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
   }
+
   fill(255);
   textSize(8);
   updateHistogram();
+  
+  if (!isFilterMode) updateHistogram(trajectoryManager.getMarkers());
+  
   histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
-  lineChart.draw(0, chartY, width-5, chartHeight);
+  lineChart.draw(width - 180, chartY, 150, chartHeight);
   updateLineGraph();
-  drawIU();
+  
+  //update zoom levels (leave last in draw)
+  previousZoomLevel = currentZoomLevel;
 }
 
-void updateHistogram() {
+void updateRadiusFilter() {
+  if (currentZoomLevel != previousZoomLevel) {
+    radiusFilter.setFilterRadius(map, filterSize);                
+  }
+  if (isFilterMode) {
+    radiusFilter.setHidden(false);
+    radiusFilter.setFilterRadius(map,filterSize);
+    updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
+    radiusFilter.update(map);
+  } else {
+    if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
+  }
+  
+  drawIU();
+
+}
+
+void updateHistogram(List<Trajectory> t) {
   //histogram update and draw
-  List<Trajectory> t = trajectoryManager.getMarkers();
   float[] speeds = new float[t.size()];
   int i = 0;
   
@@ -187,7 +230,7 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  //println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
@@ -231,6 +274,7 @@ void initialiseUI() {
     .hideBackground()
     .setOn();
     
+
    cp5.addIcon("plusSpeed",1)
     .setPosition((width / 2) +100 , sliderY - 35)
     .setSize(20, 20)
@@ -254,6 +298,26 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground();
     //.setOn();
+
+  //ui for radius filter control
+  cp5.addToggle("isFilterMode")
+    .setPosition(width - 50, 50)
+    //.setColor(controlsColours)
+    .setLabel("Filter Mode");
+  cp5.addSlider("filterSize")
+    .setPosition(width - 110, 90)
+    .setRange(FILTER_MIN, FILTER_MAX)
+    //.setColor(controlsColours)
+    .showTickMarks(true)
+    .setNumberOfTickMarks(4);
+}
+
+/* update filter size from filter controls */
+void filterSize(int size) {
+  filterSize = size;
+  cp5.getController("filterSize").setValue(size);
+  println(filterSize);
+
 }
 
 void drawIU() {
