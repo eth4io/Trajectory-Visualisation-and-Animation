@@ -31,6 +31,8 @@ static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
 static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
+static final int FILTER_MAX = 20;                  /* kilometres */
+static final int FILTER_MIN = 5;                   /* kilometres */
 
 
 //-----------------------  Global Variables ------------------------
@@ -72,8 +74,8 @@ int chartHeight;
 RadiusFilter radiusFilter;
 int currentZoomLevel = 0;
 int previousZoomLevel = 0;
-
-
+boolean isFilterMode = false;
+float filterSize = 5;
 
 void setup() {
   size(800, 800);
@@ -141,15 +143,11 @@ void setup() {
 }
 
 void draw() {
-  //get new zoom level
+  //get new zoom level (leave at start of draw)
   currentZoomLevel = map.getZoomLevel();
+  //main radius filter updater
+  updateRadiusFilter();
   
-  if (currentZoomLevel != previousZoomLevel) {
-    radiusFilter.setFilterRadius(map, 20);                //update to radius var
-  }
-  
-  radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
-  radiusFilter.update(map);
   map.draw();
 
   trajectoryManager.draw();
@@ -177,6 +175,20 @@ void draw() {
   
   //update zoom levels (leave last in draw)
   previousZoomLevel = currentZoomLevel;
+}
+
+void updateRadiusFilter() {
+  if (currentZoomLevel != previousZoomLevel) {
+    radiusFilter.setFilterRadius(map, 20);                //update to radius var
+  }
+  if (isFilterMode) {
+    radiusFilter.setHidden(false);
+    radiusFilter.setFilterRadius(map,20);
+    radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
+    radiusFilter.update(map);
+  } else {
+    if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
+  }
 }
 
 void updateHistogram() {
@@ -234,6 +246,25 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
+    
+  //ui for radius filter control
+  cp5.addToggle("isFilterMode")
+    .setPosition(width - 50, 50)
+    //.setColor(controlsColours)
+    .setLabel("Filter Mode");
+  cp5.addSlider("filterSize")
+    .setPosition(width - 110, 90)
+    .setRange(FILTER_MIN, FILTER_MAX)
+    //.setColor(controlsColours)
+    .showTickMarks(true)
+    .setNumberOfTickMarks(4);
+}
+
+/* update filter size from filter controls */
+void filterSize(int size) {
+  filterSize = size;
+  cp5.getController("filterSize").setValue(size);
+  println(filterSize);
 }
 
 void drawIU() {

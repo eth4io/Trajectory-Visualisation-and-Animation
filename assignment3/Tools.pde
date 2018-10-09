@@ -5,18 +5,24 @@ class Tools {
 
 }
 
+/* class for radius filter
+ * calculated from actual distances.
+ * unit is Kilometres
+ * 
+ * ask Michael for Q&A
+ */
 class RadiusFilter extends SimplePointMarker  {
   private float rad_km = 20;
+  private boolean placed = false;
   
-  public RadiusFilter() {
-                                             
+  public RadiusFilter() 
+  {                                       
     super(new Location(0,0));
-
     this.setColor(color(255,0,0,50));
     this.setStrokeWeight(0);
-
   }
   
+  /* cycle updates for the filter */
   public void update(UnfoldingMap map) 
   {
     this.setLocation(map.getLocation(mouseX, mouseY));
@@ -30,7 +36,8 @@ class RadiusFilter extends SimplePointMarker  {
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
     
     for (Marker m : markers) {
-      double diff = GeoUtils.getDistance(m.getLocation(), this.getLocation());
+      double diff = GeoUtils.getDistance(m.getLocation(),
+        this.getLocation());
       if (diff < dist/2) {
         m.setSelected(true);
         found.add(m);
@@ -43,7 +50,8 @@ class RadiusFilter extends SimplePointMarker  {
     return found;
   }
   
-  public void setFilterRadius(UnfoldingMap map, float kms) {
+  public void setFilterRadius(UnfoldingMap map, float kms) 
+  {
     this.rad_km = kms;
     Location radPos = GeoUtils.getDestinationLocation(this.getLocation(), 0, kms);
     ScreenPosition radScreen = map.getScreenPosition(radPos);
@@ -60,7 +68,7 @@ class RadiusFilter extends SimplePointMarker  {
 
 
 /* histogram class for displaying data frequency
- * ask Michael for questions
+ * ask Michael for Q&A
  */
 class Histogram {
    
@@ -83,6 +91,7 @@ class Histogram {
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
   }
+  
   /* private update function */
   private void update(float[]bins, float[] data) {
     this.bins = new float[bins.length];
