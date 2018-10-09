@@ -22,15 +22,16 @@ class RadiusFilter extends SimplePointMarker  {
     this.setLocation(map.getLocation(mouseX, mouseY));
   }
   
+  /* returns list of markers that are within this filter */
   public List<Marker> getWithinRadius(UnfoldingMap map, List<Marker> markers) 
   {
     List<Marker> found = new ArrayList<Marker>();
-    double dist = GeoUtils.getDistance(this.getLocation(), GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
+    double dist = GeoUtils.getDistance(this.getLocation(), 
+      GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
     
     for (Marker m : markers) {
-      double diff = GeoUtils.getDistance( m.getLocation(), this.getLocation());
-      if (diff < dist/2.5) {
-        println(dist, diff);
+      double diff = GeoUtils.getDistance(m.getLocation(), this.getLocation());
+      if (diff < dist/2) {
         m.setSelected(true);
         found.add(m);
       } else {

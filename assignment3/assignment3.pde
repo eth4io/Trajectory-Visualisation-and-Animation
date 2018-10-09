@@ -70,7 +70,8 @@ int chartHeight;
 
 //----------- Radius Filter Variables----------
 RadiusFilter radiusFilter;
-
+int currentZoomLevel = 0;
+int previousZoomLevel = 0;
 
 
 
@@ -140,14 +141,17 @@ void setup() {
 }
 
 void draw() {
-
+  //get new zoom level
+  currentZoomLevel = map.getZoomLevel();
+  
+  if (currentZoomLevel != previousZoomLevel) {
+    radiusFilter.setFilterRadius(map, 20);                //update to radius var
+  }
+  
   radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
-    radiusFilter.update(map);
+  radiusFilter.update(map);
   map.draw();
-  //test radius variable
-  //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
-  //some colors testing
-  //trajectoryManager.setAllColor(color(150,150,200));
+
   trajectoryManager.draw();
   //colourMarkers();
   barScale.draw();
@@ -170,7 +174,9 @@ void draw() {
   histogram.draw(width - 180, height - 200, 150, 110);
   lineChart.draw(width - 180, chartY, 150, chartHeight);
   updateLineGraph();
-
+  
+  //update zoom levels (leave last in draw)
+  previousZoomLevel = currentZoomLevel;
 }
 
 void updateHistogram() {
