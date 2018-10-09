@@ -232,7 +232,7 @@ void initialiseUI() {
     .setOn();
     
    cp5.addIcon("plusSpeed",1)
-    .setPosition((width / 2) +50 , sliderY - 40)
+    .setPosition((width / 2) +50 , sliderY - 30)
     .setSize(10, 10)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
@@ -244,7 +244,7 @@ void initialiseUI() {
     //.setOn();
     
    cp5.addIcon("minusSpeed",1)
-    .setPosition((width / 2) +50 , sliderY - 20)
+    .setPosition((width / 2) +50 , sliderY - 10)
     .setSize(10, 10)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
