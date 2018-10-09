@@ -32,16 +32,19 @@ static class Tools {
       mm.clearMarkers();
     }
     for (int i = 0; i < t.getPositionData().size() - 1; i++) {                      /* create line shape while i < n-1 */
-      SimpleLinesMarker slm = new SimpleLinesMarker(
-        new Location(                                                               /* i point */
+      Location a = new Location(                                                    /* set location i */
           t.getPositionData().get(i).getLat(),                                       
-          t.getPositionData().get(i).getLng()), 
-        new Location(                                                               /* i + 1 point */
+          t.getPositionData().get(i).getLng());
+      Location b = new Location(                                                    /* set locaiton i + 1 */                                  
           t.getPositionData().get(i+1).getLat(), 
-          t.getPositionData().get(i+1).getLng()));
-     slm.setStrokeWeight(3);
-     slm.setColor(ct.findColour(t.getPositionData().get(i+1).getSpeed()));          /* set colour of line segment based on i+1 speed */
-     mm.addMarker(slm);                                                             /* add marker to manager */
+          t.getPositionData().get(i+1).getLng());
+          
+      if (GeoUtils.getDistance(a, b) <= 2) {                                        /* check for sample errors > 2km apart */
+        SimpleLinesMarker slm = new SimpleLinesMarker(a, b);
+        slm.setStrokeWeight(3);
+        slm.setColor(ct.findColour(t.getPositionData().get(i+1).getSpeed()));       /* set colour of line segment based on i+1 speed */
+        mm.addMarker(slm);  
+      }                                                  
     }
     return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
   }
