@@ -64,6 +64,13 @@ public class DataReader {
     dataDir = dataPath(GEOLIFE_DIR + fileSeparator + GEOLIFE_DATA_DIR);
   }
 
+  public List<List<Trajectory>> getListOfTrajectoryListByListOfDate(List<String> dates) {
+    List<List<Trajectory>> listOfTrajectoryList = new ArrayList<List<Trajectory>>();
+    for (String date : dates) {
+      listOfTrajectoryList.add(getTrajectoryListByDate(date));
+    }
+    return listOfTrajectoryList;
+  }
 
   public List<Trajectory> getTrajectoryListByDate(String date) {
     List<Trajectory> trajectoryList = new ArrayList<Trajectory>();

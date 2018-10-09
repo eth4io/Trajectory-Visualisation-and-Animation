@@ -25,6 +25,19 @@ static final int MIN_LVL = 13;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
+static final List<String> STUDY_DATES = Arrays.asList(
+  "20081106",
+  "20090220",
+  "20081116",
+  "20081106",
+  "20081105",
+  "20081203",
+  "20090312",
+  "20090219",
+  "20081111",
+  "20081112",
+  "20081205"
+);
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
 static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
@@ -95,7 +108,8 @@ void setup() {
   markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN,0,50);
   
 
-  trajectoryManager = new TrajectoryManager(dataReader.getTrajectoryListByDate(STUDY_DATE));
+  trajectoryManager = new TrajectoryManager(
+    dataReader.getListOfTrajectoryListByListOfDate(STUDY_DATES));
   trajectoryManager.setMap(map);
   
   try {
