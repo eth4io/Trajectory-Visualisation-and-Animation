@@ -309,7 +309,7 @@ public void initialiseLineGraph() {
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
-  lineChart.setMaxY(13);
+  //lineChart.setMaxY(13);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
   lineChart.setAxisColour(255);
