@@ -1,8 +1,44 @@
+/* Tools file 
+ * 
+ * List of Tools:
+ * - radius filter 
+ * - histogram
+ *
+ * Statics:
+ * - explore trajectory
+ * 
+ */
+
 import org.gicentre.utils.stat.*;                          /* for charts */
 import de.fhpotsdam.unfolding.utils.GeoUtils.*; 
 
-class Tools {
 
+static class Tools {
+  
+/* reads entire positionData file for a trajectory
+ * and adds to Marker Manager as point data
+ * 
+ * precondition marker manager must be initilised 
+ * and assigned to an UnfoldingMap
+ *
+ * returns true if successful, otherwise false
+ * 
+ * ask Michael for Q&A
+ */
+  public static boolean exploreTrajectory(Trajectory t, MarkerManager mm) 
+  {
+    if (mm.getMarkers() != null) {                                                  /* clear marker manager if not empty */
+      mm.clearMarkers();
+    }
+    for (int i = 0; i < t.getPositionData().size(); i++) {                            /* add markers from position data file */
+      mm.addMarker(new SimplePointMarker(
+                     new Location(
+                       t.getPositionData().get(i).getLat(), 
+                       t.getPositionData().get(i).getLng()
+                   )));
+    }
+    return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
+  }
 }
 
 /* class for radius filter
