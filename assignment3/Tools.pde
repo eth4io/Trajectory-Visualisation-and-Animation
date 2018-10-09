@@ -29,13 +29,13 @@ class RadiusFilter extends SimplePointMarker  {
   }
   
   /* returns list of markers that are within this filter */
-  public List<Marker> getWithinRadius(UnfoldingMap map, List<Marker> markers) 
+  public List<Trajectory> getWithinRadius(UnfoldingMap map, List<Trajectory> markers) 
   {
-    List<Marker> found = new ArrayList<Marker>();
+    List<Trajectory> found = new ArrayList<Trajectory>();
     double dist = GeoUtils.getDistance(this.getLocation(), 
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
     
-    for (Marker m : markers) {
+    for (Trajectory m : markers) {
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
       if (diff < dist/2) {

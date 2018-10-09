@@ -168,7 +168,8 @@ void draw() {
     showInspector();
   }
   
-  updateHistogram();
+  if (!isFilterMode) updateHistogram(trajectoryManager.getMarkers());
+  
   histogram.draw(width - 180, height - 200, 150, 110);
   lineChart.draw(width - 180, chartY, 150, chartHeight);
   updateLineGraph();
@@ -184,16 +185,16 @@ void updateRadiusFilter() {
   if (isFilterMode) {
     radiusFilter.setHidden(false);
     radiusFilter.setFilterRadius(map,filterSize);
-    radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
+    
+    updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
     radiusFilter.update(map);
   } else {
     if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
   }
 }
 
-void updateHistogram() {
+void updateHistogram(List<Trajectory> t) {
   //histogram update and draw
-  List<Trajectory> t = trajectoryManager.getMarkers();
   float[] speeds = new float[t.size()];
   int i = 0;
   
