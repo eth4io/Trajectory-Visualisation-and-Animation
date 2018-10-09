@@ -151,18 +151,19 @@ void draw() {
     else
       timeLine = 0;
   }
-  drawIU();
+  
   
     //draw inspector if there is a current selection
   if (inspectedTrajectory != null) {
     showInspector();
   }
   fill(255);
+  textSize(8);
   updateHistogram();
   histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
-  lineChart.draw(0, chartY, width, chartHeight);
+  lineChart.draw(0, chartY, width-5, chartHeight);
   updateLineGraph();
-
+  drawIU();
 }
 
 void updateHistogram() {
@@ -218,7 +219,7 @@ void initialiseUI() {
     ;
 
   cp5.addIcon("isPlay", 40)
-    .setPosition(sliderX + sliderW / 2, sliderY - 40)
+    .setPosition((width / 2) - 20, sliderY - 40)
     .setSize(40, 40)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
@@ -246,6 +247,7 @@ void drawIU() {
   }
   int min = int(timeLine % 60);
   fill(255);
+  textSize(20);
   text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
 
 }
@@ -260,7 +262,7 @@ public void timeLine(int value) {
 public void initialiseLineGraph() {
   timeBreakSize = 5;
   chartHeight = 110;
-  chartY = height-chartHeight;
+  chartY = height-chartHeight-5;
   //create speed array for y variable:
   speeds = new float[SLIDER_MAX/timeBreakSize+1];
   times = new float[SLIDER_MAX/timeBreakSize+1];
@@ -274,7 +276,7 @@ public void initialiseLineGraph() {
   }
   lineChart = new XYChart(this);
   lineChart.setData(times,speeds);
-  lineChart.showXAxis(true); 
+  //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
@@ -286,13 +288,13 @@ public void initialiseLineGraph() {
   lineChart.setAxisValuesColour(255);
   lineChart.setLineColour(255);
   lineChart.setPointColour(255);
-  lineChart.draw(0, chartY, width, chartHeight);
+  lineChart.draw(0, chartY, width-5, chartHeight);
  
 
 }
 
 public void updateLineGraph(){
-  int i = timeLine/timeBreakSize;
+  int i = timeLine/timeBreakSize +1;
 
   PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
   int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
