@@ -197,7 +197,7 @@ void draw() {
   if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
     // test and show selected trajectory
-    if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager)) {
+    if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
       inspectedManager.draw();
     }
     

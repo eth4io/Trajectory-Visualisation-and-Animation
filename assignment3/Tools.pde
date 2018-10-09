@@ -15,8 +15,9 @@ import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 
 static class Tools {
   
-/* reads entire positionData file for a trajectory
- * and adds to Marker Manager as point data
+/* reads entire positionData file for a trajectory,
+ * creates line segments and colours according to speed,
+ * and adds to Marker Manager.
  * 
  * precondition marker manager must be initilised 
  * and assigned to an UnfoldingMap
@@ -25,7 +26,7 @@ static class Tools {
  * 
  * ask Michael for Q&A
  */
-  public static boolean exploreTrajectory(Trajectory t, MarkerManager mm) 
+  public static boolean exploreTrajectory(Trajectory t, MarkerManager mm, ColourTable ct) 
   {
     if (mm.getMarkers() != null) {                                                  /* clear marker manager if not empty */
       mm.clearMarkers();
@@ -38,7 +39,8 @@ static class Tools {
         new Location(                                                               /* i + 1 point */
           t.getPositionData().get(i+1).getLat(), 
           t.getPositionData().get(i+1).getLng()));
-     
+     slm.setStrokeWeight(2);
+     slm.setColor(ct.findColour(t.getPositionData().get(i+1).getSpeed()));          /* set colour of line segment based on i+1 speed */
      mm.addMarker(slm);                                                             /* add marker to manager */
     }
     return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
