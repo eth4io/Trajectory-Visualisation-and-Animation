@@ -232,10 +232,10 @@ void initialiseUI() {
     .setOn();
     
    cp5.addIcon("plusSpeed",1)
-    .setPosition((width / 2) +50 , sliderY - 30)
-    .setSize(10, 10)
+    .setPosition((width / 2) +100 , sliderY - 35)
+    .setSize(20, 20)
     //.setRoundedCorners(20)
-    .setFont(createFont("fontawesome-webfont.ttf", 25))
+    .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f067)
     //.setScale(0.9, 1)
     //.setSwitch(true)
@@ -244,10 +244,10 @@ void initialiseUI() {
     //.setOn();
     
    cp5.addIcon("minusSpeed",1)
-    .setPosition((width / 2) +50 , sliderY - 10)
-    .setSize(10, 10)
+    .setPosition((width / 2) +100 , sliderY - 15)
+    .setSize(20, 10)
     //.setRoundedCorners(20)
-    .setFont(createFont("fontawesome-webfont.ttf", 25))
+    .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f068)
     //.setScale(0.9, 1)
     //.setSwitch(true)
@@ -274,9 +274,13 @@ void drawIU() {
   fill(255);
   textSize(20);
   text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
+  textSize(15);
+  text("Speed", (width / 2) +50, sliderY-10);
 
 }
 
+public void minusSpeed() {frameRate(frameRate/2);}
+public void plusSpeed() {frameRate(frameRate*2);}
 
 public void timeLine(int value) {
 
