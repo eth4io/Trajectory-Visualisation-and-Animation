@@ -59,7 +59,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
-static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
 
@@ -163,8 +163,8 @@ void draw() {
   }
   drawIU();
   
-    //draw inspector if there is a current selection
-  if (inspectedTrajectory != null) {
+    //draw inspector if there is a current selection && if is not in filter mode
+  if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
   }
   
@@ -179,11 +179,11 @@ void draw() {
 
 void updateRadiusFilter() {
   if (currentZoomLevel != previousZoomLevel) {
-    radiusFilter.setFilterRadius(map, 20);                //update to radius var
+    radiusFilter.setFilterRadius(map, filterSize);                
   }
   if (isFilterMode) {
     radiusFilter.setHidden(false);
-    radiusFilter.setFilterRadius(map,20);
+    radiusFilter.setFilterRadius(map,filterSize);
     radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers());
     radiusFilter.update(map);
   } else {
