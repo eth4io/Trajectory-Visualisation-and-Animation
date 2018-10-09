@@ -183,8 +183,6 @@ public class DataReader {
              float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
              positionData.setSpeed(speed);
              lastPosition = currentPosition;
-             
-
              pointTrack.add(positionData);
            }
            catch (Exception e) {
