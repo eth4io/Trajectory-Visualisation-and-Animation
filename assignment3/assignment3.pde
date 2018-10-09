@@ -43,6 +43,12 @@ static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
 static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
+static final int FILTER_MAX = 20;                  /* kilometres */
+static final int FILTER_MIN = 5;                   /* kilometres */
+static final int HEIGHT = 768;
+static final int UI_HEIGHT = 170;
+static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
+
 
 //-----------------------  Global Variables ------------------------
 
@@ -57,11 +63,12 @@ TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
 ColourTable markerColourTable;
 
-//----------- Slider Variables ----------------
+//----------- UI Variables ----------------
 ControlP5  cp5;
 RadioButton radioButton;
 int sliderX, sliderY, sliderW, sliderH;
 boolean isPlay = true;
+int animationSpeed;
 CColor  controlsColours;
 int timeLine;
 int time;
@@ -69,7 +76,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
-static float[] HIST_BINS = new float[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
 
@@ -80,27 +87,38 @@ float[] times;
 int chartY;
 int chartHeight;
 
-
-
+//----------- Radius Filter Variables----------
+RadiusFilter radiusFilter;
+int currentZoomLevel = 0;
+int previousZoomLevel = 0;
+boolean isFilterMode = false;
+float filterSize = 5;
 
 void setup() {
-  size(800, 800);
+  size(1024, HEIGHT);
   
 
   
   /* set up map */
   map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
-  height-200, new EsriProvider.WorldGrayCanvas());
+  MAP_HEIGHT, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
   map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
 
   //create bar scale
-  barScale = new BarScaleUI(this, map, 10, height - 20);
+
+  barScale = new BarScaleUI(this, map, 10, MAP_HEIGHT - 20);
+
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
+   //create radius filter
+  radiusFilter = new RadiusFilter();
+  radiusFilter.setFilterRadius(map, 20);
+  map.addMarker(radiusFilter);
+  
   /* test of DataReader method */
   dataReader = new DataReader();
 
@@ -126,55 +144,89 @@ void setup() {
   testSpeedGraph = trajectoryManager.getMarkers();
 
   //initialise UI
-
+  frameRate(30);
   controlsColours = new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
   0xffffffff);
-  sliderW=350;
-  sliderH=10;
-  sliderX = width / 2 - sliderW / 2;
-  sliderY = height - 40;
-  initialiseUI();
+
+
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
   
   //initialise Line Graph
   initialiseLineGraph();
+  initialiseUI();
 }
 
 void draw() {
+  //get new zoom level (leave at start of draw)
+  currentZoomLevel = map.getZoomLevel();
+  //main radius filter updater
+  updateRadiusFilter();
+  
   map.draw();
+
   //test radius variable
   //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
   //some colors testing
   //trajectoryManager.setAllColor(color(150,150,200));
+  //draw interface background
+  fill(50, 150);
+  noStroke();
+  rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
+
   trajectoryManager.draw();
   colourMarkers();
   barScale.draw();
   if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
-    if (time < SLIDER_MAX)
-      time ++;
+    if (timeLine < SLIDER_MAX)
+      timeLine ++;
     else
-      time = 0;
+      timeLine = 0;
   }
-  drawIU();
   
-    //draw inspector if there is a current selection
-  if (inspectedTrajectory != null) {
+  
+    //draw inspector if there is a current selection && if is not in filter mode
+  if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
   }
-  updateHistogram();
-  histogram.draw(width - 180, height - 200, 150, 110);
-  lineChart.draw(width - 180, chartY, 150, chartHeight);
+
+  fill(255);
+  textSize(8);
+  
+  if (!isFilterMode) updateHistogram(trajectoryManager.getMarkers());
+  
+  histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
+  lineChart.draw(0, chartY, width-5, chartHeight);
   updateLineGraph();
+  
+  //update zoom levels (leave last in draw)
+  previousZoomLevel = currentZoomLevel;
+  
+  drawIU();
+}
+
+void updateRadiusFilter() {
+  if (currentZoomLevel != previousZoomLevel) {
+    radiusFilter.setFilterRadius(map, filterSize);                
+  }
+  if (isFilterMode) {
+    radiusFilter.setHidden(false);
+    radiusFilter.setFilterRadius(map,filterSize);
+    updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
+    radiusFilter.update(map);
+  } else {
+    if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
+  }
+  
+  
 
 }
 
-void updateHistogram() {
+void updateHistogram(List<Trajectory> t) {
   //histogram update and draw
-  List<Trajectory> t = trajectoryManager.getMarkers();
   float[] speeds = new float[t.size()];
   int i = 0;
   
@@ -192,7 +244,7 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-  println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
+  //println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
@@ -204,20 +256,28 @@ void showInspector() {
 }
 
 void initialiseUI() {
+  PVector startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
+  PVector endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
+  
+  sliderH=10;
+  sliderY = height - 130;  
+  sliderX =(int) startLineGraph.x;
+  sliderW = (int)(endLineGraph.x - startLineGraph.x);
+  
   cp5 = new ControlP5(this);
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
     .setRange(0, SLIDER_MAX)
-    .showTickMarks(true)
-    .setNumberOfTickMarks(23)
+    //.showTickMarks(true)
+    //.setNumberOfTickMarks(98)
     .setColor(controlsColours)
     .setLabelVisible(false)
-     //.listen(true)
+     .listen(true)
     ;
 
   cp5.addIcon("isPlay", 40)
-    .setPosition(sliderX + sliderW / 2, sliderY - 40)
+    .setPosition((width / 2) - 20, sliderY - 40)
     .setSize(40, 40)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
@@ -229,7 +289,7 @@ void initialiseUI() {
     .setOn();
 
   radioButton = cp5.addRadioButton("radioButton")
-         .setPosition(width-100,100)
+         .setPosition(width-100,250)
          .setSize(40,20)
          //.setColorForeground(color(120))
          ////.setColorActive(color(255))
@@ -249,33 +309,92 @@ void initialiseUI() {
        t.getCaptionLabel().getStyle().backgroundWidth = 45;
        t.getCaptionLabel().getStyle().backgroundHeight = 13;
      }
+
+    
+
+   cp5.addIcon("plusSpeed",1)
+    .setPosition((width / 2) +100 , sliderY - 35)
+    .setSize(20, 20)
+    //.setRoundedCorners(20)
+    .setFont(createFont("fontawesome-webfont.ttf", 20))
+    .setFontIcon(#00f067)
+    //.setScale(0.9, 1)
+    //.setSwitch(true)
+    .setColorBackground(color(255, 100))
+    .hideBackground();
+    //.setOn();
+    
+   cp5.addIcon("minusSpeed",1)
+    .setPosition((width / 2) +100 , sliderY - 15)
+    .setSize(20, 10)
+    //.setRoundedCorners(20)
+    .setFont(createFont("fontawesome-webfont.ttf", 20))
+    .setFontIcon(#00f068)
+    //.setScale(0.9, 1)
+    //.setSwitch(true)
+    .setColorBackground(color(255, 100))
+    .hideBackground();
+    //.setOn();
+
+  //ui for radius filter control
+  cp5.addToggle("isFilterMode")
+    .setPosition(width - 50, 50)
+    //.setColor(controlsColours)
+    .setLabel("Filter Mode");
+  cp5.addSlider("filterSize")
+    .setPosition(width - 110, 90)
+    .setRange(FILTER_MIN, FILTER_MAX)
+    //.setColor(controlsColours)
+    .showTickMarks(true)
+    .setNumberOfTickMarks(4);
+}
+
+/* update filter size from filter controls */
+void filterSize(int size) {
+  filterSize = size;
+  cp5.getController("filterSize").setValue(size);
+  println(filterSize);
+
+
 }
 
 void drawIU() {
 
-  fill(50, 150);
-  noStroke();
-  rect(sliderX - 40, sliderY - 40, sliderW + 80, sliderH + 80, 7);
-  int hour = int(time / 60);
-  int min = int(time % 60);
-  fill(255);
-  text(String.format("%02d:%02d", hour, min), sliderX, sliderY - 10);
-  
-  if(abs(time - previousUpdate) > 60){
-    cp5.getController("timeLine").setValue(time);
-    previousUpdate = time;
+
+  int rawHour = int(timeLine / 60) + 8;
+  int hour = rawHour;
+  String daytime = "am";
+  if (rawHour > 12){
+   hour = rawHour - 12;
+   daytime = "pm";
   }
+  if (rawHour >= 24) {
+    hour = rawHour - 24;
+    daytime = "am";
+  }
+  int min = int(timeLine % 60);
+  fill(255,255,255,255);
+  strokeWeight(3);
+  textSize(20);
+  text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
+  textSize(15);
+  text("Speed", (width / 2) +50, sliderY-10);
+
 }
 
+public void minusSpeed() {frameRate(frameRate/2);}
+public void plusSpeed() {frameRate(frameRate*2);}
 
 public void timeLine(int value) {
-  time = value; 
+
+  timeLine = value; 
+  time = value;
 }
 
 public void initialiseLineGraph() {
-  timeBreakSize = 30;
-  chartY = height-320;
+  timeBreakSize = 5;
   chartHeight = 110;
+  chartY = height-chartHeight-5;
   //create speed array for y variable:
   speeds = new float[SLIDER_MAX/timeBreakSize+1];
   times = new float[SLIDER_MAX/timeBreakSize+1];
@@ -283,24 +402,31 @@ public void initialiseLineGraph() {
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
     speeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
-    times[i]=x/60;
+    times[i]=x;
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
   lineChart.setData(times,speeds);
-  lineChart.showXAxis(true); 
+  //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
-  lineChart.setMaxX(24);
-  lineChart.setMaxY(13);
+  lineChart.setMaxX(SLIDER_MAX);
+  //lineChart.setMaxY(13);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
+  lineChart.setAxisColour(255);
+  lineChart.setAxisLabelColour(255);
+  lineChart.setAxisValuesColour(255);
+  lineChart.setLineColour(255);
+  lineChart.setPointColour(255);
+  lineChart.draw(0, chartY, width-5, chartHeight);
+ 
 
 }
 
 public void updateLineGraph(){
-  int i = time/timeBreakSize;
+  int i = timeLine/timeBreakSize;
 
   PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],speeds[i]));
   int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
