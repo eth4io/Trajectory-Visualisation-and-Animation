@@ -11,7 +11,7 @@
 
 import org.gicentre.utils.stat.*;                          /* for charts */
 import de.fhpotsdam.unfolding.utils.GeoUtils.*; 
-
+import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 
 static class Tools {
   
@@ -30,12 +30,16 @@ static class Tools {
     if (mm.getMarkers() != null) {                                                  /* clear marker manager if not empty */
       mm.clearMarkers();
     }
-    for (int i = 0; i < t.getPositionData().size(); i++) {                            /* add markers from position data file */
-      mm.addMarker(new SimplePointMarker(
-                     new Location(
-                       t.getPositionData().get(i).getLat(), 
-                       t.getPositionData().get(i).getLng()
-                   )));
+    for (int i = 0; i < t.getPositionData().size() - 1; i++) {                      /* create line shape while i < n-1 */
+      SimpleLinesMarker slm = new SimpleLinesMarker(
+        new Location(                                                               /* i point */
+          t.getPositionData().get(i).getLat(),                                       
+          t.getPositionData().get(i).getLng()), 
+        new Location(                                                               /* i + 1 point */
+          t.getPositionData().get(i+1).getLat(), 
+          t.getPositionData().get(i+1).getLng()));
+     
+     mm.addMarker(slm);                                                             /* add marker to manager */
     }
     return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
   }
