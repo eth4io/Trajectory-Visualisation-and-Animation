@@ -201,7 +201,7 @@ void draw() {
     colourMarkers();
   }
   
-  histogram.draw(width - 180, MAP_HEIGHT - 120, 150, 110);
+  histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
   lineChart.draw(0, chartY, width-5, chartHeight);
   updateLineGraph();
   

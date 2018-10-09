@@ -88,6 +88,7 @@ class Histogram {
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
     barChart.setMinValue(0);
+    barChart.setBarGap(3);
   }
   
   /* private update function */
@@ -112,8 +113,8 @@ class Histogram {
         }
       }
     }
-    labels = new String[]{"0 - 4", "5 - 9", "10 - 14", "15 - 19", "20 - 24", "25 - 29",
-                             "30 - 34", "35 - 49", "40 - 44", "45 - 49"};
+    labels = new String[]{"0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
+                             "30-34", "35-49", "40-44", "45-49"};
   }
 
   /* public updater to be used at runtime */
