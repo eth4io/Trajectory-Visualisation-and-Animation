@@ -79,6 +79,7 @@ Histogram histogram;
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
+XYChart scatterChart;
 
 int timeBreakSize;
 float[] avgSpeeds;
@@ -203,6 +204,7 @@ void draw() {
   
   histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  //scatterChart.draw(0, 300, width-5, chartHeight);
   updateLineGraph();
   
   //update zoom levels (leave last in draw)
@@ -395,27 +397,32 @@ public void timeLine(int value) {
 }
 
 public void initialiseLineGraph() {
-  timeBreakSize = 5;
+  timeBreakSize = 1;
   chartHeight = 110;
   chartY = height-chartHeight-5;
   //create speed array for y variable:
   avgSpeeds = new float[SLIDER_MAX/timeBreakSize+1];
   times = new float[SLIDER_MAX/timeBreakSize+1];
   int i = 0; 
+  ArrayList<PVector> speedTimeVectors= new ArrayList<PVector>();
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
     avgSpeeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
     times[i]=x;
+    speedTimeVectors.addAll(trajectoryManager.getSpeedFromProgressVal(i));
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
   }
+  
+  
   lineChart = new XYChart(this);
   lineChart.setData(times,avgSpeeds);
   //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
-  //lineChart.setMaxY(13);
+  lineChart.setMaxY(25);
+  lineChart.setMinY(0);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
   lineChart.setAxisColour(255);
@@ -423,9 +430,20 @@ public void initialiseLineGraph() {
   lineChart.setAxisValuesColour(255);
   lineChart.setLineColour(255);
   lineChart.setPointColour(255);
+  lineChart.setPointSize(2);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  
+ /*
+ scatterChart = new XYChart(this);
+ scatterChart.setData(speedTimeVectors);
+ scatterChart.showXAxis(true);
+ scatterChart.showYAxis(true);
+ scatterChart.setMaxY(25);
+ scatterChart.setMinY(0);
+ scatterChart.setMaxX(SLIDER_MAX);
+ scatterChart.setPointSize(1);
  
-
+*/
 }
 
 public void updateLineGraph(){
