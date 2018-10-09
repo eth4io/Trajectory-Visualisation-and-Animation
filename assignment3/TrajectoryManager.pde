@@ -33,7 +33,7 @@ class TrajectoryManager extends MarkerManager {
   
   public void setNumberOfDaysToDisplay(int numberOfDays) {
     List<Trajectory> trajectoryList = new ArrayList<Trajectory>();
-    for (int i = 0; i < numberOfDays || i < listOfTrajectoryList.size(); i++) {
+    for (int i = 0; i < numberOfDays && i < listOfTrajectoryList.size(); i++) {
       trajectoryList.addAll(listOfTrajectoryList.get(i));
     }
     this.setMarkers(trajectoryList);

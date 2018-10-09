@@ -45,7 +45,6 @@ static final String STUDY_DATE_END_TIME = "2008-11-06/23:59:59";
 static final String ERROR_PARSING_DATE = "Error while parsing Date";
 static final int SLIDER_MAX = 1440;
 
-
 //-----------------------  Global Variables ------------------------
 
 UnfoldingMap map;
@@ -61,6 +60,7 @@ ColourTable markerColourTable;
 
 //----------- Slider Variables ----------------
 ControlP5  cp5;
+RadioButton radioButton;
 int sliderX, sliderY, sliderW, sliderH;
 boolean isPlay = true;
 CColor  controlsColours;
@@ -228,6 +228,27 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
+
+  radioButton = cp5.addRadioButton("radioButton")
+         .setPosition(100,180)
+         .setSize(40,20)
+         .setColorForeground(color(120))
+         .setColorActive(color(255))
+         .setColorLabel(color(255))
+         .setItemsPerRow(3)
+         .setSpacingColumn(50)
+         .addItem("1",1)
+         .addItem("5",2)
+         .addItem("10",3)
+         ;
+
+     for(Toggle t : radioButton.getItems()) {
+       t.getCaptionLabel().setColorBackground(color(255,80));
+       t.getCaptionLabel().getStyle().moveMargin(-7,0,0,-3);
+       t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
+       t.getCaptionLabel().getStyle().backgroundWidth = 45;
+       t.getCaptionLabel().getStyle().backgroundHeight = 13;
+     }
 }
 
 void drawIU() {
@@ -298,11 +319,26 @@ public void colourMarkers(){
     if (m.isMoving()) {
       float speed =  m.getCurrentSpeed();
       m.setColor(markerColourTable.findColour(speed));
-      m.setHidden(false);                                                 /* show if moving */
+      m.setHidden(false); /* show if moving */
     } else {
-      m.setHidden(true);                                                  /* Hide if not moving */
+      m.setHidden(true); /* Hide if not moving */
     }
-    
   }
-    
+}
+
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(radioButton)) {
+    trajectoryManager.clearMarkers();
+    switch(int(theEvent.getValue())) {
+      case 1:
+        trajectoryManager.setNumberOfDaysToDisplay(1);
+        break;
+      case 2:
+        trajectoryManager.setNumberOfDaysToDisplay(5);
+        break;
+      case 3:
+        trajectoryManager.setNumberOfDaysToDisplay(10);
+        break;
+    }
   }
+}
