@@ -90,6 +90,7 @@ class Histogram {
     barChart.setBarLabels(labels);
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
+    barChart.setMinValue(0);
   }
   
   /* private update function */
@@ -114,16 +115,10 @@ class Histogram {
         }
       }
     }
-    
-    for (int i = 0; i < values.length; i++) {                /* loop over bins to generate labels */
-      //println(i + 1, values[i]);                           /* print bin number and frequency */
-      labels[i] = Integer.toString(i) + "0 - " +             /* format value axis labels */
-        Integer.toString(i) + "9" ;
-    }
-    
-    
+    labels = new String[]{"0 - 4", "5 - 9", "10 - 14", "15 - 19", "20 - 24", "25 - 29",
+                             "30 - 34", "35 - 49", "40 - 44", "45 - 49"};
   }
-  
+
   /* public updater to be used at runtime */
   public void update(float[] data) {
     update(this.bins, data);

@@ -185,7 +185,6 @@ void updateRadiusFilter() {
   if (isFilterMode) {
     radiusFilter.setHidden(false);
     radiusFilter.setFilterRadius(map,filterSize);
-    
     updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
     radiusFilter.update(map);
   } else {
