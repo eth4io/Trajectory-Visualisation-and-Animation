@@ -367,7 +367,7 @@ void initialiseUI() {
 /* update filter size from filter controls */
 void filterSize(int size) {
   filterSize = size;
-  cp5.getController("filterSize").setValue(size);
+//  cp5.getController("filterSize").setValue(size);
 }
 
 void drawIU() {
