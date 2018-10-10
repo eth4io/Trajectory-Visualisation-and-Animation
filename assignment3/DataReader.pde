@@ -17,8 +17,8 @@ public class DataReader {
   private static final String ERROR_PARSING_DATE = "Error while parsing Date from plt.";
   private static final int SPEED_SMOOTHING_SIZE = 10;
   private static final int DATE_STRING_LENGTH = 8; // sample file name: "20090705025307.plt"
-  private static final float BEIJING_X = 39.907614; 
-  private static final float BEIJING_Y = 116.397334;
+  private static final float BEIJING_X = 116.397334;
+  private static final float BEIJING_Y = 39.907614;
   private static final float STUDY_AREA_RADIUS = 1;
   static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
   private String fileSeparator;
@@ -105,7 +105,10 @@ public class DataReader {
       if (fileEntry.isFile() && fileEntry.getName().substring(0, DATE_STRING_LENGTH).equals(Date)) {
         List<PositionData> result = new ArrayList<PositionData>();
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
-        return new Trajectory(result);
+        if (result.size() > 0)
+          return new Trajectory(result);
+        else
+          return null;
       }
     }
     return null;    
@@ -170,8 +173,11 @@ public class DataReader {
            float lat = Float.valueOf(tracklog[0]);
            float lon = Float.valueOf(tracklog[1]);
            
-           if ((lat < BEIJING_X - STUDY_AREA_RADIUS) || (lat > BEIJING_X + STUDY_AREA_RADIUS)
-            || (lon < BEIJING_Y - STUDY_AREA_RADIUS) || (lon > BEIJING_Y + STUDY_AREA_RADIUS)) continue; 
+           if ((lat < BEIJING_Y - STUDY_AREA_RADIUS) || (lat > BEIJING_Y + STUDY_AREA_RADIUS)
+             || (lon < BEIJING_X - STUDY_AREA_RADIUS) || (lon > BEIJING_X + STUDY_AREA_RADIUS)) {
+             continue;
+           }
+
            
            float altitude = Float.valueOf(tracklog[3]);
            SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
