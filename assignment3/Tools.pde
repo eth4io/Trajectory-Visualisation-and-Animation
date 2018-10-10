@@ -1,8 +1,53 @@
+/* Tools file 
+ * 
+ * List of Tools:
+ * - radius filter 
+ * - histogram
+ *
+ * Statics:
+ * - explore trajectory
+ * 
+ */
+
 import org.gicentre.utils.stat.*;                          /* for charts */
 import de.fhpotsdam.unfolding.utils.GeoUtils.*; 
+import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 
-class Tools {
-
+static class Tools {
+  
+/* reads entire positionData file for a trajectory,
+ * creates line segments and colours according to speed,
+ * and adds to Marker Manager.
+ * 
+ * precondition marker manager must be initilised 
+ * and assigned to an UnfoldingMap
+ *
+ * returns true if successful, otherwise false
+ * 
+ * ask Michael for Q&A
+ */
+  public static boolean exploreTrajectory(Trajectory t, MarkerManager mm, ColourTable ct) 
+  {
+    if (mm.getMarkers() != null) {                                                  /* clear marker manager if not empty */
+      mm.clearMarkers();
+    }
+    for (int i = 0; i < t.getPositionData().size() - 1; i++) {                      /* create line shape while i < n-1 */
+      Location a = new Location(                                                    /* set location i */
+          t.getPositionData().get(i).getLat(),                                       
+          t.getPositionData().get(i).getLng());
+      Location b = new Location(                                                    /* set locaiton i + 1 */                                  
+          t.getPositionData().get(i+1).getLat(), 
+          t.getPositionData().get(i+1).getLng());
+          
+      if (GeoUtils.getDistance(a, b) <= 2) {                                        /* check for sample errors > 2km apart */
+        SimpleLinesMarker slm = new SimpleLinesMarker(a, b);
+        slm.setStrokeWeight(3);
+        slm.setColor(ct.findColour(t.getPositionData().get(i+1).getSpeed()));       /* set colour of line segment based on i+1 speed */
+        mm.addMarker(slm);  
+      }                                                  
+    }
+    return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
+  }
 }
 
 /* class for radius filter
