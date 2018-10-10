@@ -56,8 +56,8 @@ UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
-Trajectory inspectedTrajectory;              /* trajectory for inspection */
-
+Trajectory inspectedTrajectory;           /* trajectory for inspection */
+MarkerManager inspectedManager;           /* manager for exploring trajectory points */
 //test
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
@@ -124,10 +124,15 @@ void setup() {
 
   markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN,0,50);
   
-
+  //init trajectory manager
   trajectoryManager = new TrajectoryManager(
     dataReader.getListOfTrajectoryListByListOfDate(STUDY_DATES));
   trajectoryManager.setMap(map);
+  
+  //init inspected trajectory manager
+  inspectedManager = new MarkerManager();
+  inspectedManager.setMap(map);
+  
   
   try {
     SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
@@ -175,7 +180,7 @@ void draw() {
   noStroke();
   rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
 
-  trajectoryManager.draw();
+
   
   barScale.draw();
   if (isPlay) {
@@ -191,7 +196,14 @@ void draw() {
     //draw inspector if there is a current selection && if is not in filter mode
   if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();
+    // test and show selected trajectory
+    if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
+      inspectedManager.draw();
+    }
   }
+  
+  trajectoryManager.draw();
+  
   trajectoryManager.setAllColor(200);
   fill(255);
   textSize(8);
@@ -356,9 +368,6 @@ void initialiseUI() {
 void filterSize(int size) {
   filterSize = size;
   cp5.getController("filterSize").setValue(size);
-  println(filterSize);
-
-
 }
 
 void drawIU() {
