@@ -2,6 +2,7 @@
  * 
  * List of Tools:
  * - radius filter 
+ * - filter manager
  * - histogram
  *
  * Statics:
@@ -176,11 +177,8 @@ class FilterManager extends MarkerManager {
     for (Marker m : temp) {
       List<Trajectory> traj = new ArrayList<Trajectory>();
       traj = ((RadiusFilter) m).getWithinRadius(map, markers);
-      if (traj.size() > 0) {
-        listOfTraj.add(traj);
-      }
+      listOfTraj.add(traj);
     }
-
     return listOfTraj;
   }
 }
@@ -196,6 +194,7 @@ class Histogram {
   //private float maxValue = 0;
   private String[] labels;
   private BarChart barChart;
+
   
   public Histogram(float[] bins, float[] data, PApplet PObj) 
   {
@@ -211,6 +210,13 @@ class Histogram {
     barChart.transposeAxes(true);
     barChart.setMinValue(0);
     barChart.setBarGap(3);
+  }
+  
+  public void changeLook(boolean showLabels, color c)
+  {
+    barChart.showValueAxis(showLabels);
+    barChart.showCategoryAxis(showLabels);
+    barChart.setBarColour(c);
   }
   
   /* private update function */

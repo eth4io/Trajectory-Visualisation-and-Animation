@@ -76,6 +76,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
+Histogram histogram2;
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
@@ -162,7 +163,9 @@ void setup() {
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
-  
+  histogram2 = new Histogram(HIST_BINS, new float[]{0}, this);
+  histogram.changeLook(true,color(255,0,0));
+  histogram2.changeLook(true, color(0,255,0));
   //initialise Line Graph
   initialiseLineGraph();
   initialiseUI();
@@ -214,11 +217,13 @@ void draw() {
   textSize(8);
   
   if (!isFilterMode){
-    updateHistogram(trajectoryManager.getMarkers());
+    
+    updateHistogram(trajectoryManager.getMarkers(), trajectoryManager.getMarkers());
     colourMarkers();
   }
   
   histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
+  histogram2.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
   lineChart.draw(0, chartY, width-5, chartHeight);
   filterManager.draw();
   updateLineGraph();
@@ -242,8 +247,15 @@ void updateRadiusFilter() {
     filterManager.setAllHidden(false);
     //radiusFilter.setFilterRadius(map,filterSize);
     filterManager.setAllFilterRadius(map, filterSize);
+    List<List<Trajectory>> tTemp = new ArrayList<List<Trajectory>>();
     
-    //updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
+    tTemp = filterManager.getAllWithinRadius(map,trajectoryManager.getMarkers());
+    if (filterManager.getMarkers().size() > 1 ) {
+      updateHistogram(tTemp.get(0), tTemp.get(1));
+    } else {
+      updateHistogram(tTemp.get(0), null);
+    }
+    
     trajectoryManager.deselectAll();
     filterManager.getAllWithinRadius(map,trajectoryManager.getMarkers());
     //radiusFilter.update(map);
@@ -258,16 +270,26 @@ void updateRadiusFilter() {
 
 }
 
-void updateHistogram(List<Trajectory> t) {
+void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   //histogram update and draw
-  float[] speeds = new float[t.size()];
+  
+  float[] speeds1 = new float[a.size()];
+  float[] speeds2 = new float[b != null ? b.size() : 0];
   int i = 0;
   
-  for (Trajectory m : t) {
+  
+  for (Trajectory m : a) {
     
-    speeds[i++] =  m.getCurrentSpeed();
+    speeds1[i++] =  m.getCurrentSpeed();
   }
-  histogram.update(speeds);
+  histogram.update(speeds1);
+  if (b != null) {
+  i = 0;
+  for (Trajectory m : b) {
+    speeds2[i++] =  m.getCurrentSpeed();
+  }
+  histogram2.update(speeds2);
+  }
 }
 
 void mouseClicked() {
