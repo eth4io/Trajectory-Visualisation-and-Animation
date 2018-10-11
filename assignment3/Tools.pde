@@ -78,6 +78,7 @@ class RadiusFilter extends SimplePointMarker  {
   /* returns list of markers that are within this filter */
   public List<Trajectory> getWithinRadius(UnfoldingMap map, List<Trajectory> markers) 
   {
+    int pfound = 0;
     List<Trajectory> found = new ArrayList<Trajectory>();
     double dist = GeoUtils.getDistance(this.getLocation(), 
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
@@ -90,10 +91,12 @@ class RadiusFilter extends SimplePointMarker  {
         found.add(m);
       } else {
         if (m.isSelected()) {
-          m.setSelected(false);
+          //m.setSelected(false);
         }
       }
+      if (m.isSelected()) pfound++;
     }
+    println(pfound);
     return found;
   }
   
@@ -120,12 +123,31 @@ class FilterManager extends MarkerManager {
     super();
   }
   
-  private void addFilter(color c)
+  public void addFilter(color c)
   {
     this.addMarker(new RadiusFilter(c));
   }
   
-  public void setAllFilterRadius(UnflodingMap map, float kms)
+  public void setAllHidden(boolean b) 
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      m.setHidden(b);
+    }
+    this.setMarkers(temp);  
+  }
+  
+  public void updateAll(UnfoldingMap map) {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      ((RadiusFilter)m).update(map);
+    }
+    this.setMarkers(temp); 
+  }
+  
+  public void setAllFilterRadius(UnfoldingMap map, float kms)
   {
     List<Marker> temp = this.getMarkers();
     
@@ -135,18 +157,13 @@ class FilterManager extends MarkerManager {
     this.setMarkers(temp);
   }
   
-  public void placeFilter(UnfoldingMap map, float x, float y) 
+  public void placeFilter(UnfoldingMap map) 
   {
     List<Marker> temp = this.getMarkers();
     
     for (Marker m : temp) {
-      if (m.isInside(map, x, y)) {
-        if (!((RadiusFilter)m).getPlaced()) {
-          ((RadiusFilter)m).setPlaced(true);
-          this.addFilter(color(255,0,0,50));
-        } else {
-          ((RadiusFilter)m).setPlaced(false);
-        }
+      if (!((RadiusFilter)m).getPlaced()) {
+        ((RadiusFilter)m).setPlaced(true);
       }
     }
     this.setMarkers(temp);
@@ -163,6 +180,7 @@ class FilterManager extends MarkerManager {
         listOfTraj.add(traj);
       }
     }
+
     return listOfTraj;
   }
 }

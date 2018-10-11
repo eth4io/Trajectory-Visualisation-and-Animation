@@ -119,6 +119,9 @@ void setup() {
   //radiusFilter = new RadiusFilter(color(255,0,0,50));
   //radiusFilter.setFilterRadius(map, 20);
   //map.addMarker(radiusFilter);
+  filterManager = new FilterManager();
+  //filterManager.addFilter(color(255,0,0,50));
+  filterManager.setMap(map);
   
   
   /* test of DataReader method */
@@ -217,6 +220,7 @@ void draw() {
   
   histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  filterManager.draw();
   updateLineGraph();
   
   //update zoom levels (leave last in draw)
@@ -227,15 +231,27 @@ void draw() {
 
 void updateRadiusFilter() {
   if (currentZoomLevel != previousZoomLevel) {
-    radiusFilter.setFilterRadius(map, filterSize);                
+    filterManager.setAllFilterRadius(map, filterSize);
+    //radiusFilter.setFilterRadius(map, filterSize);                
   }
   if (isFilterMode) {
-    radiusFilter.setHidden(false);
-    radiusFilter.setFilterRadius(map,filterSize);
-    updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
-    radiusFilter.update(map);
+    if (filterManager.getMarkers().size() <= 0) {
+      filterManager.addFilter(color(255, 0, 0, 50));
+    }
+    //radiusFilter.setHidden(false);
+    filterManager.setAllHidden(false);
+    //radiusFilter.setFilterRadius(map,filterSize);
+    filterManager.setAllFilterRadius(map, filterSize);
+    
+    //updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
+    trajectoryManager.deselectAll();
+    filterManager.getAllWithinRadius(map,trajectoryManager.getMarkers());
+    //radiusFilter.update(map);
+    filterManager.updateAll(map);
   } else {
-    if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
+    if (filterManager.getMarkers().size() > 0) {
+      filterManager.setAllHidden(true);
+    }
   }
   
   
@@ -256,6 +272,15 @@ void updateHistogram(List<Trajectory> t) {
 
 void mouseClicked() {
   inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+  
+  if (isFilterMode && mouseX <= width - 150) {
+    filterManager.placeFilter(map);
+    if (filterManager.getMarkers().size() < 2) {
+      filterManager.addFilter(color(0, 255,0,50));
+    }
+  } else if (!isFilterMode) {
+    filterManager.clearMarkers();
+  }
 
 }
 
