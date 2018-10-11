@@ -60,17 +60,19 @@ class RadiusFilter extends SimplePointMarker  {
   private float rad_km = 20;
   private boolean placed = false;
   
-  public RadiusFilter() 
+  public RadiusFilter(color c) 
   {                                       
     super(new Location(0,0));
-    this.setColor(color(255,0,0,50));
+    this.setColor(c/*color(255,0,0,50)*/);
     this.setStrokeWeight(0);
   }
   
   /* cycle updates for the filter */
   public void update(UnfoldingMap map) 
   {
-    this.setLocation(map.getLocation(mouseX, mouseY));
+    if (!placed) {
+      this.setLocation(map.getLocation(mouseX, mouseY));
+    }
   }
   
   /* returns list of markers that are within this filter */
@@ -105,6 +107,63 @@ class RadiusFilter extends SimplePointMarker  {
     float actualRad = PApplet.dist(radScreen.x, radScreen.y, centreScreen.x, centreScreen.y);
     this.setRadius(actualRad);
     
+  }
+  
+  public void setPlaced(boolean b) { this.placed = b; }
+  
+  public boolean getPlaced() {return this.placed;}
+}
+
+class FilterManager extends MarkerManager {
+  
+  public FilterManager() {
+    super();
+  }
+  
+  private void addFilter(color c)
+  {
+    this.addMarker(new RadiusFilter(c));
+  }
+  
+  public void setAllFilterRadius(UnflodingMap map, float kms)
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      ((RadiusFilter)m).setFilterRadius(map, kms);
+    }
+    this.setMarkers(temp);
+  }
+  
+  public void placeFilter(UnfoldingMap map, float x, float y) 
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      if (m.isInside(map, x, y)) {
+        if (!((RadiusFilter)m).getPlaced()) {
+          ((RadiusFilter)m).setPlaced(true);
+          this.addFilter(color(255,0,0,50));
+        } else {
+          ((RadiusFilter)m).setPlaced(false);
+        }
+      }
+    }
+    this.setMarkers(temp);
+  }
+  
+  public List<List<Trajectory>> getAllWithinRadius(UnfoldingMap map, List<Trajectory> markers)
+  {
+    List<Marker> temp = this.getMarkers();
+    List<List<Trajectory>> listOfTraj = new ArrayList<List<Trajectory>>();
+    for (Marker m : temp) {
+      List<Trajectory> traj = new ArrayList<Trajectory>();
+      traj = ((RadiusFilter) m).getWithinRadius(map, markers);
+      if (traj.size() > 0) {
+        listOfTraj.add(traj);
+      }
+    }
+    return listOfTraj;
   }
 }
 

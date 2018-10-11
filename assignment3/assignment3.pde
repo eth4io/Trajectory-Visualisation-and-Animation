@@ -88,7 +88,8 @@ int chartY;
 int chartHeight;
 
 //----------- Radius Filter Variables----------
-RadiusFilter radiusFilter;
+//RadiusFilter radiusFilter;
+FilterManager filterManager;
 int currentZoomLevel = 0;
 int previousZoomLevel = 0;
 boolean isFilterMode = false;
@@ -115,9 +116,10 @@ void setup() {
   MapUtils.createDefaultEventDispatcher(this, map);
 
    //create radius filter
-  radiusFilter = new RadiusFilter();
-  radiusFilter.setFilterRadius(map, 20);
-  map.addMarker(radiusFilter);
+  //radiusFilter = new RadiusFilter(color(255,0,0,50));
+  //radiusFilter.setFilterRadius(map, 20);
+  //map.addMarker(radiusFilter);
+  
   
   /* test of DataReader method */
   dataReader = new DataReader();
