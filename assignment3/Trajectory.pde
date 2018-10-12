@@ -67,7 +67,10 @@ class Trajectory extends SimplePointMarker {
     for (int i = 0; i < positionData.size(); i++) {
       currentPosition = positionData.get(i);
 
-      if (currentPosition.getCreatedTime().getTime() % (1000 * 3600 * 24) - currentTime.getTime() % (1000 * 3600 * 24) > 0) {
+      if ((currentPosition.getCreatedTime().getTime() % (1000 * 3600 * 24)
+        - currentTime.getTime() % (1000 * 3600 * 24) > 0)
+        && (currentPosition.getCreatedTime().getTime() % (1000 * 3600 * 24)
+        - (currentTime.getTime() % (1000 * 3600 * 24) + 1000 * 60) < 0)) {
         this.setLocation(currentPosition.lat, currentPosition.lng);
         this.currentSpeed = this.currentPosition.getSpeed();                /* update speed variable */
         return;
