@@ -206,8 +206,8 @@ void draw() {
   
   
     //draw inspector if there is a current selection && if is not in filter mode
-  if (inspectedTrajectory != null && !isFilterMode) {
-    showInspector();
+  if (inspectedTrajectory != null) {
+    showInspector();// add coords here
     // test and show selected trajectory
     if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
       inspectedManager.draw();
@@ -221,7 +221,9 @@ void draw() {
   textSize(8);
   
   if (!isFilterMode){
-    updateHistogram(trajectoryManager.getMarkers(), trajectoryManager.getMarkers());
+    List<Trajectory> empty = new ArrayList<Trajectory>();
+    updateHistogram(trajectoryManager.getMarkers(), empty);
+    trajectoryManager.setStyle(color(255,255,255,0), color(0,0,0),1);
   }
   
   colourMarkers();
@@ -316,9 +318,14 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-  //println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
-  float x = inspectedTrajectory.getX(map);
-  float y = inspectedTrajectory.getY(map);
+    float x, y;
+  if (!isFilterMode) {
+    x = inspectedTrajectory.getX(map);
+    y = inspectedTrajectory.getY(map);
+  } else {
+    x = 1;
+    y = 60;
+  }
   int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
   rect(x, y - 60, 125, 60, 7);

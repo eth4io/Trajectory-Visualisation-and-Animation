@@ -89,7 +89,7 @@ class RadiusFilter extends SimplePointMarker  {
     for (Trajectory m : markers) {
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
-      if (diff < dist/2) {
+      if (diff < dist/2 && m.isMoving()) {
         m.setSelected(true);
         found.add(m);
       } else {
@@ -211,7 +211,7 @@ class Histogram {
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
     barChart.setMinValue(0);
-    barChart.setMaxValue(50);
+    barChart.setMaxValue(20);
     barChart.setBarGap(3);
   }
   
