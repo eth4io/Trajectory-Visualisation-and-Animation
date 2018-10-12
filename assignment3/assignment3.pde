@@ -193,7 +193,6 @@ void draw() {
 
   
   barScale.draw();
-  //if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
     if (isPlay) {
@@ -202,11 +201,9 @@ void draw() {
     else
       timeLine = 0;
     }
-  //}
-  
   
     //draw inspector if there is a current selection && if is not in filter mode
-  if (inspectedTrajectory != null) {
+  if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();// add coords here
     // test and show selected trajectory
     if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
@@ -318,14 +315,8 @@ void mouseClicked() {
 
 void showInspector() {
   fill(30,20,20,150);
-    float x, y;
-  if (!isFilterMode) {
-    x = inspectedTrajectory.getX(map);
-    y = inspectedTrajectory.getY(map);
-  } else {
-    x = 1;
-    y = 60;
-  }
+  float x = inspectedTrajectory.getX(map);
+  float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
   rect(x, y - 60, 125, 60, 7);
