@@ -341,9 +341,9 @@ void showInspector() {
   String id = inspectedTrajectory.getId();
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
-  text("Speed: " + speed + " km/h", x + 5, y - 50);
-  text("altitude: " + alt + " m", x + 5, y - 35);
-  text("id: " + id, x + 5, y - 15);
+  text("id: " + id, x + 5, y - 50);
+  text("Speed: " + speed + " km/h", x + 5, y - 35);
+  text("altitude: " + alt + " m", x + 5, y - 15);
 }
 
 void initialiseUI() {
