@@ -222,7 +222,7 @@ public class DataReader {
   private float getSmoothedSpeed(Queue<Float> speedQueue,
     PositionData lastPosition, PositionData currentPosition) {
     // update current speed
-    float currentSpeed = getSimpleSpeedWithInactive(lastPosition, currentPosition);
+    float currentSpeed = getSimpleSpeed(lastPosition, currentPosition);
 
     if (speedQueue.size() >= SPEED_SMOOTHING_SIZE) {
       speedSum -= speedQueue.remove();
@@ -250,23 +250,6 @@ public class DataReader {
     return distanceDiffInKm / timeDiffInHour;
   }
 
-  private float getSimpleSpeedWithInactive(PositionData lastPosition, PositionData currentPosition) {
-    if (lastPosition == null || currentPosition == null) {
-      return 0;
-    }
-    //get time difference in milliseconds from current time - last time
-    float timeDiffInHour = getTimeDiffInHour(lastPosition, currentPosition);
-    float distanceDiffInKm = getDistance(lastPosition, currentPosition);
-
-    
-    if (Float.isNaN(distanceDiffInKm) || timeDiffInHour == 0)
-      return 0;
-    if (timeDiffInHour > 0.5)
-      return 0;
-    //calculate distance / speed to get km per hour
-    return distanceDiffInKm / timeDiffInHour;
-  }
-  
   /**
    * Calculate distance between two points in latitude and longitude taking
    * into account height difference. If you are not interested in height
