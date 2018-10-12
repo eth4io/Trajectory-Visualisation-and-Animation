@@ -2,6 +2,7 @@
  * 
  * List of Tools:
  * - radius filter 
+ * - filter manager
  * - histogram
  *
  * Statics:
@@ -60,22 +61,27 @@ class RadiusFilter extends SimplePointMarker  {
   private float rad_km = 20;
   private boolean placed = false;
   
-  public RadiusFilter() 
+  public RadiusFilter(color c) 
   {                                       
     super(new Location(0,0));
-    this.setColor(color(255,0,0,50));
-    this.setStrokeWeight(0);
+    //this.setColor(c/*color(255,0,0,50)*/);
+    this.setStrokeColor(c);
+    this.setStrokeWeight(3);
+    this.setColor(color(255,255,255, 0));
   }
   
   /* cycle updates for the filter */
   public void update(UnfoldingMap map) 
   {
-    this.setLocation(map.getLocation(mouseX, mouseY));
+    if (!placed) {
+      this.setLocation(map.getLocation(mouseX, mouseY));
+    }
   }
   
   /* returns list of markers that are within this filter */
   public List<Trajectory> getWithinRadius(UnfoldingMap map, List<Trajectory> markers) 
   {
+    int pfound = 0;
     List<Trajectory> found = new ArrayList<Trajectory>();
     double dist = GeoUtils.getDistance(this.getLocation(), 
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
@@ -83,15 +89,17 @@ class RadiusFilter extends SimplePointMarker  {
     for (Trajectory m : markers) {
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
-      if (diff < dist/2) {
+      if (diff < dist/2 && m.isMoving()) {
         m.setSelected(true);
         found.add(m);
       } else {
         if (m.isSelected()) {
-          m.setSelected(false);
+          //m.setSelected(false);
         }
       }
+      if (m.isSelected()) pfound++;
     }
+    println(pfound);
     return found;
   }
   
@@ -106,6 +114,75 @@ class RadiusFilter extends SimplePointMarker  {
     this.setRadius(actualRad);
     
   }
+  
+  public void setPlaced(boolean b) { this.placed = b; }
+  
+  public boolean getPlaced() {return this.placed;}
+}
+
+class FilterManager extends MarkerManager {
+  
+  public FilterManager() {
+    super();
+  }
+  
+  public void addFilter(color c)
+  {
+    this.addMarker(new RadiusFilter(c));
+  }
+  
+  public void setAllHidden(boolean b) 
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      m.setHidden(b);
+    }
+    this.setMarkers(temp);  
+  }
+  
+  public void updateAll(UnfoldingMap map) {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      ((RadiusFilter)m).update(map);
+    }
+    this.setMarkers(temp); 
+  }
+  
+  public void setAllFilterRadius(UnfoldingMap map, float kms)
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      ((RadiusFilter)m).setFilterRadius(map, kms);
+    }
+    this.setMarkers(temp);
+  }
+  
+  public void placeFilter(UnfoldingMap map) 
+  {
+    List<Marker> temp = this.getMarkers();
+    
+    for (Marker m : temp) {
+      if (!((RadiusFilter)m).getPlaced()) {
+        ((RadiusFilter)m).setPlaced(true);
+      }
+    }
+    this.setMarkers(temp);
+  }
+  
+  public List<List<Trajectory>> getAllWithinRadius(UnfoldingMap map, List<Trajectory> markers)
+  {
+    List<Marker> temp = this.getMarkers();
+    List<List<Trajectory>> listOfTraj = new ArrayList<List<Trajectory>>();
+    for (Marker m : temp) {
+      List<Trajectory> traj = new ArrayList<Trajectory>();
+      traj = ((RadiusFilter) m).getWithinRadius(map, markers);
+      listOfTraj.add(traj);
+    }
+    return listOfTraj;
+  }
 }
 
 
@@ -119,6 +196,7 @@ class Histogram {
   //private float maxValue = 0;
   private String[] labels;
   private BarChart barChart;
+
   
   public Histogram(float[] bins, float[] data, PApplet PObj) 
   {
@@ -133,7 +211,16 @@ class Histogram {
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
     barChart.setMinValue(0);
+    barChart.setMaxValue(20);
     barChart.setBarGap(3);
+  }
+  
+  public void changeLook(boolean showLabels, float padding, color c)
+  {
+    barChart.showValueAxis(showLabels);
+    barChart.showCategoryAxis(showLabels);
+    barChart.setBarColour(c);
+    barChart.setBarPadding(padding);
   }
   
   /* private update function */

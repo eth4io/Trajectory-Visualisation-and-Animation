@@ -49,7 +49,6 @@ static final int HEIGHT = 768;
 static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 
-
 //-----------------------  Global Variables ------------------------
 
 UnfoldingMap map;
@@ -76,6 +75,7 @@ long previousUpdate = 0;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
+Histogram histogram2;
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
@@ -88,15 +88,19 @@ int chartY;
 int chartHeight;
 
 //----------- Radius Filter Variables----------
-RadiusFilter radiusFilter;
+//RadiusFilter radiusFilter;
+FilterManager filterManager;
 int currentZoomLevel = 0;
 int previousZoomLevel = 0;
 boolean isFilterMode = false;
 float filterSize = 5;
+color FILTER_BLUE;
+color FILTER_RED;
 
 void setup() {
   size(1024, HEIGHT);
-  
+  FILTER_BLUE = color(252,141,89);
+  FILTER_RED = color(145,191,219);
 
   
   /* set up map */
@@ -115,9 +119,13 @@ void setup() {
   MapUtils.createDefaultEventDispatcher(this, map);
 
    //create radius filter
-  radiusFilter = new RadiusFilter();
-  radiusFilter.setFilterRadius(map, 20);
-  map.addMarker(radiusFilter);
+  //radiusFilter = new RadiusFilter(color(255,0,0,50));
+  //radiusFilter.setFilterRadius(map, 20);
+  //map.addMarker(radiusFilter);
+  filterManager = new FilterManager();
+  //filterManager.addFilter(color(255,0,0,50));
+  filterManager.setMap(map);
+  
   
   /* test of DataReader method */
   dataReader = new DataReader();
@@ -157,7 +165,9 @@ void setup() {
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
-  
+  histogram2 = new Histogram(HIST_BINS, new float[]{0}, this);
+  histogram.changeLook(true, 0, FILTER_BLUE);
+  histogram2.changeLook(true, 4, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
   initialiseUI();
@@ -183,19 +193,18 @@ void draw() {
 
   
   barScale.draw();
-  if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
+    if (isPlay) {
     if (timeLine < SLIDER_MAX)
       timeLine ++;
     else
       timeLine = 0;
-  }
-  
+    }
   
     //draw inspector if there is a current selection && if is not in filter mode
   if (inspectedTrajectory != null && !isFilterMode) {
-    showInspector();
+    showInspector();// add coords here
     // test and show selected trajectory
     if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
       inspectedManager.draw();
@@ -209,12 +218,17 @@ void draw() {
   textSize(8);
   
   if (!isFilterMode){
-    updateHistogram(trajectoryManager.getMarkers());
-    colourMarkers();
+    List<Trajectory> empty = new ArrayList<Trajectory>();
+    updateHistogram(trajectoryManager.getMarkers(), empty);
+    trajectoryManager.setStyle(color(255,255,255,0), color(0,0,0),1);
   }
   
-  histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
+  colourMarkers();
+  
+  histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
+  histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  filterManager.draw();
   updateLineGraph();
   
   //update zoom levels (leave last in draw)
@@ -225,41 +239,82 @@ void draw() {
 
 void updateRadiusFilter() {
   if (currentZoomLevel != previousZoomLevel) {
-    radiusFilter.setFilterRadius(map, filterSize);                
+    filterManager.setAllFilterRadius(map, filterSize);
+    //radiusFilter.setFilterRadius(map, filterSize);                
   }
   if (isFilterMode) {
-    radiusFilter.setHidden(false);
-    radiusFilter.setFilterRadius(map,filterSize);
-    updateHistogram(radiusFilter.getWithinRadius(map,trajectoryManager.getMarkers()));
-    radiusFilter.update(map);
+    if (filterManager.getMarkers().size() <= 0) {
+      filterManager.addFilter(FILTER_BLUE);
+    }
+    //radiusFilter.setHidden(false);
+    filterManager.setAllHidden(false);
+    //radiusFilter.setFilterRadius(map,filterSize);
+    filterManager.setAllFilterRadius(map, filterSize);
+    List<List<Trajectory>> tTemp = new ArrayList<List<Trajectory>>();
+    
+    tTemp = filterManager.getAllWithinRadius(map,trajectoryManager.getMarkers());
+    if (filterManager.getMarkers().size() > 1 ) {
+      updateHistogram(tTemp.get(0), tTemp.get(1));
+    } else {
+      updateHistogram(tTemp.get(0), null);
+    }
+    
+    trajectoryManager.deselectAll();
+    filterManager.getAllWithinRadius(map,trajectoryManager.getMarkers());
+    //radiusFilter.update(map);
+    filterManager.updateAll(map);
   } else {
-    if (!radiusFilter.isHidden()) { radiusFilter.setHidden(true); }
+    if (filterManager.getMarkers().size() > 0) {
+      filterManager.setAllHidden(true);
+    }
   }
   
   
 
 }
 
-void updateHistogram(List<Trajectory> t) {
+void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   //histogram update and draw
-  float[] speeds = new float[t.size()];
+  
+  float[] speeds1 = new float[a.size()];
+  float[] speeds2 = new float[b != null ? b.size() : 0];
   int i = 0;
   
-  for (Trajectory m : t) {
+  
+  for (Trajectory m : a) {
     
-    speeds[i++] =  m.getCurrentSpeed();
+    speeds1[i++] =  m.getCurrentSpeed();
   }
-  histogram.update(speeds);
+  
+  histogram.update(speeds1);
+  
+  if (b != null) {
+    i = 0;
+    for (Trajectory m : b) {
+      speeds2[i++] =  m.getCurrentSpeed();
+    }
+    histogram2.update(speeds2);
+    }
 }
 
 void mouseClicked() {
-  inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+  if (mouseY <= height - UI_HEIGHT) {
+    inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+  }
+  
+  if (isFilterMode && mouseX <= width - 150) {
+    filterManager.placeFilter(map);
+    if (filterManager.getMarkers().size() < 2) {
+      filterManager.addFilter(FILTER_RED);
+    }
+  } else if (!isFilterMode) {
+    filterManager.clearMarkers();
+  }
 
 }
 
 void showInspector() {
   fill(30,20,20,150);
-  //println(inspectedTrajectory.getX(map), inspectedTrajectory.getY(map));
   float x = inspectedTrajectory.getX(map);
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
@@ -455,8 +510,10 @@ public void colourMarkers(){
   
   for (Trajectory m : t) {
     if (m.isMoving()) {
-      float speed =  m.getCurrentSpeed();
-      m.setColor(markerColourTable.findColour(speed));
+      if (!isFilterMode) {                                              /* do not colour if in filter mode */
+        float speed =  m.getCurrentSpeed();
+        m.setColor(markerColourTable.findColour(speed));
+      }
       m.setHidden(false); /* show if moving */
     } else {
       m.setHidden(true); /* Hide if not moving */

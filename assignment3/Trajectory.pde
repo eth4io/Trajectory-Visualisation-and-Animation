@@ -116,6 +116,7 @@ class Trajectory extends SimplePointMarker {
   public void setCurrentPositionIndex(int i) { this.currentPositionIndex = i; }
   
   
+  
 
 }
 
