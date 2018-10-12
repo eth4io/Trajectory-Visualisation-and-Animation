@@ -4,17 +4,21 @@ class PositionData {
   private float altitude;
   private float speed;
   private Date createdTime;  
+  private int time; //variable holds the time as the number of minutes from midnight
+  private float floatDate;
 
-  public PositionData(float lat, float lng, float altitude, float speed, Date createdTime) {
+  public PositionData(float lat, float lng, float altitude, float speed, Date createdTime, float floatDate) {
     this.lat = lat;
     this.lng = lng;
     this.altitude = altitude;
     this.speed = speed;
     this.createdTime = createdTime;
+    this.floatDate = floatDate;
+    this.time = calculateTime(floatDate);
   }
   
-  public PositionData(float lat, float lng, float altitude, Date createdTime) {
-    this(lat, lng, altitude, 0, createdTime);
+  public PositionData(float lat, float lng, float altitude, Date createdTime, float floatDate) {
+    this(lat, lng, altitude, 0, createdTime, floatDate);
   }
 
   /* emptlng data with slngstem date */
@@ -29,6 +33,8 @@ class PositionData {
     td.lng = this.lng;
     td.altitude = this.altitude;
     td.createdTime = this.createdTime;
+    td.floatDate = this.floatDate;
+    td.time = this.time;
     return td;
   }
   /* replace this object data from another */
@@ -38,6 +44,8 @@ class PositionData {
       this.lng = td.lng;
       this.altitude = td.altitude;
       this.createdTime = td.createdTime;
+      this.floatDate = this.floatDate;
+      this.time = td.time;
     }
   }
   
@@ -65,9 +73,19 @@ class PositionData {
     return createdTime;
   }
   
+  public int getTime(){
+    return time;
+  }
+  
   public String toString() {
     return "lat: " + lat + ",\tlng: " + lng + ",\taltitude: "
       + altitude + ",\tspeed: " + speed + ",\ttime: " + createdTime;
+  }
+  
+  public int calculateTime(float floatDate){
+    int intDate = (int) floatDate;
+    float timeFraction = floatDate - intDate;
+    return (int)(timeFraction*1440);
   }
 }
 

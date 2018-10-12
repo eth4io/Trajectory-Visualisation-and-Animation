@@ -181,9 +181,11 @@ public class DataReader {
            
            float altitude = Float.valueOf(tracklog[3]);
            SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
+           float time = Float.valueOf(tracklog[4]);
+           
            try {
              Date date = dataFormat.parse(tracklog[5] + "/" + tracklog[6]);
-             PositionData positionData = new PositionData(lat, lon, altitude, date);
+             PositionData positionData = new PositionData(lat, lon, altitude, date, time);
              currentPosition = positionData;
              float speed = getSmoothedSpeed(speedQueue, lastPosition, currentPosition);
              positionData.setSpeed(speed);

@@ -79,6 +79,7 @@ Histogram histogram2;
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
+XYChart scatterChart;
 
 int timeBreakSize;
 float[] avgSpeeds;
@@ -170,6 +171,7 @@ void setup() {
   histogram2.changeLook(true, 4, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
+  initialiseScatterPlot();
   initialiseUI();
 }
 
@@ -228,6 +230,7 @@ void draw() {
   histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  scatterChart.draw(0, 200, width-5, chartHeight);
   filterManager.draw();
   updateLineGraph();
   
@@ -491,6 +494,15 @@ public void initialiseLineGraph() {
  
 
 }
+
+public void initialiseScatterPlot(){
+  List<PVector> speedTime = new ArrayList<PVector>();
+  speedTime = trajectoryManager.getTimeSpeedList();
+  print(speedTime);
+  scatterChart = new XYChart(this);
+  scatterChart.setData(speedTime);
+}
+  
 
 public void updateLineGraph(){
   int i = timeLine/timeBreakSize;
