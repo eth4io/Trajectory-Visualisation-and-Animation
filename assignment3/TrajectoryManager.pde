@@ -174,10 +174,12 @@ class TrajectoryManager extends MarkerManager {
     float elapsedTime = timeDiff * progress;
     Date currentTime = new Date();
     currentTime.setTime(startTime.getTime() + (int)elapsedTime);
-    List<Marker> temp = this.getMarkers();
-     for (Marker m : temp) {
+    List<Marker> markers = this.getMarkers();
+     for (Marker m : markers) {
        if (((Trajectory)m).hasNext())
-         ((Trajectory)m).update(currentTime);
+         if (!((Trajectory)m).update(currentTime)) {
+           this.removeMarker(m);
+         }
      }
   }
 

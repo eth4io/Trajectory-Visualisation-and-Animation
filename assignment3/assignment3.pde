@@ -1,4 +1,4 @@
-/* Created by
+  /* Created by
  *  Angela Ryan 953452
  *  Michael Holmes 928428
  *  Yichi Zhang  895529
@@ -31,26 +31,26 @@ static final List<String> STUDY_DATES = Arrays.asList(
   "20081106",
   "20081105",
   "20081203",
-  "20090312",
-  "20090219",
-  "20081111",
-  "20081112",
-  "20081205",
-  "20090216",
-  "20090313",
-  "20081210",
-  "20090217",
-  "20081117",
-  "20090408",
-  "20081109",
-  "20081207",
-  "20081212",
-  "20090305",
-  "20081113",
-  "20081114",
-  "20090413",
-  "20081209",
-  "20081204",
+//  "20090312",
+//  "20090219",
+//  "20081111",
+//  "20081112",
+//  "20081205",
+//  "20090216",
+//  "20090313",
+//  "20081210",
+//  "20090217",
+//  "20081117",
+//  "20090408",
+//  "20081109",
+//  "20081207",
+//  "20081212",
+//  "20090305",
+//  "20081113",
+//  "20081114",
+//  "20090413",
+//  "20081209",
+//  "20081204",
   "20081211"
 );
 static final String STUDY_DATE = "20081106";
@@ -335,10 +335,12 @@ void showInspector() {
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
+  String id = inspectedTrajectory.getId();
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
   text("Speed: " + speed + " km/h", x + 5, y - 50);
   text("altitude: " + alt + " m", x + 5, y - 35);
+  text("id: " + id, x + 5, y - 15);
 }
 
 void initialiseUI() {

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.text.*;
 
 class Trajectory extends SimplePointMarker {
+  private String id;
   private List<PositionData> positionData;
   private PositionData currentPosition;
   private int currentPositionIndex = 0;  //PositionData iterator
@@ -19,10 +20,12 @@ class Trajectory extends SimplePointMarker {
   //private float movingMaxSpeed = 0;
   private Queue<Float> speedQueue = new LinkedList();
   //end speed variables
+  private boolean isActive;
 
   /* creates new TrackPoint. pass in all associated data for this point as PositionData */
-  public Trajectory(List<PositionData> data) {
+  public Trajectory(String id, List<PositionData> data) {
     super(new Location(0, 0));
+    this.id = id;
     currentPosition = new PositionData();
     this.positionData = new ArrayList<PositionData>();
 
@@ -41,6 +44,7 @@ class Trajectory extends SimplePointMarker {
     super(location);
     positionData = new ArrayList<PositionData>();
     currentPosition = new PositionData();
+    this.isActive = true;
   }
 
   /* new empty */
@@ -63,7 +67,7 @@ class Trajectory extends SimplePointMarker {
     }
   }
 
-  public void update(Date currentTime) {
+  public boolean update(Date currentTime) {
     for (int i = 0; i < positionData.size(); i++) {
       currentPosition = positionData.get(i);
 
@@ -73,9 +77,10 @@ class Trajectory extends SimplePointMarker {
         - (currentTime.getTime() % (1000 * 3600 * 24) + 1000 * 60) < 0)) {
         this.setLocation(currentPosition.lat, currentPosition.lng);
         this.currentSpeed = this.currentPosition.getSpeed();                /* update speed variable */
-        return;
+        return true;
       }
     }
+    return false;
   }
   
   public boolean isMoving(){
@@ -113,6 +118,10 @@ class Trajectory extends SimplePointMarker {
   public float getY(UnfoldingMap map) {
     ScreenPosition sp = map.getScreenPosition(this.getLocation());
     return sp.y;
+  }
+  
+  public String getId() {
+    return id;
   }
   
   //setters
