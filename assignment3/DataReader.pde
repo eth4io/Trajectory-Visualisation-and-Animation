@@ -136,6 +136,7 @@ public class DataReader {
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
       }
     }
+
     return result;
   }
 
@@ -198,6 +199,13 @@ public class DataReader {
     } catch(Exception e) {
        e.printStackTrace();
     }
+
+    Collections.sort(pointTrack, new Comparator<PositionData>() {
+      @Override
+      public int compare(PositionData o1, PositionData o2) {
+        return o1.getCreatedTime().compareTo(o2.getCreatedTime());
+      }
+    });
     return pointTrack;
   }
 
