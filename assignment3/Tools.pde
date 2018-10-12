@@ -87,6 +87,8 @@ class RadiusFilter extends SimplePointMarker  {
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
     
     for (Trajectory m : markers) {
+      if(!m.isActive())
+        continue;
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
       if (diff < dist/2 && m.isMoving()) {

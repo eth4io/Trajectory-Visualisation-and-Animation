@@ -31,26 +31,26 @@ static final List<String> STUDY_DATES = Arrays.asList(
   "20081106",
   "20081105",
   "20081203",
-//  "20090312",
-//  "20090219",
-//  "20081111",
-//  "20081112",
-//  "20081205",
-//  "20090216",
-//  "20090313",
-//  "20081210",
-//  "20090217",
-//  "20081117",
-//  "20090408",
-//  "20081109",
-//  "20081207",
-//  "20081212",
-//  "20090305",
-//  "20081113",
-//  "20081114",
-//  "20090413",
-//  "20081209",
-//  "20081204",
+  "20090312",
+  "20090219",
+  "20081111",
+  "20081112",
+  "20081205",
+  "20090216",
+  "20090313",
+  "20081210",
+  "20090217",
+  "20081117",
+  "20090408",
+  "20081109",
+  "20081207",
+  "20081212",
+  "20090305",
+  "20081113",
+  "20081114",
+  "20090413",
+  "20081209",
+  "20081204",
   "20081211"
 );
 static final String STUDY_DATE = "20081106";
@@ -298,7 +298,8 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   
   
   for (Trajectory m : a) {
-    
+    if(!m.isActive())
+        continue;
     speeds1[i++] =  m.getCurrentSpeed();
   }
   
@@ -307,10 +308,12 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   if (b != null) {
     i = 0;
     for (Trajectory m : b) {
+      if(!m.isActive())
+        continue;
       speeds2[i++] =  m.getCurrentSpeed();
     }
     histogram2.update(speeds2);
-    }
+  }
 }
 
 void mouseClicked() {
@@ -527,7 +530,7 @@ public void colourMarkers(){
   List<Trajectory> t = trajectoryManager.getMarkers();
   
   for (Trajectory m : t) {
-    if (m.isMoving()) {
+    if (m.isActive() && m.isMoving()) {
       if (!isFilterMode) {                                              /* do not colour if in filter mode */
         float speed =  m.getCurrentSpeed();
         m.setColor(markerColourTable.findColour(speed));

@@ -106,7 +106,7 @@ public class DataReader {
         List<PositionData> result = new ArrayList<PositionData>();
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
         if (result.size() > 0)
-          return new Trajectory(folderName + fileEntry.getName(), result);
+          return new Trajectory(folderName, result);
         else
           return null;
       }

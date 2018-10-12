@@ -177,9 +177,7 @@ class TrajectoryManager extends MarkerManager {
     List<Marker> markers = this.getMarkers();
      for (Marker m : markers) {
        if (((Trajectory)m).hasNext())
-         if (!((Trajectory)m).update(currentTime)) {
-           this.removeMarker(m);
-         }
+         ((Trajectory)m).update(currentTime);
      }
   }
 
@@ -210,6 +208,8 @@ class TrajectoryManager extends MarkerManager {
     for (Marker m : markers) {
       if (((Trajectory)m).hasNext()){
         ((Trajectory)m).update(currentTime);
+        if (!((Trajectory)m).isActive())
+          continue;
         float speed = ((Trajectory)m).getCurrentSpeed();
         if (speed > MIN_SPEED) {
           speedSum = speedSum + speed;

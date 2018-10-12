@@ -67,7 +67,7 @@ class Trajectory extends SimplePointMarker {
     }
   }
 
-  public boolean update(Date currentTime) {
+  public void update(Date currentTime) {
     for (int i = 0; i < positionData.size(); i++) {
       currentPosition = positionData.get(i);
 
@@ -77,18 +77,23 @@ class Trajectory extends SimplePointMarker {
         - (currentTime.getTime() % (1000 * 3600 * 24) + 1000 * 60) < 0)) {
         this.setLocation(currentPosition.lat, currentPosition.lng);
         this.currentSpeed = this.currentPosition.getSpeed();                /* update speed variable */
-        return true;
+        isActive = true;
+        return;
       }
     }
-    return false;
+    isActive = false;
   }
   
-  public boolean isMoving(){
+  public boolean isMoving() {
     PositionData previousPosition = positionData.get(currentPositionIndex);
     Location previousLocation = new Location(previousPosition.lat, previousPosition.lng);
     double distance = this.getDistanceTo(previousLocation);
     if (distance < 3) return false;
     else return true;
+  }
+  
+  public boolean isActive() {
+    return isActive;
   }
 
   /* updates current speed based on previous position record */
