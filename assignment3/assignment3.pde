@@ -35,7 +35,23 @@ static final List<String> STUDY_DATES = Arrays.asList(
   "20090219",
   "20081111",
   "20081112",
-  "20081205"
+  "20081205",
+  "20090216",
+  "20090313",
+  "20081210",
+  "20090217",
+  "20081117",
+  "20090408",
+  "20081109",
+  "20081207",
+  "20081212",
+  "20090305",
+  "20081113",
+  "20081114",
+  "20090413",
+  "20081209",
+  "20081204",
+  "20081211"
 );
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
@@ -468,7 +484,7 @@ public void initialiseLineGraph() {
   int i = 0; 
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
-    avgSpeeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
+    avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
     times[i]=x;
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;

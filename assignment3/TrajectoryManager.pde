@@ -9,7 +9,7 @@ class TrajectoryManager extends MarkerManager {
   
   private List<List<Trajectory>> listOfTrajectoryList;
   private static final int DEFAULT_DRAW = 10;    //default draw level if not set
-  private static final int DEFAULT_NUMBER_OF_DAYS = 10;
+  private static final int DEFAULT_NUMBER_OF_DAYS = 30;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
@@ -196,6 +196,7 @@ class TrajectoryManager extends MarkerManager {
   }
   
   public float calcAvgSpeed(float progress) {
+    final float MIN_SPEED = 2.0;
     //return average speed of current array list
     float timeDiff = getTimeDiff(startTime, endTime);
     float elapsedTime = timeDiff * progress;
@@ -203,10 +204,15 @@ class TrajectoryManager extends MarkerManager {
     currentTime.setTime(startTime.getTime() + (int)elapsedTime);
     List<Marker> markers = this.getMarkers();
     float speedSum = 0;
+    int sum = 0;
     for (Marker m : markers) {
       if (((Trajectory)m).hasNext()){
         ((Trajectory)m).update(currentTime);
-        speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
+        float speed = ((Trajectory)m).getCurrentSpeed();
+        if (speed > MIN_SPEED) {
+          speedSum = speedSum + speed;
+          sum++;
+        }
       }
     } 
     return speedSum / markers.size();
