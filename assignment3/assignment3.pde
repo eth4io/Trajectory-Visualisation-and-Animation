@@ -49,7 +49,6 @@ static final int HEIGHT = 768;
 static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 
-
 //-----------------------  Global Variables ------------------------
 
 UnfoldingMap map;
@@ -95,10 +94,13 @@ int currentZoomLevel = 0;
 int previousZoomLevel = 0;
 boolean isFilterMode = false;
 float filterSize = 5;
+color FILTER_BLUE;
+color FILTER_RED;
 
 void setup() {
   size(1024, HEIGHT);
-  
+  FILTER_BLUE = color(252,141,89);
+  FILTER_RED = color(145,191,219);
 
   
   /* set up map */
@@ -164,8 +166,8 @@ void setup() {
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
   histogram2 = new Histogram(HIST_BINS, new float[]{0}, this);
-  histogram.changeLook(true,color(255,0,0));
-  histogram2.changeLook(true, color(0,255,0));
+  histogram.changeLook(true, 0, FILTER_BLUE);
+  histogram2.changeLook(true, 4, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
   initialiseUI();
@@ -191,14 +193,16 @@ void draw() {
 
   
   barScale.draw();
-  if (isPlay) {
+  //if (isPlay) {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
+    if (isPlay) {
     if (timeLine < SLIDER_MAX)
       timeLine ++;
     else
       timeLine = 0;
-  }
+    }
+  //}
   
   
     //draw inspector if there is a current selection && if is not in filter mode
@@ -217,13 +221,13 @@ void draw() {
   textSize(8);
   
   if (!isFilterMode){
-    
     updateHistogram(trajectoryManager.getMarkers(), trajectoryManager.getMarkers());
-    colourMarkers();
   }
   
-  histogram.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
-  histogram2.draw(width - 200, MAP_HEIGHT - 150, 190, 150);
+  colourMarkers();
+  
+  histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
+  histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   lineChart.draw(0, chartY, width-5, chartHeight);
   filterManager.draw();
   updateLineGraph();
@@ -241,7 +245,7 @@ void updateRadiusFilter() {
   }
   if (isFilterMode) {
     if (filterManager.getMarkers().size() <= 0) {
-      filterManager.addFilter(color(255, 0, 0, 50));
+      filterManager.addFilter(FILTER_BLUE);
     }
     //radiusFilter.setHidden(false);
     filterManager.setAllHidden(false);
@@ -282,23 +286,27 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
     
     speeds1[i++] =  m.getCurrentSpeed();
   }
+  
   histogram.update(speeds1);
+  
   if (b != null) {
-  i = 0;
-  for (Trajectory m : b) {
-    speeds2[i++] =  m.getCurrentSpeed();
-  }
-  histogram2.update(speeds2);
-  }
+    i = 0;
+    for (Trajectory m : b) {
+      speeds2[i++] =  m.getCurrentSpeed();
+    }
+    histogram2.update(speeds2);
+    }
 }
 
 void mouseClicked() {
-  inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+  if (mouseY <= height - UI_HEIGHT) {
+    inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
+  }
   
   if (isFilterMode && mouseX <= width - 150) {
     filterManager.placeFilter(map);
     if (filterManager.getMarkers().size() < 2) {
-      filterManager.addFilter(color(0, 255,0,50));
+      filterManager.addFilter(FILTER_RED);
     }
   } else if (!isFilterMode) {
     filterManager.clearMarkers();
@@ -504,8 +512,10 @@ public void colourMarkers(){
   
   for (Trajectory m : t) {
     if (m.isMoving()) {
-      float speed =  m.getCurrentSpeed();
-      m.setColor(markerColourTable.findColour(speed));
+      if (!isFilterMode) {                                              /* do not colour if in filter mode */
+        float speed =  m.getCurrentSpeed();
+        m.setColor(markerColourTable.findColour(speed));
+      }
       m.setHidden(false); /* show if moving */
     } else {
       m.setHidden(true); /* Hide if not moving */

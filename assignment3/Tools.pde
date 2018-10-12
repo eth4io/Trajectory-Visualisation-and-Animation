@@ -64,8 +64,10 @@ class RadiusFilter extends SimplePointMarker  {
   public RadiusFilter(color c) 
   {                                       
     super(new Location(0,0));
-    this.setColor(c/*color(255,0,0,50)*/);
-    this.setStrokeWeight(0);
+    //this.setColor(c/*color(255,0,0,50)*/);
+    this.setStrokeColor(c);
+    this.setStrokeWeight(3);
+    this.setColor(color(255,255,255, 0));
   }
   
   /* cycle updates for the filter */
@@ -209,14 +211,16 @@ class Histogram {
     barChart.showCategoryAxis(true);
     barChart.transposeAxes(true);
     barChart.setMinValue(0);
+    barChart.setMaxValue(50);
     barChart.setBarGap(3);
   }
   
-  public void changeLook(boolean showLabels, color c)
+  public void changeLook(boolean showLabels, float padding, color c)
   {
     barChart.showValueAxis(showLabels);
     barChart.showCategoryAxis(showLabels);
     barChart.setBarColour(c);
+    barChart.setBarPadding(padding);
   }
   
   /* private update function */
