@@ -356,6 +356,9 @@ void initialiseUI() {
   sliderW = (int)(endLineGraph.x - startLineGraph.x);
   
   cp5 = new ControlP5(this);
+  
+  cp5.setColor(controlsColours);
+
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
