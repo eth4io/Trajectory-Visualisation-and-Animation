@@ -215,6 +215,22 @@ void draw() {
     line(MAP_WIDTH, 30,width,30);
     line(MAP_WIDTH, 125,width,125);
     line(MAP_WIDTH, 215,width,215);
+    
+    //draw scale
+    float inc = 0.001;
+    int colOffset = MAP_WIDTH + 21;
+    fill(0);
+    textSize(10);
+    text("Speed Legend", MAP_WIDTH+20, 305);
+    for (float i=0; i<1-inc; i+=inc)
+    {
+         fill(markerColourTable.findColour(i*50));
+         stroke(markerColourTable.findColour(i*50));
+         rect(colOffset + 100*i, 310, 50*inc, 20);
+    }
+    fill(0);
+    text("0km/h", MAP_WIDTH+20, 345);
+    text("50km/h", MAP_WIDTH+100, 345);
   }
    
   barScale.draw();
@@ -224,10 +240,10 @@ void draw() {
     
     countFrames++;
     
-    if (countFrames+1 >= frameSpeed){
-      countFrames=0;
+    if (countFrames >= frameSpeed){
+      
       if (timeLine < SLIDER_MAX) timeLine ++;
-      else timeLine = 0;
+      if (timeLine >= SLIDER_MAX) timeLine = 0;
     
       countFrames=0;
     }
@@ -520,8 +536,8 @@ void initialiseUI() {
         
     cp5.addToggle("showColours")
         .setLabel("Colour Points by Speed")
-        .setPosition(buttonX, 265)
-        .setValue(true)
+        .setPosition(buttonX, 270)
+        .setValue(false)
         .moveTo("Controls")
         .getCaptionLabel()
         .getStyle()
@@ -582,9 +598,11 @@ void drawIU() {
 }
 
 public void minusSpeed() {
-  frameSpeed = frameSpeed*2;
+  frameSpeed = (frameSpeed*2)+1;
   print(frameSpeed);}
-public void plusSpeed() {frameSpeed = frameSpeed/2;}
+public void plusSpeed() {
+frameSpeed = (frameSpeed/2)+1;
+print(frameSpeed);}
 
 public void timeLine(int value) {
 
