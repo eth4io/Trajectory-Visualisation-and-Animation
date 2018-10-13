@@ -91,10 +91,15 @@ CColor  controlsColours;
 int timeLine;
 int time;
 long previousUpdate = 0;
+int frameSpeed = 7;
+int countFrames;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
 Histogram histogram2;
+boolean isHistogramOn;
+boolean isColoursOn;
+
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
@@ -132,7 +137,7 @@ void setup() {
 
   //create bar scale
 
-  barScale = new BarScaleUI(this, map, 10, MAP_HEIGHT - 20);
+  barScale = new BarScaleUI(this, map, MAP_WIDTH-40, MAP_HEIGHT - 20);
 
 
   MapUtils.createDefaultEventDispatcher(this, map);
@@ -175,11 +180,7 @@ void setup() {
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
   testSpeedGraph = trajectoryManager.getMarkers();
 
-  //initialise UI
-  frameRate(30);
-
-
-
+ 
   
   //initialise histogram
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
@@ -221,12 +222,17 @@ void draw() {
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
     if (isPlay) {
-    if (timeLine < SLIDER_MAX)
+    
+    countFrames++;
+    
+    if (countFrames >= frameSpeed){
+      countFrames=0;
+      if (timeLine < SLIDER_MAX)
       timeLine ++;
     else
       timeLine = 0;
     }
-  
+    }
     //draw inspector if there is a current selection && if is not in filter mode
   if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();// add coords here
@@ -250,10 +256,10 @@ void draw() {
   
   colourMarkers();
   
-  
-    histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
-    histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
-  
+  if (isHistogramOn){
+    histogram.draw(10, MAP_HEIGHT - 310, 250, 300);
+    histogram2.draw(10, MAP_HEIGHT - 310, 250, 300);
+  }
   
   lineChart.draw(0, chartY, width-5, chartHeight);
   filterManager.draw();
@@ -407,27 +413,20 @@ void initialiseUI() {
     .moveTo("global")
     .setPosition((width / 2) +100 , sliderY - 35)
     .setSize(20, 20)
-    //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f067)
-    //.setScale(0.9, 1)
-    //.setSwitch(true)
     .setColorBackground(color(255, 100))
     .hideBackground();
-    //.setOn();
+    
     
    cp5.addIcon("minusSpeed",1)
     .moveTo("global")
     .setPosition((width / 2) +100 , sliderY - 15)
-    .setSize(20, 10)
-    //.setRoundedCorners(20)
+    .setSize(20, 20)
     .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f068)
-    //.setScale(0.9, 1)
-    //.setSwitch(true)
     .setColorBackground(color(255, 100))
     .hideBackground();
-    //.setOn();
     
     
     //-------------------------------Panel Controls-----------------------------
@@ -473,8 +472,8 @@ void initialiseUI() {
         //.getCaptionLabel().align(RIGHT,CENTER)
         .getCaptionLabel()
         .getStyle()
-        .setMarginTop(-25)
-        .setMarginLeft(40)
+        .setMarginTop(-22)
+        .setMarginLeft(45)
         ;
         
   cp5.addSlider("filterSize")
@@ -511,13 +510,24 @@ void initialiseUI() {
      }
 
    cp5.addToggle("showHistogram")
+        .setLabel("Show Histogram")
         .setPosition(buttonX, 245)
         .setValue(true)
         .moveTo("Controls")
         .getCaptionLabel()
         .getStyle()
-        .setMarginTop(-25)
-        .setMarginLeft(40); 
+        .setMarginTop(-22)
+        .setMarginLeft(45); 
+        
+    cp5.addToggle("showColours")
+        .setLabel("Colour Points by Speed")
+        .setPosition(buttonX, 265)
+        .setValue(true)
+        .moveTo("Controls")
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-22)
+        .setMarginLeft(45); 
 
    
     
@@ -532,6 +542,14 @@ void initialiseUI() {
         .setLabel("Hide Controls")
         ;
     
+}
+
+void showHistogram(boolean value){
+  isHistogramOn = value;
+}
+
+void showColours(boolean value){
+  isColoursOn = value;
 }
 
 /* update filter size from filter controls */
@@ -564,8 +582,10 @@ void drawIU() {
 
 }
 
-public void minusSpeed() {frameRate(frameRate/2);}
-public void plusSpeed() {frameRate(frameRate*2);}
+public void minusSpeed() {
+  frameSpeed = frameSpeed*2;
+  print(frameSpeed);}
+public void plusSpeed() {frameSpeed = frameSpeed/2;}
 
 public void timeLine(int value) {
 
@@ -625,7 +645,7 @@ public void colourMarkers(){
   
   for (Trajectory m : t) {
     if (m.isActive() && m.isMoving()) {
-      if (!isFilterMode) {                                              /* do not colour if in filter mode */
+      if ((!isFilterMode)&&(isColoursOn)) {                                              /* do not colour if in filter mode */
         float speed =  m.getCurrentSpeed();
         m.setColor(markerColourTable.findColour(speed));
       }

@@ -211,10 +211,11 @@ class Histogram {
     barChart.setValueFormat("#.#");
     barChart.setBarLabels(labels);
     barChart.showCategoryAxis(true);
-    barChart.transposeAxes(true);
+    //barChart.transposeAxes(true);
     barChart.setMinValue(0);
     barChart.setMaxValue(20);
     barChart.setBarGap(3);
+   
   }
   
   public void changeLook(boolean showLabels, float padding, color c)
