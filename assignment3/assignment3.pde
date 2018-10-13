@@ -174,8 +174,7 @@ void setup() {
 
   //initialise UI
   frameRate(30);
-  controlsColours = new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 
-  0xffffffff);
+
 
 
   
@@ -349,6 +348,9 @@ void showInspector() {
 void initialiseUI() {
   PVector startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
   PVector endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
+  controlsColours = new CColor(0xffffffff, 0x55ffffff, 0xffffffff, 0x99ffffff, 
+  0xffffffff);
+  
   
   sliderH=10;
   sliderY = height - 130;  
@@ -358,6 +360,17 @@ void initialiseUI() {
   cp5 = new ControlP5(this);
   
   cp5.setColor(controlsColours);
+  
+  cp5.addTab("filter data controls")
+  .setColorLabel(color(0));
+  cp5.addTab("Tools")
+  .setColorLabel(color(0));
+  cp5.addTab("View Options")
+  .setColorLabel(color(0));
+  
+  cp5.getTab("default")
+  .setColorLabel(color(0))
+  .setLabel("Animation mode");
 
   cp5.addSlider("timeLine")
     .setPosition(sliderX, sliderY)
@@ -393,8 +406,8 @@ void initialiseUI() {
          .setSpacingColumn(50)
          .addItem("1 day",1)
          .addItem("5 days",2)
-         .addItem("10 days",3)
-         ;
+         .addItem("10 days",3);
+         
 
      for(Toggle t : radioButton.getItems()) {
        t.getCaptionLabel().setColorBackground(color(255,80));
@@ -434,13 +447,24 @@ void initialiseUI() {
   cp5.addToggle("isFilterMode")
     .setPosition(width - 50, 50)
     //.setColor(controlsColours)
-    .setLabel("Filter Mode");
+    .setLabel("Filter Mode")
+    .setColorLabel(color(0));
   cp5.addSlider("filterSize")
     .setPosition(width - 110, 90)
     .setRange(FILTER_MIN, FILTER_MAX)
     //.setColor(controlsColours)
     .showTickMarks(true)
-    .setNumberOfTickMarks(4);
+    .setNumberOfTickMarks(4)
+    .setColorLabel(color(0));
+    
+    //tab sorting
+    
+    cp5.getController("1 day").moveTo("filter data controls");
+    cp5.getController("5 days").moveTo("filter data controls");
+    cp5.getController("10 days").moveTo("filter data controls");
+    cp5.getController("isFilterMode").moveTo("Tools");
+    cp5.getController("filterSize").moveTo("Tools");
+    
 }
 
 /* update filter size from filter controls */
@@ -544,6 +568,8 @@ public void colourMarkers(){
     }
   }
 }
+
+
 
 
 void controlEvent(ControlEvent theEvent) {
