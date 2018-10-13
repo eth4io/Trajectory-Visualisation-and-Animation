@@ -90,14 +90,16 @@ int animationSpeed;
 CColor  controlsColours;
 int timeLine;
 long previousUpdate = 0;
-int frameSpeed = 3;
-int countFrames;
+int frameSpeed;
+long countFrames;
+boolean isHistogramOn;
+boolean isColoursOn;
+boolean isTrajOn;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
 Histogram histogram2;
-boolean isHistogramOn;
-boolean isColoursOn;
+
 
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
@@ -137,7 +139,7 @@ void setup() {
   //create bar scale
 
   barScale = new BarScaleUI(this, map, MAP_WIDTH-40, MAP_HEIGHT - 20);
-
+  
 
   MapUtils.createDefaultEventDispatcher(this, map);
 
@@ -188,6 +190,7 @@ void setup() {
   histogram2.changeLook(true, 4, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
+  frameSpeed = 2;
   initialiseUI();
 }
 
@@ -217,35 +220,37 @@ void draw() {
     line(MAP_WIDTH, 215,width,215);
     
     //draw scale
-    float inc = 0.001;
-    int colOffset = MAP_WIDTH + 21;
-    fill(0);
-    textSize(10);
-    text("Speed Legend", MAP_WIDTH+20, 305);
-    for (float i=0; i<1-inc; i+=inc)
-    {
-         fill(markerColourTable.findColour(i*50));
-         stroke(markerColourTable.findColour(i*50));
-         rect(colOffset + 100*i, 310, 50*inc, 20);
+    if ((isTrajOn) || (isColoursOn)){
+      float inc = 0.001;
+      int colOffset = MAP_WIDTH + 21;
+      fill(0);
+      textSize(10);
+      text("Speed Legend", MAP_WIDTH+20, 335);
+      for (float i=0; i<1-inc; i+=inc)
+      {
+           fill(markerColourTable.findColour(i*50));
+           stroke(markerColourTable.findColour(i*50));
+           rect(colOffset + 100*i, 340, 50*inc, 20);
+      }
+      fill(0);
+      text("0km/h", MAP_WIDTH+20, 375);
+      text("50km/h", MAP_WIDTH+100, 375);
     }
-    fill(0);
-    text("0km/h", MAP_WIDTH+20, 345);
-    text("50km/h", MAP_WIDTH+100, 345);
   }
-   
+  textSize(15); 
   barScale.draw();
     float progress = (float)timeLine / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
     if (isPlay) {
     
-    countFrames++;
+    countFrames+= 1000*frameSpeed;
     
-    if (countFrames >= frameSpeed){
+    if ((countFrames-previousUpdate) > 6000){
       
       if (timeLine < SLIDER_MAX) timeLine ++;
       if (timeLine >= SLIDER_MAX) timeLine = 0;
     
-      countFrames=0;
+      previousUpdate=countFrames;
     }
     }
     //draw inspector if there is a current selection && if is not in filter mode
@@ -350,7 +355,7 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
 }
 
 void mouseClicked() {
-  if (mouseY <= MAP_HEIGHT) {
+  if ((mouseY <= MAP_HEIGHT) && (isTrajOn)) {
     inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
   }
   
@@ -413,7 +418,7 @@ void initialiseUI() {
 
   cp5.addIcon("isPlay", 40)
     .moveTo("global")
-    .setPosition((width / 2) - 20, sliderY - 40)
+    .setPosition((width / 2) -30, sliderY - 40)
     .setSize(40, 40)
     //.setRoundedCorners(20)
     .setFont(createFont("fontawesome-webfont.ttf", 25))
@@ -426,7 +431,7 @@ void initialiseUI() {
     
     cp5.addIcon("plusSpeed",1)
     .moveTo("global")
-    .setPosition((width / 2) +100 , sliderY - 35)
+    .setPosition(width -30 , sliderY - 25)
     .setSize(20, 20)
     .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f067)
@@ -436,7 +441,7 @@ void initialiseUI() {
     
    cp5.addIcon("minusSpeed",1)
     .moveTo("global")
-    .setPosition((width / 2) +100 , sliderY - 15)
+    .setPosition(width-95, sliderY - 25)
     .setSize(20, 20)
     .setFont(createFont("fontawesome-webfont.ttf", 20))
     .setFontIcon(#00f068)
@@ -544,6 +549,15 @@ void initialiseUI() {
         .setMarginTop(-22)
         .setMarginLeft(45); 
 
+    cp5.addToggle("showTrajectory")
+        .setLabel("Show Traj with Click")
+        .setPosition(buttonX, 295)
+        .setValue(true)
+        .moveTo("Controls")
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-22)
+        .setMarginLeft(45); 
    
     
     //set tabs sorting
@@ -565,6 +579,10 @@ void showHistogram(boolean value){
 
 void showColours(boolean value){
   isColoursOn = value;
+}
+
+void showTrajectory(boolean value){
+  isTrajOn = value;
 }
 
 /* update filter size from filter controls */
@@ -593,22 +611,22 @@ void drawIU() {
   textSize(20);
   text(String.format("%02d:%02d%s", hour, min,daytime), sliderX, sliderY - 10);
   textSize(15);
-  text("Speed", (width / 2) +50, sliderY-10);
+  text("Speed", width-75, sliderY-12);
 
 }
 
 public void minusSpeed() {
-  frameSpeed = (frameSpeed*2)+1;
+  frameSpeed = (frameSpeed/2)+1;
   print(frameSpeed);}
 public void plusSpeed() {
-frameSpeed = (frameSpeed/2)+1;
+frameSpeed = (frameSpeed*2)+1;
 print(frameSpeed);}
 
-public void timeLine(int value) {
-
-  timeLine = value; 
-
-}
+//public void timeLine(int value) {
+//
+//  timeLine = value; 
+//
+//}
 
 public void initialiseLineGraph() {
   timeBreakSize = 5;
