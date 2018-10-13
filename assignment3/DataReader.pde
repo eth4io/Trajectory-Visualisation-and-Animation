@@ -106,7 +106,7 @@ public class DataReader {
         List<PositionData> result = new ArrayList<PositionData>();
         result.addAll(getPositionDataListByFilePath(fileEntry.toString()));
         if (result.size() > 0)
-          return new Trajectory(result);
+          return new Trajectory(folderName, result);
         else
           return null;
       }
@@ -251,7 +251,7 @@ public class DataReader {
     //calculate distance / speed to get km per hour
     return distanceDiffInKm / timeDiffInHour;
   }
- 
+
   /**
    * Calculate distance between two points in latitude and longitude taking
    * into account height difference. If you are not interested in height
