@@ -208,7 +208,14 @@ void draw() {
   noStroke();
   rect(0, MAP_HEIGHT, width, UI_HEIGHT);
   
-  if (cp5.getTab("Controls").isActive()) rect(MAP_WIDTH,0,PANEL_WIDTH,MAP_HEIGHT);
+  //draw Panel
+  if (cp5.getTab("Controls").isActive()){
+    rect(MAP_WIDTH,0,PANEL_WIDTH,MAP_HEIGHT);
+    stroke(1);
+    fill(255);
+    line(MAP_WIDTH, 30,width,30);
+    line(MAP_WIDTH, 100,width,100);
+  }
    
   barScale.draw();
     float progress = (float)time / SLIDER_MAX;
@@ -319,7 +326,7 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
 }
 
 void mouseClicked() {
-  if (mouseY <= height - UI_HEIGHT) {
+  if (mouseY <= MAP_HEIGHT) {
     inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
   }
   
@@ -364,6 +371,9 @@ void initialiseUI() {
   cp5 = new ControlP5(this);
   
   cp5.setColor(controlsColours);
+  cp5.setFont(createFont("Arial", 10));
+  
+  //------------------Animation Controls---------------------------------------
   
   cp5.addSlider("timeLine")
     .moveTo("global")
@@ -390,37 +400,7 @@ void initialiseUI() {
     .hideBackground()
     .setOn();
     
-   
-
-  radioButton = cp5.addRadioButton("radioButton")
-         .setPosition(buttonX,150)
-         .setSize(40,20)
-         //.setColorForeground(color(120))
-         ////.setColorActive(color(255))
-         .setColorLabel(color(0))
-         .setColor(controlsColours)
-         .setItemsPerRow(1)
-         .setSpacingColumn(50)
-         .moveTo("Controls")
-         .addItem("1 day",1)
-         .addItem("5 days",2)
-         .addItem("10 days",3)
-         ;
-         
-
-     for(Toggle t : radioButton.getItems()) {
-       t.getCaptionLabel().setColorBackground(color(255,80));
-       t.getCaptionLabel().getStyle().moveMargin(-7,0,0,-3);
-       t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
-       t.getCaptionLabel().getStyle().backgroundWidth = 45;
-       t.getCaptionLabel().getStyle().backgroundHeight = 13;
-     }
-
-   cp5.addButton("showHistogram")
-      .moveTo("Controls")
-      .setPosition(buttonX, 300); 
-
-   cp5.addIcon("plusSpeed",1)
+    cp5.addIcon("plusSpeed",1)
     .moveTo("global")
     .setPosition((width / 2) +100 , sliderY - 35)
     .setSize(20, 20)
@@ -445,47 +425,89 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground();
     //.setOn();
+    
+    
+    //-------------------------------Panel Controls-----------------------------
+   
+  cp5.addTextlabel("Title")
+     .setText("USER CONTROLS")
+     .setPosition(buttonX,5)
+     .setColorValue(color(0))
+     .moveTo("Controls")
+     .setFont(createFont("Arial", 20))  
+     ; 
 
+  cp5.addTextlabel("FilterControls")
+     .setText("Chose Amount of Data")
+     .setPosition(buttonX,35)
+     .setColorValue(color(0))
+     .moveTo("Controls")
+     .setFont(createFont("Arial", 15))  
+     ; 
+     
+     
   //ui for radius filter control
   cp5.addToggle("isFilterMode")
-    .setPosition(buttonX, 50)
-    //.setColor(controlsColours)
-    .setLabel("Filter Mode")
-    .setColorLabel(color(0))
-    .moveTo("Controls")
-    ;
+        .setPosition(buttonX, 300)
+      //.setColor(controlsColours)
+        .setLabel("Filter Mode")
+        .setColorLabel(color(0))
+        .moveTo("Controls")
+        ;
   cp5.addSlider("filterSize")
-    .setPosition(buttonX, 90)
-    .setRange(FILTER_MIN, FILTER_MAX)
-    //.setColor(controlsColours)
-    .showTickMarks(true)
-    .setNumberOfTickMarks(4)
-    .setColorLabel(color(0))
-    .setLabel("Filter Size")
-    .setBroadcast(true)
-    .moveTo("Controls")
-    ;
+        .setPosition(buttonX, 350)
+        .setRange(FILTER_MIN, FILTER_MAX)
+        //.setColor(controlsColours)
+        .showTickMarks(true)
+        .setNumberOfTickMarks(4)
+        .setColorLabel(color(0))
+        .setLabel("Filter Size")
+        .setBroadcast(true)
+        .moveTo("Controls")
+        ;
+
+  radioButton = cp5.addRadioButton("radioButton")
+         .setPosition(buttonX,60)
+         .setSize(40,20)
+         //.setColorForeground(color(120))
+         ////.setColorActive(color(255))
+         .setColorLabel(color(0))
+         .setColor(controlsColours)
+         .setItemsPerRow(1)
+         .setSpacingColumn(50)
+         .moveTo("Controls")
+         .addItem("1 day",1)
+         .addItem("5 days",2)
+         .addItem("10 days",3)
+         ;
+         
+
+     for(Toggle t : radioButton.getItems()) {
+       t.getCaptionLabel().setColorBackground(color(255,80));
+       t.getCaptionLabel().getStyle().moveMargin(-7,0,0,-3);
+       t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
+       t.getCaptionLabel().getStyle().backgroundWidth = 45;
+       t.getCaptionLabel().getStyle().backgroundHeight = 13;
+     }
+
+   cp5.addButton("showHistogram")
+        .moveTo("Controls")
+        .setPosition(buttonX, 400); 
+
+   
+
+
     
     //tab sorting
    cp5.getTab("Controls")
-  .setColorLabel(color(0))
-  .setLabel("Show Controls")
- 
-  ;
+        .setColorLabel(color(0))
+        .setLabel("Show Controls")
+         ;
 
   cp5.getTab("default")
-  .setColorLabel(color(0))
-  .setLabel("Hide Controls")
-  ;
-    //cp5.getController("1 day").moveTo("Controls");
-    //cp5.getController("5 days").moveTo("Controls");
-    //cp5.getController("10 days").moveTo("Controls");
-    //cp5.getController("isFilterMode").moveTo("Controls");
-    //cp5.getController("filterSize").moveTo("Controls");
-    //cp5.getController("minusSpeed").moveTo("global");
-    //cp5.getController("timeLine").moveTo("global");
-    //cp5.getController("isPlay").moveTo("global");
-    //cp5.getController("plusSpeed").moveTo("global");
+        .setColorLabel(color(0))
+        .setLabel("Hide Controls")
+        ;
     
 }
 
