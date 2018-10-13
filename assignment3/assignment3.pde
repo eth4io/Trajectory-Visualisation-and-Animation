@@ -62,8 +62,11 @@ static final int SLIDER_MAX = 1440;
 static final int FILTER_MAX = 20;                  /* kilometres */
 static final int FILTER_MIN = 5;                   /* kilometres */
 static final int HEIGHT = 768;
+static final int WIDTH = 1024;
 static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
+static final int PANEL_WIDTH = 200;
+static final int MAP_WIDTH = WIDTH - PANEL_WIDTH;
 
 //-----------------------  Global Variables ------------------------
 
@@ -114,13 +117,13 @@ color FILTER_BLUE;
 color FILTER_RED;
 
 void setup() {
-  size(1024, HEIGHT);
+  size(WIDTH, HEIGHT);
   FILTER_BLUE = color(252,141,89);
   FILTER_RED = color(145,191,219);
 
   
   /* set up map */
-  map = new UnfoldingMap(this, 0, 0, width,                 /* init map */
+  map = new UnfoldingMap(this, 0, 0, MAP_WIDTH,                 /* init map */
   MAP_HEIGHT, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
@@ -203,10 +206,10 @@ void draw() {
   //draw interface background
   fill(50, 150);
   noStroke();
-  rect(0, MAP_HEIGHT, width, UI_HEIGHT, 7);
-
-
+  rect(0, MAP_HEIGHT, width, UI_HEIGHT);
   
+  if (cp5.getTab("Controls").isActive()) rect(MAP_WIDTH,0,PANEL_WIDTH,MAP_HEIGHT);
+   
   barScale.draw();
     float progress = (float)time / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
@@ -320,7 +323,7 @@ void mouseClicked() {
     inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
   }
   
-  if (isFilterMode && mouseX <= width - 150) {
+  if (isFilterMode && mouseX <= MAP_WIDTH) {
     filterManager.placeFilter(map);
     if (filterManager.getMarkers().size() < 2) {
       filterManager.addFilter(FILTER_RED);
@@ -351,6 +354,7 @@ void initialiseUI() {
   controlsColours = new CColor(0xffffffff, 0x55ffffff, 0xffffffff, 0x99ffffff, 
   0xffffffff);
   
+  int buttonX = MAP_WIDTH + 20;
   
   sliderH=10;
   sliderY = height - 130;  
@@ -361,18 +365,8 @@ void initialiseUI() {
   
   cp5.setColor(controlsColours);
   
-  cp5.addTab("filter data controls")
-  .setColorLabel(color(0));
-  cp5.addTab("Tools")
-  .setColorLabel(color(0));
-  cp5.addTab("View Options")
-  .setColorLabel(color(0));
-  
-  cp5.getTab("default")
-  .setColorLabel(color(0))
-  .setLabel("Animation mode");
-
   cp5.addSlider("timeLine")
+    .moveTo("global")
     .setPosition(sliderX, sliderY)
     .setSize(sliderW, sliderH)
     .setRange(0, SLIDER_MAX)
@@ -384,6 +378,7 @@ void initialiseUI() {
     ;
 
   cp5.addIcon("isPlay", 40)
+    .moveTo("global")
     .setPosition((width / 2) - 20, sliderY - 40)
     .setSize(40, 40)
     //.setRoundedCorners(20)
@@ -394,9 +389,11 @@ void initialiseUI() {
     .setColorBackground(color(255, 100))
     .hideBackground()
     .setOn();
+    
+   
 
   radioButton = cp5.addRadioButton("radioButton")
-         .setPosition(width-100,250)
+         .setPosition(buttonX,150)
          .setSize(40,20)
          //.setColorForeground(color(120))
          ////.setColorActive(color(255))
@@ -404,9 +401,11 @@ void initialiseUI() {
          .setColor(controlsColours)
          .setItemsPerRow(1)
          .setSpacingColumn(50)
+         .moveTo("Controls")
          .addItem("1 day",1)
          .addItem("5 days",2)
-         .addItem("10 days",3);
+         .addItem("10 days",3)
+         ;
          
 
      for(Toggle t : radioButton.getItems()) {
@@ -417,9 +416,12 @@ void initialiseUI() {
        t.getCaptionLabel().getStyle().backgroundHeight = 13;
      }
 
-    
+   cp5.addButton("showHistogram")
+      .moveTo("Controls")
+      .setPosition(buttonX, 300); 
 
    cp5.addIcon("plusSpeed",1)
+    .moveTo("global")
     .setPosition((width / 2) +100 , sliderY - 35)
     .setSize(20, 20)
     //.setRoundedCorners(20)
@@ -432,6 +434,7 @@ void initialiseUI() {
     //.setOn();
     
    cp5.addIcon("minusSpeed",1)
+    .moveTo("global")
     .setPosition((width / 2) +100 , sliderY - 15)
     .setSize(20, 10)
     //.setRoundedCorners(20)
@@ -445,25 +448,44 @@ void initialiseUI() {
 
   //ui for radius filter control
   cp5.addToggle("isFilterMode")
-    .setPosition(width - 50, 50)
+    .setPosition(buttonX, 50)
     //.setColor(controlsColours)
     .setLabel("Filter Mode")
-    .setColorLabel(color(0));
+    .setColorLabel(color(0))
+    .moveTo("Controls")
+    ;
   cp5.addSlider("filterSize")
-    .setPosition(width - 110, 90)
+    .setPosition(buttonX, 90)
     .setRange(FILTER_MIN, FILTER_MAX)
     //.setColor(controlsColours)
     .showTickMarks(true)
     .setNumberOfTickMarks(4)
-    .setColorLabel(color(0));
+    .setColorLabel(color(0))
+    .setLabel("Filter Size")
+    .setBroadcast(true)
+    .moveTo("Controls")
+    ;
     
     //tab sorting
-    
-    cp5.getController("1 day").moveTo("filter data controls");
-    cp5.getController("5 days").moveTo("filter data controls");
-    cp5.getController("10 days").moveTo("filter data controls");
-    cp5.getController("isFilterMode").moveTo("Tools");
-    cp5.getController("filterSize").moveTo("Tools");
+   cp5.getTab("Controls")
+  .setColorLabel(color(0))
+  .setLabel("Show Controls")
+ 
+  ;
+
+  cp5.getTab("default")
+  .setColorLabel(color(0))
+  .setLabel("Hide Controls")
+  ;
+    //cp5.getController("1 day").moveTo("Controls");
+    //cp5.getController("5 days").moveTo("Controls");
+    //cp5.getController("10 days").moveTo("Controls");
+    //cp5.getController("isFilterMode").moveTo("Controls");
+    //cp5.getController("filterSize").moveTo("Controls");
+    //cp5.getController("minusSpeed").moveTo("global");
+    //cp5.getController("timeLine").moveTo("global");
+    //cp5.getController("isPlay").moveTo("global");
+    //cp5.getController("plusSpeed").moveTo("global");
     
 }
 
