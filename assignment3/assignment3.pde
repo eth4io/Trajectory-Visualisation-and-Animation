@@ -89,9 +89,8 @@ boolean isPlay = true;
 int animationSpeed;
 CColor  controlsColours;
 int timeLine;
-int time;
 long previousUpdate = 0;
-int frameSpeed = 7;
+int frameSpeed = 3;
 int countFrames;
 
 //-----------Histogram Variables---------------
@@ -219,18 +218,18 @@ void draw() {
   }
    
   barScale.draw();
-    float progress = (float)time / SLIDER_MAX;
+    float progress = (float)timeLine / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
     if (isPlay) {
     
     countFrames++;
     
-    if (countFrames >= frameSpeed){
+    if (countFrames+1 >= frameSpeed){
       countFrames=0;
-      if (timeLine < SLIDER_MAX)
-      timeLine ++;
-    else
-      timeLine = 0;
+      if (timeLine < SLIDER_MAX) timeLine ++;
+      else timeLine = 0;
+    
+      countFrames=0;
     }
     }
     //draw inspector if there is a current selection && if is not in filter mode
@@ -257,8 +256,8 @@ void draw() {
   colourMarkers();
   
   if (isHistogramOn){
-    histogram.draw(10, MAP_HEIGHT - 310, 250, 300);
-    histogram2.draw(10, MAP_HEIGHT - 310, 250, 300);
+    histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
+    histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
   }
   
   lineChart.draw(0, chartY, width-5, chartHeight);
@@ -590,7 +589,7 @@ public void plusSpeed() {frameSpeed = frameSpeed/2;}
 public void timeLine(int value) {
 
   timeLine = value; 
-  time = value;
+
 }
 
 public void initialiseLineGraph() {
