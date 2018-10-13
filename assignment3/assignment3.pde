@@ -1,4 +1,4 @@
-  /* Created by
+/* Created by
  *  Angela Ryan 953452
  *  Michael Holmes 928428
  *  Yichi Zhang  895529
@@ -35,23 +35,7 @@ static final List<String> STUDY_DATES = Arrays.asList(
   "20090219",
   "20081111",
   "20081112",
-  "20081205",
-  "20090216",
-  "20090313",
-  "20081210",
-  "20090217",
-  "20081117",
-  "20090408",
-  "20081109",
-  "20081207",
-  "20081212",
-  "20090305",
-  "20081113",
-  "20081114",
-  "20090413",
-  "20081209",
-  "20081204",
-  "20081211"
+  "20081205"
 );
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
@@ -246,7 +230,13 @@ void draw() {
   histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
   lineChart.draw(0, chartY, width-5, chartHeight);
-  scatterChart.draw(0, 200, width-5, chartHeight);
+  
+  //if (trajectoryManager.isSelection()) 
+  List<PVector> speedTime = new ArrayList<PVector>();
+  speedTime = trajectoryManager.getTimeSpeedListSelected();
+  scatterChart.setData(speedTime);
+  scatterChart.draw(0, 300, width-5, chartHeight);
+  
   filterManager.draw();
   updateLineGraph();
   
@@ -301,8 +291,7 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   
   
   for (Trajectory m : a) {
-    if(!m.isActive())
-        continue;
+    
     speeds1[i++] =  m.getCurrentSpeed();
   }
   
@@ -311,12 +300,10 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   if (b != null) {
     i = 0;
     for (Trajectory m : b) {
-      if(!m.isActive())
-        continue;
       speeds2[i++] =  m.getCurrentSpeed();
     }
     histogram2.update(speeds2);
-  }
+    }
 }
 
 void mouseClicked() {
@@ -341,12 +328,10 @@ void showInspector() {
   float y = inspectedTrajectory.getY(map);
   int speed = round(inspectedTrajectory.getCurrentSpeed());
   int alt = round(inspectedTrajectory.getCurrentPosition().getAltitude());
-  String id = inspectedTrajectory.getId();
   rect(x, y - 60, 125, 60, 7);
   fill(255,255,255);
-  text("id: " + id, x + 5, y - 50);
-  text("Speed: " + speed + " km/h", x + 5, y - 35);
-  text("altitude: " + alt + " m", x + 5, y - 15);
+  text("Speed: " + speed + " km/h", x + 5, y - 50);
+  text("altitude: " + alt + " m", x + 5, y - 35);
 }
 
 void initialiseUI() {
@@ -492,7 +477,7 @@ public void initialiseLineGraph() {
   int i = 0; 
   for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
     
-    avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
+    avgSpeeds[i] = trajectoryManager.calcAvgSpeed(x/(float)SLIDER_MAX);
     times[i]=x;
     //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
     i++;
@@ -503,7 +488,7 @@ public void initialiseLineGraph() {
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
-  //lineChart.setMaxY(13);
+  lineChart.setMaxY(25);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
   lineChart.setAxisColour(255);
@@ -517,11 +502,14 @@ public void initialiseLineGraph() {
 }
 
 public void initialiseScatterPlot(){
-  List<PVector> speedTime = new ArrayList<PVector>();
-  speedTime = trajectoryManager.getTimeSpeedList();
-  print(speedTime);
+
   scatterChart = new XYChart(this);
-  scatterChart.setData(speedTime);
+  scatterChart.setMaxX(SLIDER_MAX);
+  scatterChart.setMaxY(25);
+  scatterChart.setPointColour(color(153,0,0));
+  scatterChart.showYAxis(true);
+  scatterChart.showXAxis(true);
+  
 }
   
 
@@ -542,7 +530,7 @@ public void colourMarkers(){
   List<Trajectory> t = trajectoryManager.getMarkers();
   
   for (Trajectory m : t) {
-    if (m.isActive() && m.isMoving()) {
+    if (m.isMoving()) {
       if (!isFilterMode) {                                              /* do not colour if in filter mode */
         float speed =  m.getCurrentSpeed();
         m.setColor(markerColourTable.findColour(speed));

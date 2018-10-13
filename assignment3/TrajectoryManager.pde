@@ -9,7 +9,7 @@ class TrajectoryManager extends MarkerManager {
   
   private List<List<Trajectory>> listOfTrajectoryList;
   private static final int DEFAULT_DRAW = 10;    //default draw level if not set
-  private static final int DEFAULT_NUMBER_OF_DAYS = 30;
+  private static final int DEFAULT_NUMBER_OF_DAYS = 10;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
@@ -150,6 +150,12 @@ class TrajectoryManager extends MarkerManager {
     return selected;
   }
   
+  //tests if there is any selection
+  public boolean isSelection() {
+    if (getSelected().size() == 0) return false;
+    else return true;
+  }
+  
   /* deselect all markers */
   public void deselectAll() {
     List<Marker> temp = this.getMarkers();
@@ -174,8 +180,8 @@ class TrajectoryManager extends MarkerManager {
     float elapsedTime = timeDiff * progress;
     Date currentTime = new Date();
     currentTime.setTime(startTime.getTime() + (int)elapsedTime);
-    List<Marker> markers = this.getMarkers();
-     for (Marker m : markers) {
+    List<Marker> temp = this.getMarkers();
+     for (Marker m : temp) {
        if (((Trajectory)m).hasNext())
          ((Trajectory)m).update(currentTime);
      }
@@ -196,7 +202,6 @@ class TrajectoryManager extends MarkerManager {
   }
   
   public float calcAvgSpeed(float progress) {
-    final float MIN_SPEED = 2.0;
     //return average speed of current array list
     float timeDiff = getTimeDiff(startTime, endTime);
     float elapsedTime = timeDiff * progress;
@@ -204,22 +209,16 @@ class TrajectoryManager extends MarkerManager {
     currentTime.setTime(startTime.getTime() + (int)elapsedTime);
     List<Marker> markers = this.getMarkers();
     float speedSum = 0;
-    int sum = 0;
     for (Marker m : markers) {
       if (((Trajectory)m).hasNext()){
         ((Trajectory)m).update(currentTime);
-        if (!((Trajectory)m).isActive())
-          continue;
-        float speed = ((Trajectory)m).getCurrentSpeed();
-        if (speed > MIN_SPEED) {
-          speedSum = speedSum + speed;
-          sum++;
-        }
+        speedSum = speedSum + ((Trajectory)m).getCurrentSpeed();
       }
     } 
     return speedSum / markers.size();
   }
   
+  //works, but slows down the interface too much...
   public List<PVector> getTimeSpeedList(){
     ArrayList<PVector> speedTime = new ArrayList<PVector>();
     for (List<Trajectory> l : listOfTrajectoryList) {
@@ -231,4 +230,18 @@ class TrajectoryManager extends MarkerManager {
     }
     return speedTime;  
   }
+  
+  //returns only the speeds Time vectors of selected point
+  public List<PVector> getTimeSpeedListSelected(){
+    ArrayList<PVector> speedTime = new ArrayList<PVector>();
+    List<Marker> selectedMarkers = getSelected();
+    for (Marker t : selectedMarkers) {
+      if (t.isSelected()){
+      for (PositionData p : ((Trajectory)t).getPositionData()){
+        speedTime.add(new PVector(p.getTime(), p.getSpeed()));
+        }
+      }
+    }
+      return speedTime;
+    }
 }
