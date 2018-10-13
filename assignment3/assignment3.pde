@@ -211,10 +211,10 @@ void draw() {
   //draw Panel
   if (cp5.getTab("Controls").isActive()){
     rect(MAP_WIDTH,0,PANEL_WIDTH,MAP_HEIGHT);
-    stroke(1);
-    fill(255);
+    stroke(255);
     line(MAP_WIDTH, 30,width,30);
-    line(MAP_WIDTH, 100,width,100);
+    line(MAP_WIDTH, 125,width,125);
+    line(MAP_WIDTH, 215,width,215);
   }
    
   barScale.draw();
@@ -250,8 +250,11 @@ void draw() {
   
   colourMarkers();
   
-  histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
-  histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
+  
+    histogram.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
+    histogram2.draw(width - 220, MAP_HEIGHT - 170, 220, 170);
+  
+  
   lineChart.draw(0, chartY, width-5, chartHeight);
   filterManager.draw();
   updateLineGraph();
@@ -431,7 +434,7 @@ void initialiseUI() {
    
   cp5.addTextlabel("Title")
      .setText("USER CONTROLS")
-     .setPosition(buttonX,5)
+     .setPosition(buttonX-10,3)
      .setColorValue(color(0))
      .moveTo("Controls")
      .setFont(createFont("Arial", 20))  
@@ -445,17 +448,37 @@ void initialiseUI() {
      .setFont(createFont("Arial", 15))  
      ; 
      
+  cp5.addTextlabel("Tools")
+     .setText("Filter Tool")
+     .setPosition(buttonX,130)
+     .setColorValue(color(0))
+     .moveTo("Controls")
+     .setFont(createFont("Arial", 15))  
+     ; 
+     
+   cp5.addTextlabel("ViewControls")
+     .setText("View Controls")
+     .setPosition(buttonX,220)
+     .setColorValue(color(0))
+     .moveTo("Controls")
+     .setFont(createFont("Arial", 15))  
+     ; 
      
   //ui for radius filter control
   cp5.addToggle("isFilterMode")
-        .setPosition(buttonX, 300)
-      //.setColor(controlsColours)
-        .setLabel("Filter Mode")
+        .setPosition(buttonX, 155)
+        .setLabel("Activate Filter Mode")
         .setColorLabel(color(0))
         .moveTo("Controls")
+        //.getCaptionLabel().align(RIGHT,CENTER)
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-25)
+        .setMarginLeft(40)
         ;
+        
   cp5.addSlider("filterSize")
-        .setPosition(buttonX, 350)
+        .setPosition(buttonX, 190)
         .setRange(FILTER_MIN, FILTER_MAX)
         //.setColor(controlsColours)
         .showTickMarks(true)
@@ -467,7 +490,7 @@ void initialiseUI() {
         ;
 
   radioButton = cp5.addRadioButton("radioButton")
-         .setPosition(buttonX,60)
+         .setPosition(buttonX,55)
          .setSize(40,20)
          //.setColorForeground(color(120))
          ////.setColorActive(color(255))
@@ -483,28 +506,28 @@ void initialiseUI() {
          
 
      for(Toggle t : radioButton.getItems()) {
-       t.getCaptionLabel().setColorBackground(color(255,80));
        t.getCaptionLabel().getStyle().moveMargin(-7,0,0,-3);
        t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
-       t.getCaptionLabel().getStyle().backgroundWidth = 45;
-       t.getCaptionLabel().getStyle().backgroundHeight = 13;
      }
 
-   cp5.addButton("showHistogram")
+   cp5.addToggle("showHistogram")
+        .setPosition(buttonX, 245)
+        .setValue(true)
         .moveTo("Controls")
-        .setPosition(buttonX, 400); 
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-25)
+        .setMarginLeft(40); 
 
    
-
-
     
-    //tab sorting
+    //set tabs sorting
    cp5.getTab("Controls")
         .setColorLabel(color(0))
         .setLabel("Show Controls")
          ;
 
-  cp5.getTab("default")
+   cp5.getTab("default")
         .setColorLabel(color(0))
         .setLabel("Hide Controls")
         ;
