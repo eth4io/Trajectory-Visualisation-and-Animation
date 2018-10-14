@@ -12,6 +12,7 @@ class Trajectory extends SimplePointMarker {
   private String id;
   private List<PositionData> positionData;
   private PositionData currentPosition;
+  private PositionData previousPosition;
   private int currentPositionIndex = 0;  //PositionData iterator
 
   //speed variables
@@ -35,6 +36,10 @@ class Trajectory extends SimplePointMarker {
     }
     //set to position 0 by default
     this.currentPosition = positionData.get(currentPositionIndex);
+    
+    if (currentPositionIndex != 0) this.previousPosition = positionData.get(currentPositionIndex-1);
+    else this.previousPosition = currentPosition;
+    
     //set initial loaction
     this.setLocation(currentPosition.lat, currentPosition.lng);
   }
@@ -57,6 +62,7 @@ class Trajectory extends SimplePointMarker {
    */
   public void update() {
     currentPositionIndex++;
+    previousPosition = currentPosition;
     currentPosition = positionData.get(currentPositionIndex);
     this.setLocation(currentPosition.lat, currentPosition.lng);
     //set speed to 0 if at end of data
@@ -68,6 +74,7 @@ class Trajectory extends SimplePointMarker {
   }
 
   public void update(Date currentTime) {
+    previousPosition = currentPosition;
     for (int i = 0; i < positionData.size(); i++) {
       currentPosition = positionData.get(i);
 
@@ -114,6 +121,7 @@ class Trajectory extends SimplePointMarker {
   public int getCurrentPositionIndex() { return currentPositionIndex; }
   public List<PositionData> getPositionData () { return this.positionData; }
   public PositionData getCurrentPosition() { return this.currentPosition; }
+  public PositionData getPreviousPosition() { return this.previousPosition; }
   
   public float getX(UnfoldingMap map) {
     ScreenPosition sp = map.getScreenPosition(this.getLocation());
