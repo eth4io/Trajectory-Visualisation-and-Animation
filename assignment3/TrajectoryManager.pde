@@ -219,4 +219,19 @@ class TrajectoryManager extends MarkerManager {
     } 
     return speedSum / markers.size();
   }
+  
+    public List<PVector> getSelectedSpeedTime(){
+    List<PVector> timeSpeedVectors = new ArrayList<PVector>();
+      List<Marker> selectedMarkers = getSelected();
+      for (Marker m : selectedMarkers){
+        for (PositionData d : ((Trajectory)m).getPositionData()){
+          float speed = d.getSpeed();
+          float time = d.getTime();
+          timeSpeedVectors.add(new PVector(time, speed));
+        }
+      }
+      
+    return timeSpeedVectors;
+    
+  }
 }

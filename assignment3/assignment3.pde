@@ -104,6 +104,7 @@ Histogram histogram2;
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
 //-----------LineChart Variables----------------
 XYChart lineChart;
+XYChart scatterChart;
 
 int timeBreakSize;
 float[] avgSpeeds;
@@ -282,6 +283,12 @@ void draw() {
   }
   
   lineChart.draw(0, chartY, width-5, chartHeight);
+  
+  //scatterChart
+  List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
+  scatterChart.setData(speedTimeData);
+  scatterChart.draw(0,300, width-5, chartHeight);
+  
   filterManager.draw();
   updateLineGraph();
   
@@ -658,6 +665,10 @@ public void initialiseLineGraph() {
   lineChart.setLineColour(255);
   lineChart.setPointColour(255);
   lineChart.draw(0, chartY, width-5, chartHeight);
+  
+  scatterChart = new XYChart(this);
+  scatterChart.showYAxis(true); 
+  scatterChart.showXAxis(true);
  
 
 }
