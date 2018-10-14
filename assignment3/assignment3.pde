@@ -320,11 +320,12 @@ if (isHistogramOn) {
 
 lineChart.draw(0, chartY, width-5, chartHeight);
 
-//scatterChart
-List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
-scatterChart.setData(speedTimeData);
-scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
-
+//scatterChart 
+if (!isFilterMode) {  /* dont run if filter mode is on */
+  List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
+  scatterChart.setData(speedTimeData);
+  scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
+}
 filterManager.draw();
 updateLineGraph();
 
@@ -374,7 +375,7 @@ void mouseClicked() {
     inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
   }
 
-  if (isFilterMode && mouseX <= MAP_WIDTH) {
+  if (isFilterMode && mouseX <= MAP_WIDTH && mouseY <= MAP_HEIGHT) {
     filterManager.placeFilter(map);
     if (filterManager.getMarkers().size() < 2) {
       filterManager.addFilter(FILTER_RED);
