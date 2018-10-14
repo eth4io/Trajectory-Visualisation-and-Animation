@@ -164,7 +164,7 @@ void setup() {
   dataReader = new DataReader();
 
   //---Set Marker Table----------------------------------------
-  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN, 0, 50);
+  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_PU, -50, 50);
 
   //init trajectory manager
   trajectoryManager = new TrajectoryManager(
