@@ -235,16 +235,23 @@ class TrajectoryManager extends MarkerManager {
     
   }
   
-  public List<SimpleLinesMarker> getLineCoords(){
+  public List<Marker> getLineCoords(){
       
     List<Marker> markers = this.getMarkers();
-    List<SimpleLinesMarker> lineMarkers = new ArrayList<SimpleLinesMarker>();
+    List<Marker> lineMarkers = new ArrayList<Marker>();
           
      for (Marker m : markers) {
-       Location current = m.getLocation();
-       Location previous = m.getLocation();
-       print(current.getDistance(previous));
-       lineMarkers.add(new SimpleLinesMarker(current, previous));
+       if (((Trajectory)m).isActive) {
+         Location current = m.getLocation();
+         Location previous = ((Trajectory)m).getPreviousLocation();
+         if (current.getDistance(previous) < 5) {
+         //print(current.getDistance(previous));
+         SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
+         d.setColor(color(233,57,35));
+         d.setStrokeWeight(2);
+         lineMarkers.add(d);
+         }
+       }
      }
      
     

@@ -269,8 +269,9 @@ void draw() {
   }
   
   trajectoryManager.draw();
-  List<SimpleLinesMarker> lines = trajectoryManager.getLineCoords();
-  for (SimpleLinesMarker l : lines) {
+  List<Marker> lines = trajectoryManager.getLineCoords();
+  //map.addMarkers(lines);
+  for (Marker l : lines) {
     l.draw(map);
   }
   
