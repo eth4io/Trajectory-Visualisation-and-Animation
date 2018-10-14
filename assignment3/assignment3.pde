@@ -76,6 +76,7 @@ DataReader dataReader;
 
 Trajectory inspectedTrajectory;           /* trajectory for inspection */
 MarkerManager inspectedManager;           /* manager for exploring trajectory points */
+
 //test
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
@@ -164,6 +165,7 @@ void setup() {
   trajectoryManager = new TrajectoryManager(
     dataReader.getListOfTrajectoryListByListOfDate(STUDY_DATES));
   trajectoryManager.setMap(map);
+  
   
   //init inspected trajectory manager
   inspectedManager = new MarkerManager();
@@ -267,6 +269,10 @@ void draw() {
   }
   
   trajectoryManager.draw();
+  List<SimpleLinesMarker> lines = trajectoryManager.getLineCoords();
+  for (SimpleLinesMarker l : lines) {
+    l.draw(map);
+  }
   
   trajectoryManager.setAllColor(200);
   fill(255);
@@ -707,9 +713,6 @@ public void colourMarkers(){
     }
   }
 }
-
-
-
 
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(radioButton)) {

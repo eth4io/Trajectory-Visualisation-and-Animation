@@ -234,4 +234,20 @@ class TrajectoryManager extends MarkerManager {
     return timeSpeedVectors;
     
   }
+  
+  public List<SimpleLinesMarker> getLineCoords(){
+      
+    List<Marker> markers = this.getMarkers();
+    List<SimpleLinesMarker> lineMarkers = new ArrayList<SimpleLinesMarker>();
+          
+     for (Marker m : markers) {
+       Location current = m.getLocation();
+       Location previous = m.getLocation();
+       print(current.getDistance(previous));
+       lineMarkers.add(new SimpleLinesMarker(current, previous));
+     }
+     
+    
+    return lineMarkers;
+  }
 }
