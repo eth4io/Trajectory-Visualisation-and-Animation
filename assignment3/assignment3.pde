@@ -14,7 +14,7 @@ import de.fhpotsdam.unfolding.ui.BarScaleUI;
 import java.util.List;
 import org.gicentre.utils.colour.*;
 
-//-----------------------  Global Constants ------------------------
+//-----------------------  Global Constants -----------------------------------------------------
 
 static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
@@ -105,7 +105,7 @@ Histogram histogram2;
 
 
 static float[] HIST_BINS = new float[] {5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
-//-----------LineChart Variables----------------
+//-----------Chart Variables----------------
 XYChart lineChart;
 XYChart scatterChart;
 
@@ -128,39 +128,40 @@ float filterSize = 5;
 color FILTER_BLUE;
 color FILTER_RED;
 
+//---------------------------SETUP--------------------------------------------------------------------------------
+
 void setup() {
   size(WIDTH, HEIGHT);
-  FILTER_BLUE = color(252,141,89);
-  FILTER_RED = color(145,191,219);
 
   
-  /* set up map */
+//-------------Set Map Variables ------------------------------------
   map = new UnfoldingMap(this, 0, 0, MAP_WIDTH,                 /* init map */
   MAP_HEIGHT, new EsriProvider.WorldGrayCanvas());
   
   map.setZoomRange(MAX_LVL, MIN_LVL);                      /* lock zoom */
   map.zoomAndPanTo(BEIJING_CENTRAL, 11);                   /* pan and zoom to study location */
   map.setPanningRestriction(BEIJING_CENTRAL, 20);          /* lock panning */
-
-  //create bar scale
+  
+  
+//create bar scale
 
   barScale = new BarScaleUI(this, map, MAP_WIDTH-40, MAP_HEIGHT - 20);
   
 
   MapUtils.createDefaultEventDispatcher(this, map);
+  
+//-----Set Filter Variables ------------------------------------  
+  FILTER_BLUE = color(252,141,89);
+  FILTER_RED = color(145,191,219);
 
-   //create radius filter
-  //radiusFilter = new RadiusFilter(color(255,0,0,50));
-  //radiusFilter.setFilterRadius(map, 20);
-  //map.addMarker(radiusFilter);
   filterManager = new FilterManager();
-  //filterManager.addFilter(color(255,0,0,50));
   filterManager.setMap(map);
   
   
   /* test of DataReader method */
   dataReader = new DataReader();
 
+//---Set Marker Table----------------------------------------
   markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN,0,50);
   
   //init trajectory manager
@@ -173,7 +174,7 @@ void setup() {
   inspectedManager = new MarkerManager();
   inspectedManager.setMap(map);
   
-  
+  //-----------Set Date Variables-------------------------------------
   try {
     SimpleDateFormat dataFormat = new SimpleDateFormat(STUDY_DATE_FORMAT);
     Date startTime = dataFormat.parse(STUDY_DATE_START_TIME);
@@ -184,13 +185,13 @@ void setup() {
     println(ERROR_PARSING_DATE);
   }
 
-
+  //--------------Speed Graph Variables-----------------------------------------
   List<Trajectory> testSpeedGraph = new ArrayList<Trajectory>();
   testSpeedGraph = trajectoryManager.getMarkers();
 
  
   
-  //initialise histogram
+  //---------initialise Graphs--------------------------------------------------
   histogram = new Histogram(HIST_BINS, new float[]{0}, this);
   histogram2 = new Histogram(HIST_BINS, new float[]{0}, this);
   histogram.changeLook(true, 0, FILTER_BLUE);
@@ -198,8 +199,17 @@ void setup() {
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
+  
+  //initialise UI
   initialiseUI();
 }
+
+
+
+//---------------------DRAW METHOD ---------------------------------------------------------
+
+
+
 
 void draw() {
   //get new zoom level (leave at start of draw)
@@ -209,16 +219,12 @@ void draw() {
   
   map.draw();
 
-  //test radius variable
-  //trajectoryManager.setRadiusToValue(frameCount, 10, 1000,false);
-  //some colors testing
-  //trajectoryManager.setAllColor(color(150,150,200));
   //draw interface background
   fill(50, 150);
   noStroke();
   rect(0, MAP_HEIGHT, width, UI_HEIGHT);
   
-  //draw Panel
+  //-------------draw Panel-------------------------------------------------------------------
   if (cp5.getTab("Controls").isActive()){
     rect(MAP_WIDTH,0,PANEL_WIDTH,MAP_HEIGHT);
     stroke(255);
@@ -226,8 +232,8 @@ void draw() {
     line(MAP_WIDTH, 125,width,125);
     line(MAP_WIDTH, 215,width,215);
     
-    //draw scale
-    if ((isTrajOn) || (isColoursOn) || (isLinesOn){
+    
+    if ((isTrajOn) || (isColoursOn) || (isLinesOn)){
       float inc = 0.001;
       int colOffset = MAP_WIDTH + 21;
       fill(0);
@@ -245,22 +251,28 @@ void draw() {
       text("50km/h", MAP_WIDTH+100, speedY + 40);
     }
   }
+  
+  //----------draw scale-----------------------------
   textSize(15); 
   barScale.draw();
+  
+  //----------------UPDATE POINTS AND SLIDER--------------------------------------------------------
     float progress = (float)timeLine / SLIDER_MAX;
     trajectoryManager.updateAll(progress);
     if (isPlay) {
     
-    countFrames+= 1000*frameSpeed;
+    //countFrames+= 1000*frameSpeed;
     
-    if ((countFrames-previousUpdate) > 6000){
+    if (frameCount % frameSpeed == 0){
       
       if (timeLine < SLIDER_MAX) timeLine ++;
       if (timeLine >= SLIDER_MAX) timeLine = 0;
     
-      previousUpdate=countFrames;
+      //previousUpdate=countFrames;
     }
     }
+    
+    
     //draw inspector if there is a current selection && if is not in filter mode
   if (inspectedTrajectory != null && !isFilterMode) {
     showInspector();// add coords here
@@ -270,9 +282,12 @@ void draw() {
     }
   }
   
+  //--------------------------------DRAW POINTS----------------------
   if (!isPtsHidden) trajectoryManager.draw();
   
-  //draw markes as lines between current and previous pt
+  
+  //--------------------------------DRAW LINES--------------------------
+  //draw markers as lines between current and previous pt
   if (isLinesOn) {
     List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
     //map.addMarkers(lines);
@@ -282,6 +297,7 @@ void draw() {
     }
   }
   
+  //----------------------COLOUR HANDLING FOR MARKERS------------------------
   trajectoryManager.setAllColor(200);
   fill(255);
   textSize(8);
@@ -294,6 +310,7 @@ void draw() {
   
   colourMarkers();
   
+  //-----------------------DRAW CHARTS--------------------------------------------
   if (isHistogramOn){
     histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
     histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
@@ -314,6 +331,8 @@ void draw() {
   
   drawIU();
 }
+
+//-----------------------------------------FILTER METHODS----------------------------------------
 
 void updateRadiusFilter() {
   if (currentZoomLevel != previousZoomLevel) {
@@ -346,39 +365,9 @@ void updateRadiusFilter() {
       filterManager.setAllHidden(true);
     }
   }
-  
-  
-
-}
-
-void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
-  //histogram update and draw
-  
-  float[] speeds1 = new float[a.size()];
-  float[] speeds2 = new float[b != null ? b.size() : 0];
-  int i = 0;
-  
-  
-  for (Trajectory m : a) {
-    if(!m.isActive())
-        continue;
-    speeds1[i++] =  m.getCurrentSpeed();
   }
   
-  histogram.update(speeds1);
-  
-  if (b != null) {
-    i = 0;
-    for (Trajectory m : b) {
-      if(!m.isActive())
-        continue;
-      speeds2[i++] =  m.getCurrentSpeed();
-    }
-    histogram2.update(speeds2);
-  }
-}
-
-void mouseClicked() {
+  void mouseClicked() {
   if ((mouseY <= MAP_HEIGHT) && (isTrajOn)) {
     inspectedTrajectory = trajectoryManager.checkClick(mouseX, mouseY);
   }
@@ -407,6 +396,89 @@ void showInspector() {
   text("Speed: " + speed + " km/h", x + 5, y - 35);
   text("altitude: " + alt + " m", x + 5, y - 15);
 }
+
+//------------------------------CHART METHODS--------------------------------------------------
+
+void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
+  //histogram update and draw
+  
+  float[] speeds1 = new float[a.size()];
+  float[] speeds2 = new float[b != null ? b.size() : 0];
+  int i = 0;
+  
+  
+  for (Trajectory m : a) {
+    if(!m.isActive())
+        continue;
+    speeds1[i++] =  m.getCurrentSpeed();
+  }
+  
+  histogram.update(speeds1);
+  
+  if (b != null) {
+    i = 0;
+    for (Trajectory m : b) {
+      if(!m.isActive())
+        continue;
+      speeds2[i++] =  m.getCurrentSpeed();
+    }
+    histogram2.update(speeds2);
+  }
+}
+
+public void initialiseLineGraph() {
+  timeBreakSize = 5;
+  chartHeight = 110;
+  chartY = height-chartHeight-5;
+  //create speed array for y variable:
+  avgSpeeds = new float[SLIDER_MAX/timeBreakSize+1];
+  times = new float[SLIDER_MAX/timeBreakSize+1];
+  int i = 0; 
+  for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
+    
+    avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
+    times[i]=x;
+    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    i++;
+  }
+  lineChart = new XYChart(this);
+  lineChart.setData(times,avgSpeeds);
+  //lineChart.showXAxis(true); 
+  lineChart.showYAxis(true); 
+  lineChart.setLineWidth(2);
+  lineChart.setMaxX(SLIDER_MAX);
+  lineChart.setMaxY(5);
+  lineChart.setXAxisLabel("Time");
+  lineChart.setYAxisLabel("Average Speed");
+  lineChart.setAxisColour(255);
+  lineChart.setAxisLabelColour(255);
+  lineChart.setAxisValuesColour(255);
+  lineChart.setLineColour(255);
+  lineChart.setPointColour(255);
+  lineChart.draw(0, chartY, width-5, chartHeight);
+  
+  scatterChart = new XYChart(this);
+  scatterChart.setMaxY(5);
+  //scatterChart.showYAxis(true)
+  scatterChart.setPointColour(color(153,0,0)); 
+}
+
+public void updateLineGraph(){
+  int i = timeLine/timeBreakSize;
+
+  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],avgSpeeds[i]));
+  int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
+  int y2 = chartY;
+  strokeWeight(2);
+  stroke(200,80,80);
+ 
+  line(pointLocation.x, y, pointLocation.x, y2);
+}
+
+
+
+//----------------------------------------------BUTTON METHODS------------------------------------------
+
 
 void initialiseUI() {
   startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
@@ -644,6 +716,24 @@ void filterSize(int size) {
 //  cp5.getController("filterSize").setValue(size);
 }
 
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(radioButton)) {
+    trajectoryManager.clearMarkers();
+    switch(int(theEvent.getValue())) {
+      case 1:
+        trajectoryManager.setNumberOfDaysToDisplay(1);
+        break;
+      case 2:
+        trajectoryManager.setNumberOfDaysToDisplay(5);
+        break;
+      case 3:
+        trajectoryManager.setNumberOfDaysToDisplay(10);
+        break;
+    }
+  }
+}
+
+
 void drawIU() {
 
 
@@ -675,64 +765,13 @@ public void plusSpeed() {
 frameSpeed = (frameSpeed*2)+1;
 print(frameSpeed);}
 
-//public void timeLine(int value) {
-//
-//  timeLine = value; 
-//
-//}
+public void timeLine(int value) {
 
-public void initialiseLineGraph() {
-  timeBreakSize = 5;
-  chartHeight = 110;
-  chartY = height-chartHeight-5;
-  //create speed array for y variable:
-  avgSpeeds = new float[SLIDER_MAX/timeBreakSize+1];
-  times = new float[SLIDER_MAX/timeBreakSize+1];
-  int i = 0; 
-  for (int x = 0; x <= SLIDER_MAX; x=x+timeBreakSize) {
-    
-    avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
-    times[i]=x;
-    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
-    i++;
-  }
-  lineChart = new XYChart(this);
-  lineChart.setData(times,avgSpeeds);
-  //lineChart.showXAxis(true); 
-  lineChart.showYAxis(true); 
-  lineChart.setLineWidth(2);
-  lineChart.setMaxX(SLIDER_MAX);
-  lineChart.setMaxY(5);
-  lineChart.setXAxisLabel("Time");
-  lineChart.setYAxisLabel("Average Speed");
-  lineChart.setAxisColour(255);
-  lineChart.setAxisLabelColour(255);
-  lineChart.setAxisValuesColour(255);
-  lineChart.setLineColour(255);
-  lineChart.setPointColour(255);
-  lineChart.draw(0, chartY, width-5, chartHeight);
-  
-  scatterChart = new XYChart(this);
-  scatterChart.setMaxY(5);
-  //scatterChart.showYAxis(true)
-  scatterChart.setPointColour(color(153,0,0)); 
-  
-  
- 
+  timeLine = value; 
 
 }
 
-public void updateLineGraph(){
-  int i = timeLine/timeBreakSize;
-
-  PVector pointLocation = lineChart.getDataToScreen( new PVector(times[i],avgSpeeds[i]));
-  int y = chartY+chartHeight - (int)lineChart.getBottomSpacing();
-  int y2 = chartY;
-  strokeWeight(2);
-  stroke(200,80,80);
- 
-  line(pointLocation.x, y, pointLocation.x, y2);
-}
+//------------------------Colour Markers-----------------------------------------------
 
 /* Colour markers according to speed */
 public void colourMarkers(){
@@ -751,19 +790,6 @@ public void colourMarkers(){
   }
 }
 
-void controlEvent(ControlEvent theEvent) {
-  if (theEvent.isFrom(radioButton)) {
-    trajectoryManager.clearMarkers();
-    switch(int(theEvent.getValue())) {
-      case 1:
-        trajectoryManager.setNumberOfDaysToDisplay(1);
-        break;
-      case 2:
-        trajectoryManager.setNumberOfDaysToDisplay(5);
-        break;
-      case 3:
-        trajectoryManager.setNumberOfDaysToDisplay(10);
-        break;
-    }
-  }
-}
+
+
+
