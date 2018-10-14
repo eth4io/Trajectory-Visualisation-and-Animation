@@ -235,7 +235,7 @@ class TrajectoryManager extends MarkerManager {
     
   }
   
-  public List<Marker> getLineCoords(){
+  public List<Marker> getLineCoords(ColourTable markerColourTable){
       
     List<Marker> markers = this.getMarkers();
     List<Marker> lineMarkers = new ArrayList<Marker>();
@@ -244,12 +244,13 @@ class TrajectoryManager extends MarkerManager {
        if (((Trajectory)m).isActive) {
          Location current = m.getLocation();
          Location previous = ((Trajectory)m).getPreviousLocation();
-         if (current.getDistance(previous) < 5) {
-         //print(current.getDistance(previous));
-         SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
-         d.setColor(color(233,57,35));
-         d.setStrokeWeight(2);
-         lineMarkers.add(d);
+         double lngth = current.getDistance(previous);
+         if (lngth < 5) {
+           float speed = ((Trajectory)m).getCurrentSpeed();
+           SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
+           d.setColor(markerColourTable.findColour(speed));
+           d.setStrokeWeight(2);
+           lineMarkers.add(d);
          }
        }
      }

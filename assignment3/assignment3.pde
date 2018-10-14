@@ -96,6 +96,8 @@ long countFrames;
 boolean isHistogramOn;
 boolean isColoursOn;
 boolean isTrajOn;
+boolean isLinesOn;
+boolean isPtsHidden;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
@@ -225,12 +227,12 @@ void draw() {
     line(MAP_WIDTH, 215,width,215);
     
     //draw scale
-    if ((isTrajOn) || (isColoursOn)){
+    if ((isTrajOn) || (isColoursOn) || (isLinesOn){
       float inc = 0.001;
       int colOffset = MAP_WIDTH + 21;
       fill(0);
       textSize(10);
-      int speedY = 335; //variable holds the Y value of all speed legend items
+      int speedY = 385; //variable holds the Y value of all speed legend items
       text("Speed Legend", MAP_WIDTH+20, speedY);
       for (float i=0; i<1-inc; i+=inc)
       {
@@ -268,11 +270,16 @@ void draw() {
     }
   }
   
-  trajectoryManager.draw();
-  List<Marker> lines = trajectoryManager.getLineCoords();
-  //map.addMarkers(lines);
-  for (Marker l : lines) {
-    l.draw(map);
+  if (!isPtsHidden) trajectoryManager.draw();
+  
+  //draw markes as lines between current and previous pt
+  if (isLinesOn) {
+    List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
+    //map.addMarkers(lines);
+    for (Marker l : lines) {
+      
+      l.draw(map);
+    }
   }
   
   trajectoryManager.setAllColor(200);
@@ -546,9 +553,11 @@ void initialiseUI() {
        t.getCaptionLabel().getStyle().movePadding(7,0,0,3);
      }
 
+  int viewControlY = 245;
+
    cp5.addToggle("showHistogram")
         .setLabel("Show Histogram")
-        .setPosition(buttonX, 245)
+        .setPosition(buttonX, viewControlY)
         .setValue(true)
         .moveTo("Controls")
         .getCaptionLabel()
@@ -558,7 +567,7 @@ void initialiseUI() {
         
     cp5.addToggle("showColours")
         .setLabel("Colour Points by Speed")
-        .setPosition(buttonX, 270)
+        .setPosition(buttonX, viewControlY + 25)
         .setValue(false)
         .moveTo("Controls")
         .getCaptionLabel()
@@ -568,14 +577,33 @@ void initialiseUI() {
 
     cp5.addToggle("showTrajectory")
         .setLabel("Show Traj with Click")
-        .setPosition(buttonX, 295)
+        .setPosition(buttonX, viewControlY + 50)
         .setValue(true)
         .moveTo("Controls")
         .getCaptionLabel()
         .getStyle()
         .setMarginTop(-22)
         .setMarginLeft(45); 
-   
+        
+    cp5.addToggle("showAsLines")
+        .setLabel("Show Pts as Lines")
+        .setPosition(buttonX, viewControlY + 75)
+        .setValue(true)
+        .moveTo("Controls")
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-22)
+        .setMarginLeft(45); 
+        
+    cp5.addToggle("HidePts")
+        .setLabel("Hide Point Markers")
+        .setPosition(buttonX, viewControlY + 100)
+        .setValue(false)
+        .moveTo("Controls")
+        .getCaptionLabel()
+        .getStyle()
+        .setMarginTop(-22)
+        .setMarginLeft(45); 
     
     //set tabs sorting
    cp5.getTab("Controls")
@@ -600,6 +628,14 @@ void showColours(boolean value){
 
 void showTrajectory(boolean value){
   isTrajOn = value;
+}
+
+void showAsLines(boolean value){
+  isLinesOn = value;
+}
+
+void HidePts(boolean value){
+  isPtsHidden = value;
 }
 
 /* update filter size from filter controls */
