@@ -601,7 +601,7 @@ void initialiseUI() {
         .showTickMarks(true)
           .setNumberOfTickMarks(4)
             .setColorLabel(color(0))
-              .setLabel("Filter Size")
+              .setLabel("Radius (KM)")
                 .setBroadcast(true)
                   .moveTo("Controls")
                     ;

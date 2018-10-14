@@ -13,6 +13,7 @@ class TrajectoryManager extends MarkerManager {
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
+  private int VECTOR_STROKE_WEIGHT = 4;
   
   public TrajectoryManager() {
     super();
@@ -249,7 +250,7 @@ class TrajectoryManager extends MarkerManager {
            float speed = ((Trajectory)m).getCurrentSpeed();
            SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
            d.setColor(markerColourTable.findColour(speed));
-           d.setStrokeWeight(2);
+           d.setStrokeWeight(VECTOR_STROKE_WEIGHT);
            lineMarkers.add(d);
          }
        }
