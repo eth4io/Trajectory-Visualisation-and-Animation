@@ -112,6 +112,8 @@ float[] times;
 
 int chartY;
 int chartHeight;
+PVector startLineGraph;
+PVector endLineGraph;
 
 //----------- Radius Filter Variables----------
 //RadiusFilter radiusFilter;
@@ -287,7 +289,7 @@ void draw() {
   //scatterChart
   List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
   scatterChart.setData(speedTimeData);
-  scatterChart.draw(0,300, width-5, chartHeight);
+  scatterChart.draw(startLineGraph.x,chartY,(int)(endLineGraph.x - startLineGraph.x), chartHeight);
   
   filterManager.draw();
   updateLineGraph();
@@ -392,8 +394,8 @@ void showInspector() {
 }
 
 void initialiseUI() {
-  PVector startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
-  PVector endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
+  startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
+  endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
   controlsColours = new CColor(0xffffffff, 0x55ffffff, 0xffffffff, 0x99ffffff, 
   0xffffffff);
   
@@ -656,7 +658,7 @@ public void initialiseLineGraph() {
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
-  //lineChart.setMaxY(13);
+  lineChart.setMaxY(5);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
   lineChart.setAxisColour(255);
@@ -667,8 +669,11 @@ public void initialiseLineGraph() {
   lineChart.draw(0, chartY, width-5, chartHeight);
   
   scatterChart = new XYChart(this);
-  scatterChart.showYAxis(true); 
-  scatterChart.showXAxis(true);
+  scatterChart.setMaxY(5);
+  //scatterChart.showYAxis(true)
+  scatterChart.setPointColour(color(153,0,0)); 
+  
+  
  
 
 }
