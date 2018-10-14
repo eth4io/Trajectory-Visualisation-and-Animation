@@ -245,7 +245,7 @@ class TrajectoryManager extends MarkerManager {
          Location current = m.getLocation();
          Location previous = ((Trajectory)m).getPreviousLocation();
          double lngth = current.getDistance(previous);
-         if (lngth < 5) {
+         if (lngth < 2) {
            float speed = ((Trajectory)m).getCurrentSpeed();
            SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
            d.setColor(markerColourTable.findColour(speed));
