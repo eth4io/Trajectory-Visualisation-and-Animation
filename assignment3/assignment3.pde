@@ -228,16 +228,17 @@ void draw() {
       int colOffset = MAP_WIDTH + 21;
       fill(0);
       textSize(10);
-      text("Speed Legend", MAP_WIDTH+20, 335);
+      int speedY = 335; //variable holds the Y value of all speed legend items
+      text("Speed Legend", MAP_WIDTH+20, speedY);
       for (float i=0; i<1-inc; i+=inc)
       {
            fill(markerColourTable.findColour(i*50));
            stroke(markerColourTable.findColour(i*50));
-           rect(colOffset + 100*i, 340, 50*inc, 20);
+           rect(colOffset + 100*i, speedY+5, 50*inc, 20);
       }
       fill(0);
-      text("0km/h", MAP_WIDTH+20, 375);
-      text("50km/h", MAP_WIDTH+100, 375);
+      text("0km/h", MAP_WIDTH+20, speedY + 40);
+      text("50km/h", MAP_WIDTH+100, speedY + 40);
     }
   }
   textSize(15); 
