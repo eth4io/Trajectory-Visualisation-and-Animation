@@ -166,7 +166,7 @@ void setup() {
   dataReader = new DataReader();
 
   //---Set Marker Table----------------------------------------
-  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_PU, -50, 50);
+  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_PU, 0, 50);
 
   //init trajectory manager
   trajectoryManager = new TrajectoryManager(
@@ -204,8 +204,8 @@ void setup() {
     0
   }
   , this);
-  histogram.changeLook(true, 0, 3, FILTER_BLUE);
-  histogram2.changeLook(true, 4, 3, FILTER_RED);
+  histogram.changeLook(true, 0, 0, FILTER_BLUE);
+  histogram2.changeLook(true, 4, 0, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
@@ -321,7 +321,7 @@ if (isHistogramOn) {
   histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
 }
 
-lineChart.draw(0, chartY, width-5, chartHeight);
+
 
 //scatterChart 
 if (!isFilterMode) {  /* dont run if filter mode is on */
@@ -329,6 +329,10 @@ if (!isFilterMode) {  /* dont run if filter mode is on */
   scatterChart.setData(speedTimeData);
   scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
 }
+
+lineChart.draw(0, chartY, width-5, chartHeight);
+
+
 filterManager.draw();
 updateLineGraph();
 
@@ -675,7 +679,7 @@ void initialiseUI() {
   cp5.addToggle("HidePts")
     .setLabel("Hide Point Markers")
       .setPosition(buttonX, viewControlY + 100)
-        .setValue(false)
+        .setValue(true)
           .moveTo("Controls")
             .getCaptionLabel()
               .getStyle()
