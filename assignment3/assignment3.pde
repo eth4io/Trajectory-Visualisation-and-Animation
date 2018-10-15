@@ -790,5 +790,11 @@ public void colourMarkers() {
   }
 }
 
+void keyPressed() {
+  if (key == ' ') {
+    isPlay = !isPlay;
+  }
+}
+
 
 
