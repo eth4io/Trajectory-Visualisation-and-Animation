@@ -9,7 +9,7 @@ class TrajectoryManager extends MarkerManager {
   
   private List<List<Trajectory>> listOfTrajectoryList;
   private static final int DEFAULT_DRAW = 10;    //default draw level if not set
-  private static final int DEFAULT_NUMBER_OF_DAYS = 30;
+  private static final int DEFAULT_NUMBER_OF_DAYS = 152;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
@@ -197,7 +197,7 @@ class TrajectoryManager extends MarkerManager {
   }
   
   public float calcAvgSpeed(float progress) {
-    final float MIN_SPEED = 2.0;
+    final float MIN_SPEED = -1.0;
     //return average speed of current array list
     float timeDiff = getTimeDiff(startTime, endTime);
     float elapsedTime = timeDiff * progress;
@@ -217,8 +217,11 @@ class TrajectoryManager extends MarkerManager {
           sum++;
         }
       }
-    } 
-    return speedSum / markers.size();
+    }
+    float avgSpeed = speedSum / markers.size();
+    if (Float.isNaN(avgSpeed))
+      return 0;
+    return avgSpeed;
   }
   
     public List<PVector> getSelectedSpeedTime(){
