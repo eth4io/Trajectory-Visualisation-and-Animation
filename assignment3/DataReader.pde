@@ -73,8 +73,11 @@ public class DataReader {
 
   public List<List<Trajectory>> getListOfTrajectoryListByListOfDate(List<String> dates) {
     List<List<Trajectory>> listOfTrajectoryList = new ArrayList<List<Trajectory>>();
+    int sum = 0;
     for (String date : dates) {
       listOfTrajectoryList.add(getTrajectoryListByDate(date));
+      sum++;
+      println("loading: " + sum +  "/ " + dates.size());
     }
     return listOfTrajectoryList;
   }
