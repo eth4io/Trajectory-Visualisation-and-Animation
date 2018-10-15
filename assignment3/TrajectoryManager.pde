@@ -197,7 +197,7 @@ class TrajectoryManager extends MarkerManager {
   }
   
   public float calcAvgSpeed(float progress) {
-    final float MIN_SPEED = 2.0;
+    final float MIN_SPEED = -1.0;
     //return average speed of current array list
     float timeDiff = getTimeDiff(startTime, endTime);
     float elapsedTime = timeDiff * progress;
@@ -217,8 +217,11 @@ class TrajectoryManager extends MarkerManager {
           sum++;
         }
       }
-    } 
-    return speedSum / markers.size();
+    }
+    float avgSpeed = speedSum / markers.size();
+    if (Float.isNaN(avgSpeed))
+      return 0;
+    return avgSpeed;
   }
   
     public List<PVector> getSelectedSpeedTime(){
