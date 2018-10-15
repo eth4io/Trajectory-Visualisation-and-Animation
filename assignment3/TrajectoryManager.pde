@@ -9,7 +9,7 @@ class TrajectoryManager extends MarkerManager {
   
   private List<List<Trajectory>> listOfTrajectoryList;
   private static final int DEFAULT_DRAW = 10;    //default draw level if not set
-  private static final int DEFAULT_NUMBER_OF_DAYS = 30;
+  private static final int DEFAULT_NUMBER_OF_DAYS = 152;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;

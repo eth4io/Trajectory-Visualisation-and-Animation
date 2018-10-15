@@ -22,6 +22,7 @@ static final String DATA_DIR = "data" + FILE_SEPARATOR +
 static final int MAX_TESTER_INDEX = 181;
 static final int MAX_LVL = 11;
 static final int MIN_LVL = 13;
+static final int LINE_CHART_Y_MAX = 5;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
@@ -51,7 +52,131 @@ static final List<String> STUDY_DATES = Arrays.asList(
 "20090413", 
 "20081209", 
 "20081204", 
-"20081211"
+"20081211",
+"20090309",
+"20081110",
+"20090407",
+"20090409",
+"20081208",
+"20090224",
+"20081030",
+"20090307",
+"20090310",
+"20081202",
+"20090222",
+"20081031",
+"20090308",
+"20090402",
+"20081103",
+"20090211",
+"20090215",
+"20090311",
+"20090319",
+"20090210",
+"20081027",
+"20090316",
+"20090317",
+"20090318",
+"20090416",
+"20090114",
+"20081118",
+"20090415",
+"20090419",
+"20090223",
+"20081115",
+"20090113",
+"20090213",
+"20081006",
+"20090302",
+"20081120",
+"20081101",
+"20090120",
+"20090116",
+"20090227",
+"20081028",
+"20081026",
+"20081029",
+"20090320",
+"20081121",
+"20090411",
+"20090414",
+"20081102",
+"20081107",
+"20090109",
+"20081214",
+"20081215",
+"20090203",
+"20090214",
+"20090221",
+"20090225",
+"20090226",
+"20081008",
+"20081020",
+"20081016",
+"20090321",
+"20090322",
+"20090315",
+"20090412",
+"20081104",
+"20090119",
+"20090212",
+"20090306",
+"20090420",
+"20090506",
+"20090118",
+"20081222",
+"20090702",
+"20090206",
+"20090218",
+"20081025",
+"20081012",
+"20090403",
+"20090410",
+"20090418",
+"20081108",
+"20090519",
+"20090112",
+"20090701",
+"20080927",
+"20090623",
+"20090207",
+"20081015",
+"20090406",
+"20090521",
+"20090507",
+"20090121",
+"20081206",
+"20081213",
+"20080917",
+"20090201",
+"20090209",
+"20081024",
+"20090304",
+"20090417",
+"20090422",
+"20081201",
+"20081001",
+"20081023",
+"20090426",
+"20090610",
+"20090505",
+"20090122",
+"20090703",
+"20081014",
+"20080510",
+"20080530",
+"20090314",
+"20090401",
+"20080628",
+"20090128",
+"20090115",
+"20080828",
+"20090202",
+"20090208",
+"20081003",
+"20081021",
+"20090303",
+"20090427"
 );
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
@@ -449,7 +574,7 @@ public void initialiseLineGraph() {
 
     avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
     times[i]=x;
-    //print("Time: " + x + " avg Speed: " + speeds[i] + "\n");
+    //print("Time: " + x + " avg Speed: " + avgSpeeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
@@ -458,7 +583,7 @@ public void initialiseLineGraph() {
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
-  lineChart.setMaxY(5);
+  lineChart.setMaxY(LINE_CHART_Y_MAX);
   lineChart.setXAxisLabel("Time");
   lineChart.setYAxisLabel("Average Speed");
   lineChart.setAxisColour(255);
@@ -469,7 +594,7 @@ public void initialiseLineGraph() {
   lineChart.draw(0, chartY, width-5, chartHeight);
 
   scatterChart = new XYChart(this);
-  scatterChart.setMaxY(5);
+  scatterChart.setMaxY(LINE_CHART_Y_MAX);
   //scatterChart.showYAxis(true)
   scatterChart.setPointColour(color(153, 0, 0));
 }
@@ -625,9 +750,9 @@ void initialiseUI() {
             .setItemsPerRow(1)
               .setSpacingColumn(50)
                 .moveTo("Controls")
-                  .addItem("3 day", 1)
-                    .addItem("15 days", 2)
-                      .addItem("30 days", 3)
+                  .addItem("10 day", 1)
+                    .addItem("50 days", 2)
+                      .addItem("150 days", 3)
                         ;
 
 
@@ -742,13 +867,13 @@ void controlEvent(ControlEvent theEvent) {
     trajectoryManager.clearMarkers();
     switch(int(theEvent.getValue())) {
     case 1:
-      trajectoryManager.setNumberOfDaysToDisplay(3);
+      trajectoryManager.setNumberOfDaysToDisplay(10);
       break;
     case 2:
-      trajectoryManager.setNumberOfDaysToDisplay(15);
+      trajectoryManager.setNumberOfDaysToDisplay(50);
       break;
     case 3:
-      trajectoryManager.setNumberOfDaysToDisplay(30);
+      trajectoryManager.setNumberOfDaysToDisplay(150);
       break;
     }
   }
