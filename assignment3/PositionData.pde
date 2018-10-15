@@ -57,6 +57,14 @@ class PositionData {
     return speed;
   }
   
+  public float getTime() {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(getCreatedTime());
+    float hour = cal.get(Calendar.HOUR_OF_DAY);
+    float min = cal.get(Calendar.MINUTE);
+    return (hour*60)+min;
+  }
+  
   public void setSpeed(float speed) {
     this.speed = speed;
   }

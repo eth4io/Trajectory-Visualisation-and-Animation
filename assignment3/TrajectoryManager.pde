@@ -9,10 +9,11 @@ class TrajectoryManager extends MarkerManager {
   
   private List<List<Trajectory>> listOfTrajectoryList;
   private static final int DEFAULT_DRAW = 10;    //default draw level if not set
-  private static final int DEFAULT_NUMBER_OF_DAYS = 30;
+  private static final int DEFAULT_NUMBER_OF_DAYS = 152;
   private int drawLevel;                  //the draw level control
   private Date startTime;
   private Date endTime;
+  private int VECTOR_STROKE_WEIGHT = 4;
   
   public TrajectoryManager() {
     super();
@@ -196,7 +197,7 @@ class TrajectoryManager extends MarkerManager {
   }
   
   public float calcAvgSpeed(float progress) {
-    final float MIN_SPEED = 2.0;
+    final float MIN_SPEED = -1.0;
     //return average speed of current array list
     float timeDiff = getTimeDiff(startTime, endTime);
     float elapsedTime = timeDiff * progress;
@@ -216,7 +217,49 @@ class TrajectoryManager extends MarkerManager {
           sum++;
         }
       }
-    } 
-    return speedSum / markers.size();
+    }
+    float avgSpeed = speedSum / markers.size();
+    if (Float.isNaN(avgSpeed))
+      return 0;
+    return avgSpeed;
+  }
+  
+    public List<PVector> getSelectedSpeedTime(){
+    List<PVector> timeSpeedVectors = new ArrayList<PVector>();
+      List<Marker> selectedMarkers = getSelected();
+      for (Marker m : selectedMarkers){
+        for (PositionData d : ((Trajectory)m).getPositionData()){
+          float speed = d.getSpeed();
+          float time = d.getTime();
+          timeSpeedVectors.add(new PVector(time, speed));
+        }
+      }
+      
+    return timeSpeedVectors;
+    
+  }
+  
+  public List<Marker> getLineCoords(ColourTable markerColourTable){
+      
+    List<Marker> markers = this.getMarkers();
+    List<Marker> lineMarkers = new ArrayList<Marker>();
+          
+     for (Marker m : markers) {
+       if (((Trajectory)m).isActive) {
+         Location current = m.getLocation();
+         Location previous = ((Trajectory)m).getPreviousLocation();
+         double lngth = current.getDistance(previous);
+         if (lngth < 2) {
+           float speed = ((Trajectory)m).getCurrentSpeed();
+           SimpleLinesMarker d = new SimpleLinesMarker(current, previous);
+           d.setColor(markerColourTable.findColour(speed));
+           d.setStrokeWeight(VECTOR_STROKE_WEIGHT);
+           lineMarkers.add(d);
+         }
+       }
+     }
+     
+    
+    return lineMarkers;
   }
 }
