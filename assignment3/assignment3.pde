@@ -166,7 +166,7 @@ void setup() {
   dataReader = new DataReader();
 
   //---Set Marker Table----------------------------------------
-  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_GN, 0, 50);
+  markerColourTable = ColourTable.getPresetColourTable(ColourTable.RD_PU, -50, 50);
 
   //init trajectory manager
   trajectoryManager = new TrajectoryManager(
@@ -619,9 +619,9 @@ void initialiseUI() {
             .setItemsPerRow(1)
               .setSpacingColumn(50)
                 .moveTo("Controls")
-                  .addItem("1 day", 1)
-                    .addItem("5 days", 2)
-                      .addItem("10 days", 3)
+                  .addItem("3 day", 1)
+                    .addItem("15 days", 2)
+                      .addItem("30 days", 3)
                         ;
 
 
@@ -736,13 +736,13 @@ void controlEvent(ControlEvent theEvent) {
     trajectoryManager.clearMarkers();
     switch(int(theEvent.getValue())) {
     case 1:
-      trajectoryManager.setNumberOfDaysToDisplay(1);
+      trajectoryManager.setNumberOfDaysToDisplay(3);
       break;
     case 2:
-      trajectoryManager.setNumberOfDaysToDisplay(5);
+      trajectoryManager.setNumberOfDaysToDisplay(15);
       break;
     case 3:
-      trajectoryManager.setNumberOfDaysToDisplay(10);
+      trajectoryManager.setNumberOfDaysToDisplay(30);
       break;
     }
   }
@@ -790,6 +790,12 @@ public void colourMarkers() {
     } else {
       m.setHidden(true); /* Hide if not moving */
     }
+  }
+}
+
+void keyPressed() {
+  if (key == ' ') {
+    isPlay = !isPlay;
   }
 }
 
