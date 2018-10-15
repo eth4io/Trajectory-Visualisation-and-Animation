@@ -88,6 +88,7 @@ ControlP5  cp5;
 RadioButton radioButton;
 int sliderX, sliderY, sliderW, sliderH;
 boolean isPlay = true;
+Icon isPlayIcon;
 int animationSpeed;
 CColor  controlsColours;
 int timeLine;
@@ -521,7 +522,7 @@ void initialiseUI() {
                 .listen(true)
                   ;
 
-  cp5.addIcon("isPlay", 40)
+  isPlayIcon = cp5.addIcon("isPlay", 40)
     .moveTo("global")
       .setPosition((width / 2) -30, sliderY - 40)
         .setSize(40, 40)
@@ -799,7 +800,10 @@ public void colourMarkers() {
 
 void keyPressed() {
   if (key == ' ') {
-    isPlay = !isPlay;
+    if (isPlay)
+      isPlayIcon.setOff();
+    else
+      isPlayIcon.setOn();
   }
 }
 
