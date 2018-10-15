@@ -101,7 +101,7 @@ class RadiusFilter extends SimplePointMarker  {
       }
       if (m.isSelected()) pfound++;
     }
-    println(pfound);
+    //println(pfound);
     return found;
   }
   
@@ -218,12 +218,14 @@ class Histogram {
    
   }
   
-  public void changeLook(boolean showLabels, float padding, color c)
+  public void changeLook(boolean showLabels, float padding, float barGap, color c)
   {
     barChart.showValueAxis(showLabels);
     barChart.showCategoryAxis(showLabels);
     barChart.setBarColour(c);
     barChart.setBarPadding(padding);
+    barChart.setBarGap(barGap);
+    
   }
   
   /* private update function */

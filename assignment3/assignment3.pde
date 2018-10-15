@@ -74,6 +74,7 @@ UnfoldingMap map;
 BarScaleUI barScale;                      /* bar scale object */
 DataReader dataReader;
 
+
 Trajectory inspectedTrajectory;           /* trajectory for inspection */
 MarkerManager inspectedManager;           /* manager for exploring trajectory points */
 
@@ -107,6 +108,7 @@ Histogram histogram2;
 static float[] HIST_BINS = new float[] {
   5, 10, 15, 20, 25, 30, 35, 40, 45, 50
 };
+float offsetTest = 3;
 //-----------Chart Variables----------------
 XYChart lineChart;
 XYChart scatterChart;
@@ -202,8 +204,8 @@ void setup() {
     0
   }
   , this);
-  histogram.changeLook(true, 0, FILTER_BLUE);
-  histogram2.changeLook(true, 4, FILTER_RED);
+  histogram.changeLook(true, 0, 3, FILTER_BLUE);
+  histogram2.changeLook(true, 4, 3, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
@@ -226,7 +228,8 @@ void draw() {
   updateRadiusFilter();
 
   map.draw();
-
+  fill(0,0,0,100);
+  rect(0,0,width,height);
   //draw interface background
   fill(50, 150);
   noStroke();
@@ -789,6 +792,5 @@ public void colourMarkers() {
     }
   }
 }
-
 
 
