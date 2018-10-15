@@ -281,11 +281,12 @@ void draw() {
 
 //draw inspector if there is a current selection && if is not in filter mode
 if (inspectedTrajectory != null && !isFilterMode) {
-  showInspector();// add coords here
+
   // test and show selected trajectory
   if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
     inspectedManager.draw();
   }
+    showInspector();// add coords here
 }
 
 //--------------------------------DRAW POINTS----------------------
