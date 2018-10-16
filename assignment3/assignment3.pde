@@ -172,10 +172,16 @@ void setup() {
 
 
   //---------initialise Graphs--------------------------------------------------
-  histogram = new Histogram(HIST_BINS, new ArrayList(), this, false);
-  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this, true);
-  histogram.changeLook(true, 0, 0, FILTER_BLUE);
-  histogram2.changeLook(true, 4, 0, FILTER_RED);
+    String[] LABELS = new String[] {
+      "0-4", "5-9", "10-14", "15-19", "20-24",
+      "25-29", "30-34", "35-39", "40-44", "45-49",
+      ">50"
+    };
+  histogram = new Histogram(HIST_BINS, new ArrayList(), this, LABELS);
+  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this);
+
+  histogram.changeLook(0, 4, FILTER_BLUE);
+  histogram2.changeLook(8, 0, FILTER_RED);
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
@@ -610,7 +616,7 @@ void initialiseUI() {
   cp5.addToggle("showHistogram")
     .setLabel("Show Histogram")
       .setPosition(buttonX, viewControlY)
-        .setValue(true)
+        .setValue(false)
           .moveTo("Controls")
             .getCaptionLabel()
               .getStyle()

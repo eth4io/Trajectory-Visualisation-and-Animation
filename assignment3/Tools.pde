@@ -190,34 +190,26 @@ class FilterManager extends MarkerManager {
 /* histogram class for displaying data frequency
  * ask Michael for Q&A
  */
-class Histogram {
+static class Histogram {
 
   private float[] bins;
   private float[] values;
   //private float maxValue = 0;
   private String[] labels;
-  private boolean showLabels;
   private BarChart barChart;
+  private static final String[] DEFAULT_LABELS = new String[] {
+    "", "", "", "", "",
+    "", "", "", "", "",
+    ""
+  };
+  public Histogram(float[] bins, List<Float> data, PApplet pObj) {
+    this(bins, data, pObj, DEFAULT_LABELS);
+  }
 
-
-  public Histogram(float[] bins, List<Float> data, PApplet PObj, boolean showLabels) {
-    labels = new String[bins.length];
-    if (showLabels) {
-      labels = new String[] {
-        "0-4", "5-9", "10-14", "15-19", "20-24",
-        "25-29", "30-34", "35-39", "40-44", "45-49",
-        ">50"
-      };
-    }
-    else {
-      labels = new String[] {
-        "", "", "", "", "",
-        "", "", "", "", "",
-        ""
-      };
-    }
+  public Histogram(float[] bins, List<Float> data, PApplet pObj, String[] labels) {
+    this.labels = labels;
     update(bins, data);
-    barChart = new BarChart(PObj);
+    barChart = new BarChart(pObj);
     barChart.setData(this.values);
     barChart.showValueAxis(true);
     barChart.setValueFormat("#.#");
@@ -229,15 +221,15 @@ class Histogram {
     barChart.setBarGap(4);
   }
 
-  public void changeLook(boolean showLabels, float padding, float barGap, color c)
+  public void changeLook(float padding, float barGap, color c)
   {
-    barChart.showValueAxis(showLabels);
-    barChart.showCategoryAxis(showLabels);
+    this.labels = labels;
+    barChart.showValueAxis(true);
+    barChart.showCategoryAxis(true);
     barChart.setBarColour(c);
     barChart.setBarPadding(padding);
     barChart.setBarGap(barGap);
   }
-
   /* private update function */
   private void update(float[]bins, List<Float> data) {
     this.bins = new float[bins.length];
