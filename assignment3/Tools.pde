@@ -224,8 +224,6 @@ static class Histogram {
   public void changeLook(float padding, float barGap, color c)
   {
     this.labels = labels;
-    barChart.showValueAxis(true);
-    barChart.showCategoryAxis(true);
     barChart.setBarColour(c);
     barChart.setBarPadding(padding);
     barChart.setBarGap(barGap);
