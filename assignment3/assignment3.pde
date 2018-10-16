@@ -275,7 +275,7 @@ void setup() {
 
   //create bar scale
 
-  barScale = new BarScaleUI(this, map, MAP_WIDTH-40, MAP_HEIGHT - 20);
+  barScale = new BarScaleUI(this, map, MAP_WIDTH-60, MAP_HEIGHT - 20);
 
 
   MapUtils.createDefaultEventDispatcher(this, map);
@@ -373,7 +373,7 @@ void draw() {
     if ((isTrajOn) || (isColoursOn) || (isLinesOn)) {
       float inc = 0.001;
       int colOffset = MAP_WIDTH + 21;
-      fill(0);
+      fill(255);
       textSize(10);
       int speedY = 385; //variable holds the Y value of all speed legend items
       text("Speed Legend", MAP_WIDTH+20, speedY);
@@ -383,7 +383,7 @@ void draw() {
         stroke(markerColourTable.findColour(i*50));
         rect(colOffset + 100*i, speedY+5, 50*inc, 20);
       }
-      fill(0);
+      fill(255);
       text("0km/h", MAP_WIDTH+20, speedY + 40);
       text("50km/h", MAP_WIDTH+100, speedY + 40);
     }
@@ -402,7 +402,9 @@ void draw() {
     if (timeLine >= SLIDER_MAX) timeLine = 0;
   }
 
-
+SimplePointMarker centroid = new SimplePointMarker(trajectoryManager.calcAvgLoc(progress));
+centroid.setRadius(10);
+centroid.draw(map);
 
 //draw inspector if there is a current selection && if is not in filter mode
 if (inspectedTrajectory != null && !isFilterMode) {
@@ -619,9 +621,8 @@ public void updateLineGraph() {
 void initialiseUI() {
   startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
   endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
-  controlsColours = new CColor(0xffffffff, 0x55ffffff, 0xffffffff, 0x99ffffff, 
-  0xffffffff);
-
+  controlsColours =new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 0xffffffff);
+  controlsColours.setCaptionLabel(color(255));
   int buttonX = MAP_WIDTH + 20;
 
   sliderH=10;
@@ -633,6 +634,7 @@ void initialiseUI() {
 
   cp5.setColor(controlsColours);
   cp5.setFont(createFont("Arial", 10));
+  
 
   //------------------Animation Controls---------------------------------------
 
@@ -641,8 +643,6 @@ void initialiseUI() {
       .setPosition(sliderX, sliderY)
         .setSize(sliderW, sliderH)
           .setRange(0, SLIDER_MAX)
-            //.showTickMarks(true)
-            //.setNumberOfTickMarks(98)
             .setColor(controlsColours)
               .setLabelVisible(false)
                 .listen(true)
@@ -686,7 +686,7 @@ void initialiseUI() {
   cp5.addTextlabel("Title")
     .setText("USER CONTROLS")
       .setPosition(buttonX-10, 3)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 20))  
               ; 
@@ -694,7 +694,7 @@ void initialiseUI() {
   cp5.addTextlabel("FilterControls")
     .setText("Chose Amount of Data")
       .setPosition(buttonX, 35)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -702,7 +702,7 @@ void initialiseUI() {
   cp5.addTextlabel("Tools")
     .setText("Filter Tool")
       .setPosition(buttonX, 130)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -710,7 +710,7 @@ void initialiseUI() {
   cp5.addTextlabel("ViewControls")
     .setText("View Controls")
       .setPosition(buttonX, 220)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -719,7 +719,7 @@ void initialiseUI() {
   cp5.addToggle("isFilterMode")
     .setPosition(buttonX, 155)
       .setLabel("Activate Filter Mode")
-        .setColorLabel(color(0))
+        //.setColorValueLabel(color(255))
           .moveTo("Controls")
             //.getCaptionLabel().align(RIGHT,CENTER)
             .getCaptionLabel()
@@ -734,7 +734,7 @@ void initialiseUI() {
         //.setColor(controlsColours)
         .showTickMarks(true)
           .setNumberOfTickMarks(4)
-            .setColorLabel(color(0))
+            .setColorLabel(color(255))
               .setLabel("Radius (KM)")
                 .setBroadcast(true)
                   .moveTo("Controls")
@@ -745,7 +745,7 @@ void initialiseUI() {
       .setSize(40, 20)
         //.setColorForeground(color(120))
         ////.setColorActive(color(255))
-        .setColorLabel(color(0))
+        .setColorLabel(color(255))
           .setColor(controlsColours)
             .setItemsPerRow(1)
               .setSpacingColumn(50)
@@ -768,6 +768,7 @@ void initialiseUI() {
       .setPosition(buttonX, viewControlY)
         .setValue(true)
           .moveTo("Controls")
+          .setColorLabel(color(255))
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
@@ -778,6 +779,7 @@ void initialiseUI() {
       .setPosition(buttonX, viewControlY + 25)
         .setValue(false)
           .moveTo("Controls")
+          .setColorLabel(color(255))
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
@@ -788,6 +790,7 @@ void initialiseUI() {
       .setPosition(buttonX, viewControlY + 50)
         .setValue(true)
           .moveTo("Controls")
+          .setColorLabel(color(255))
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
@@ -798,6 +801,7 @@ void initialiseUI() {
       .setPosition(buttonX, viewControlY + 75)
         .setValue(true)
           .moveTo("Controls")
+          .setColorLabel(color(255))
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
@@ -808,10 +812,12 @@ void initialiseUI() {
       .setPosition(buttonX, viewControlY + 100)
         .setValue(true)
           .moveTo("Controls")
+          .setColorLabel(color(255))
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
-                  .setMarginLeft(45); 
+                  .setMarginLeft(45)
+                    ; 
 
   //set tabs sorting
   cp5.getTab("Controls")
@@ -886,6 +892,7 @@ void drawIU() {
   int rawHour = int(timeLine / 60) + 8;
   int hour = rawHour;
   String daytime = "am";
+  if (rawHour == 12) daytime = "pm";
   if (rawHour > 12) {
     hour = rawHour - 12;
     daytime = "pm";
