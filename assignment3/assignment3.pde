@@ -80,7 +80,9 @@ Histogram histogram2;
 
 
 static float[] HIST_BINS = new float[] {
-  5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100
+  5, 10, 15, 20, 25,
+  30, 35, 40, 45, 50,
+  100
 };
 float offsetTest = 3;
 //-----------Chart Variables----------------
@@ -170,8 +172,8 @@ void setup() {
 
 
   //---------initialise Graphs--------------------------------------------------
-  histogram = new Histogram(HIST_BINS, new ArrayList(), this);
-  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this);
+  histogram = new Histogram(HIST_BINS, new ArrayList(), this, false);
+  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this, true);
   histogram.changeLook(true, 0, 0, FILTER_BLUE);
   histogram2.changeLook(true, 4, 0, FILTER_RED);
   //initialise Line Graph
