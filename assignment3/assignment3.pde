@@ -18,14 +18,14 @@ import org.gicentre.utils.colour.*;
 
 static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
-"Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
+  "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
 static final int MAX_TESTER_INDEX = 181;
 static final int MAX_LVL = 11;
 static final int MIN_LVL = 13;
 static final int LINE_CHART_Y_MAX = 5;
 
 static final Location BEIJING_CENTRAL =            /* study location */
-new Location(39.907614, 116.397334);
+  new Location(39.907614, 116.397334);
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
 static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
