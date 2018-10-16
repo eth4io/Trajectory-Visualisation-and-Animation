@@ -242,29 +242,10 @@ static class Histogram {
 
     int count = 0;
     for (int i = 0; i < data.size(); i++) {
-      float a = data.get(i);
-      if (a >= 0 && a < 5)
-        this.values[0]++;
-      else if (a < 10)
-        this.values[1]++;
-      else if (a < 15)
-        this.values[2]++;
-      else if (a < 20)
-        this.values[3]++;
-      else if (a < 25)
-        this.values[4]++;
-      else if (a < 30)
-        this.values[5]++;
-      else if (a < 35)
-        this.values[6]++;
-      else if (a < 40)
-        this.values[7]++;
-      else if (a < 45)
-        this.values[8]++;
-      else if (a < 50)
-        this.values[9]++;
-      else
-        this.values[10]++;
+      int index = int(data.get(i)) / 5;
+      if (index > 10)
+        index = 10;
+      this.values[index]++;
     }
 
     for (int i = 0; i < this.values.length; i++) {
