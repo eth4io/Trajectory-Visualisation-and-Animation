@@ -200,7 +200,7 @@ class Histogram {
   private BarChart barChart;
 
   
-  public Histogram(float[] bins, float[] data, PApplet PObj) 
+  public Histogram(float[] bins, List<Float> data, PApplet PObj) 
   {
     labels = new String[bins.length];
     update(bins, data);
@@ -213,7 +213,7 @@ class Histogram {
     barChart.showCategoryAxis(true);
     //barChart.transposeAxes(true);
     barChart.setMinValue(0);
-    barChart.setMaxValue(20);
+    barChart.setMaxValue(50);
     barChart.setBarGap(3);
    
   }
@@ -229,7 +229,7 @@ class Histogram {
   }
   
   /* private update function */
-  private void update(float[]bins, float[] data) {
+  private void update(float[]bins, List<Float> data) {
     this.bins = new float[bins.length];
     this.values = new float[bins.length];
     
@@ -238,24 +238,43 @@ class Histogram {
       this.values[i] = 0;                                    /* set values to 0 */
     }
     
-    for (int i = 0; i < data.length; i++) {
-      float a = ceil(data[i]);                               /* round up data i */
-      for (int j = 0; j < this.bins.length; j++) {
-        if (a < this.bins[j]) {                              /* if data i less than limit j */
-          if (j > 0 && a >= this.bins[j-1]) {                /* check if data i more than limit j - 1 */
-            this.values[j] += 1;                             /* if tests passed, add 1 to bin frequency */
-          } else if (j == 0 && a >= 0) {                     /* else if iterator is 0 and data i is greater that 0 */
-            this.values[0] += 1;                             /* data i must be between 0 and first limit */
-          } 
-        }
-      }
+    int count = 0;
+    for (int i = 0; i < data.size(); i++) {
+      float a = data.get(i);
+      if (a >= 0 && a < 5)
+        this.values[0]++;
+      else if (a < 10)
+        this.values[1]++;
+      else if (a < 15)
+        this.values[2]++;
+      else if (a < 20)
+        this.values[3]++;
+      else if (a < 25)
+        this.values[4]++;
+      else if (a < 30)
+        this.values[5]++;
+      else if (a < 35)
+        this.values[6]++;
+      else if (a < 40)
+        this.values[7]++;
+      else if (a < 45)
+        this.values[8]++;
+      else if (a < 50)
+        this.values[9]++;
+      else
+        this.values[10]++;
     }
+
+    for (int i = 0; i < this.values.length; i++) {
+      this.values[i] = this.values[i] * 100 / data.size();
+    }
+
     labels = new String[]{"0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
-                             "30-34", "35-49", "40-44", "45-49"};
+                             "30-34", "35-49", "40-44", "45-49", ">50"};
   }
 
   /* public updater to be used at runtime */
-  public void update(float[] data) {
+  public void update(List<Float> data) {
     update(this.bins, data);
     barChart.setData(values);
   }

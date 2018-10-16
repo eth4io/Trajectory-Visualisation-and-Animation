@@ -80,7 +80,7 @@ Histogram histogram2;
 
 
 static float[] HIST_BINS = new float[] {
-  5, 10, 15, 20, 25, 30, 35, 40, 45, 50
+  5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100
 };
 float offsetTest = 3;
 //-----------Chart Variables----------------
@@ -170,14 +170,8 @@ void setup() {
 
 
   //---------initialise Graphs--------------------------------------------------
-  histogram = new Histogram(HIST_BINS, new float[] {
-    0
-  }
-  , this);
-  histogram2 = new Histogram(HIST_BINS, new float[] {
-    0
-  }
-  , this);
+  histogram = new Histogram(HIST_BINS, new ArrayList(), this);
+  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this);
   histogram.changeLook(true, 0, 0, FILTER_BLUE);
   histogram2.changeLook(true, 4, 0, FILTER_RED);
   //initialise Line Graph
@@ -386,15 +380,15 @@ void showInspector() {
 void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   //histogram update and draw
 
-  float[] speeds1 = new float[a.size()];
-  float[] speeds2 = new float[b != null ? b.size() : 0];
+  List<Float> speeds1 = new ArrayList();
+  List<Float> speeds2 = b != null? new ArrayList() : null;
   int i = 0;
 
 
   for (Trajectory m : a) {
     if (!m.isActive())
       continue;
-    speeds1[i++] =  m.getCurrentSpeed();
+    speeds1.add(m.getCurrentSpeed());
   }
 
   histogram.update(speeds1);
@@ -404,7 +398,7 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
     for (Trajectory m : b) {
       if (!m.isActive())
         continue;
-      speeds2[i++] =  m.getCurrentSpeed();
+      speeds2.add(m.getCurrentSpeed());
     }
     histogram2.update(speeds2);
   }
