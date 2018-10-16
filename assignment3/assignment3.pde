@@ -781,6 +781,12 @@ void keyPressed() {
     else
       isPlayIcon.setOn();
   }
+  else if (key == 'h') { // left
+    timeLine--;
+  }
+  else if (key == 'l') { // right
+    timeLine++;
+  }
 }
 
 
