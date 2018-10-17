@@ -252,69 +252,68 @@ void draw() {
 
 
 
-//draw inspector if there is a current selection && if is not in filter mode
-if (inspectedTrajectory != null && !isFilterMode) {
+  //draw inspector if there is a current selection && if is not in filter mode
+  if (inspectedTrajectory != null && !isFilterMode) {
 
-  // test and show selected trajectory
-  if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
-    inspectedManager.draw();
+    // test and show selected trajectory
+    if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
+      inspectedManager.draw();
+    }
+      showInspector();// add coords here
   }
-    showInspector();// add coords here
-}
 
-//--------------------------------DRAW POINTS----------------------
-if (!isPtsHidden) trajectoryManager.draw();
+  //--------------------------------DRAW POINTS----------------------
+  if (!isPtsHidden) trajectoryManager.draw();
 
 
-//--------------------------------DRAW LINES--------------------------
-//draw markers as lines between current and previous pt
-if (isLinesOn) {
-  List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
-  //map.addMarkers(lines);
-  for (Marker l : lines) {
+  //--------------------------------DRAW LINES--------------------------
+  //draw markers as lines between current and previous pt
+  if (isLinesOn) {
+    List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
+    //map.addMarkers(lines);
+    for (Marker l : lines) {
 
-    l.draw(map);
+      l.draw(map);
+    }
   }
-}
 
-//----------------------COLOUR HANDLING FOR MARKERS------------------------
-trajectoryManager.setAllColor(200);
-fill(255);
-textSize(8);
+  //----------------------COLOUR HANDLING FOR MARKERS------------------------
+  trajectoryManager.setAllColor(200);
+  fill(255);
+  textSize(8);
 
-if (!isFilterMode) {
-  List<Trajectory> empty = new ArrayList<Trajectory>();
-  updateHistogram(trajectoryManager.getMarkers(), empty);
-  trajectoryManager.setStyle(color(255, 255, 255, 0), color(0, 0, 0), 1);
-}
+  if (!isFilterMode) {
+    List<Trajectory> empty = new ArrayList<Trajectory>();
+    updateHistogram(trajectoryManager.getMarkers(), empty);
+    trajectoryManager.setStyle(color(255, 255, 255, 0), color(0, 0, 0), 1);
+  }
 
-colourMarkers();
+  colourMarkers();
 
-//-----------------------DRAW CHARTS--------------------------------------------
-if (isHistogramOn) {
-  histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
-  histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
-}
-
+  //-----------------------DRAW CHARTS--------------------------------------------
+  if (isHistogramOn) {
+    histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
+    histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
+  }
 
 
-//scatterChart 
-if (!isFilterMode) {  /* dont run if filter mode is on */
-  List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
-  scatterChart.setData(speedTimeData);
-  scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
-}
+  //scatterChart
+  if (!isFilterMode && inspectedTrajectory != null) {  /* dont run if filter mode is on */
+    List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime(inspectedTrajectory);
+    scatterChart.setData(speedTimeData);
+    scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
+  }
 
-lineChart.draw(0, chartY, width-5, chartHeight);
+  lineChart.draw(0, chartY, width-5, chartHeight);
 
 
-filterManager.draw();
-updateLineGraph();
+  filterManager.draw();
+  updateLineGraph();
 
-//update zoom levels (leave last in draw)
-previousZoomLevel = currentZoomLevel;
+  //update zoom levels (leave last in draw)
+  previousZoomLevel = currentZoomLevel;
 
-drawIU();
+  drawIU();
 }
 
 //-----------------------------------------FILTER METHODS----------------------------------------
