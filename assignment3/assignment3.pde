@@ -26,9 +26,6 @@ static final int LINE_CHART_Y_MAX = 5;
 
 static final Location BEIJING_CENTRAL =            /* study location */
 new Location(39.907614, 116.397334);
-static final List<String> STUDY_DATES = Arrays.asList(
-"20090220", 
-"20081116");
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
 static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
@@ -151,7 +148,7 @@ void setup() {
 
   //init trajectory manager
   trajectoryManager = new TrajectoryManager(
-  dataReader.getListOfTrajectoryListByListOfDate(STUDY_DATES));
+  dataReader.getListOfTrajectoryListByListOfDate(StudyDates.STUDY_DATES));
   trajectoryManager.setMap(map);
 
 
