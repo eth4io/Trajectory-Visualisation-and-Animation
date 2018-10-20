@@ -184,6 +184,9 @@ void setup() {
   , this);
   histogram.changeLook(true, 0, 0, FILTER_BLUE);
   histogram2.changeLook(true, 4, 0, FILTER_RED);
+    histogram.getChart().setAxisValuesColour(255);
+  histogram2.getChart().setDecorations(false);
+  
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
@@ -309,10 +312,7 @@ colourMarkers();
 
 //-----------------------DRAW CHARTS--------------------------------------------
 if (isHistogramOn) {
-  
-  histogram.getChart().setAxisValuesColour(255);
   histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
-  histogram2.getChart().setDecorations(false);
   histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
 }
 
