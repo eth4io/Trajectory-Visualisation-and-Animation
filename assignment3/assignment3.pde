@@ -310,6 +310,7 @@ colourMarkers();
 //-----------------------DRAW CHARTS--------------------------------------------
 if (isHistogramOn) {
   
+  histogram.getChart().setAxisValuesColour(255);
   histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
   histogram2.getChart().setDecorations(false);
   histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
