@@ -91,7 +91,7 @@ class RadiusFilter extends SimplePointMarker  {
         continue;
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
-      if (diff < dist/2 && m.isMoving()) {
+      if (diff < dist/2 && m.isActive()) {
         m.setSelected(true);
         found.add(m);
       } else {

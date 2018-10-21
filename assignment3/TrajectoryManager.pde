@@ -263,20 +263,12 @@ class TrajectoryManager extends MarkerManager {
     return lineMarkers;
   }
   
-  public Location calcAvgLoc(float progress) {
-    final float MIN_SPEED = -1.0;
-    //return average speed of current array list
-    float timeDiff = getTimeDiff(startTime, endTime);
-    float elapsedTime = timeDiff * progress;
-    Date currentTime = new Date();
-    currentTime.setTime(startTime.getTime() + (int)elapsedTime);
+  public Location calcAvgLoc() {
     List<Marker> markers = this.getMarkers();
     float XSum = 0;
     float YSum = 0;
     int sum = 0;
     for (Marker m : markers) {
-      if (((Trajectory)m).hasNext()){
-        ((Trajectory)m).update(currentTime);
         if (!((Trajectory)m).isActive())
           continue;
         Location point = ((Trajectory)m).getLocation();
@@ -285,7 +277,6 @@ class TrajectoryManager extends MarkerManager {
         XSum = XSum + x;
         YSum = YSum + y;
         sum++;
-      }
     }
     float avgX = XSum / sum;
     float avgY = YSum / sum;

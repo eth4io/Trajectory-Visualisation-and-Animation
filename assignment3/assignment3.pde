@@ -270,8 +270,7 @@ void draw() {
   }
   //----------------CENTROID DISPLAY--------------------------------
   if (isCentroidOn) {
-
-    centroid.setLocation(trajectoryManager.calcAvgLoc(progress));
+    centroid.setLocation(trajectoryManager.calcAvgLoc());
     centroid.draw(map);
   }
 
@@ -701,7 +700,7 @@ void initialiseUI() {
   cp5.addToggle("showColours")
     .setLabel("Colour by Speed")
       .setPosition(buttonX+10, viewControlY + 75)
-        .setValue(false)
+        .setValue(true)
           .moveTo("Controls")
             .setColorLabel(color(255))
               .getCaptionLabel()
@@ -734,6 +733,16 @@ void initialiseUI() {
                       ;
 }
 
+void isFilterMode(boolean value) {
+  if (value) { 
+    cp5.getController("showHistogram").setValue(1);
+    cp5.getController("showCentroid").setValue(0);
+    cp5.getController("showPts").setValue(1);
+    cp5.getController("showAsLines").setValue(0);
+  }
+    
+  isFilterMode = value;
+}
 
 
 void showHistogram(boolean value) {
@@ -742,6 +751,7 @@ void showHistogram(boolean value) {
 
 void showCentroid(boolean value) {
   isCentroidOn = value;
+  if (isCentroidOn) cp5.getController("isFilterMode").setValue(0);
 }
 
 void showColours(boolean value) {
@@ -754,10 +764,12 @@ void showTrajectory(boolean value) {
 
 void showAsLines(boolean value) {
   isLinesOn = value;
+  if (isLinesOn) cp5.getController("showPts").setValue(0);
 }
 
 void showPts(boolean value) {
   isPtsOn= value;
+  if (isPtsOn) cp5.getController("showAsLines").setValue(0);
 }
 
 /* update filter size from filter controls */
@@ -828,7 +840,7 @@ public void colourMarkers() {
   List<Trajectory> t = trajectoryManager.getMarkers();
 
   for (Trajectory m : t) {
-    if (m.isActive() && m.isMoving()) {
+    if (m.isActive()) {
       if ((!isFilterMode)&&(isColoursOn)) {                                              /* do not colour if in filter mode */
         float speed =  m.getCurrentSpeed();
         m.setColor(markerColourTable.findColour(speed));
