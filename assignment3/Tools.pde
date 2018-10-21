@@ -266,6 +266,4 @@ class Histogram {
   }
   
   public float[] getBins()  {return bins; }
-  
-  public BarChart getChart() {return this.barChart; }
 }
