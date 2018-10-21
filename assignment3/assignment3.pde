@@ -40,6 +40,8 @@ static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 static final int PANEL_WIDTH = 200;
 static final int MAP_WIDTH = WIDTH - PANEL_WIDTH;
+static final int CENTROID_RADIUS = 25;
+final color CENTROID_COLOUR = color(4, 4, 100, 50);
 
 //-----------------------  Global Variables ------------------------
 
@@ -55,6 +57,7 @@ MarkerManager inspectedManager;           /* manager for exploring trajectory po
 TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
 ColourTable markerColourTable;
+
 
 //----------- UI Variables ----------------
 ControlP5  cp5;
@@ -72,7 +75,8 @@ boolean isHistogramOn;
 boolean isColoursOn;
 boolean isTrajOn;
 boolean isLinesOn;
-boolean isPtsHidden;
+boolean isPtsOn;
+boolean isCentroidOn;
 
 //-----------Histogram Variables---------------
 Histogram histogram;
@@ -125,7 +129,7 @@ void setup() {
 
   //create bar scale
 
-  barScale = new BarScaleUI(this, map, MAP_WIDTH-40, MAP_HEIGHT - 20);
+  barScale = new BarScaleUI(this, map, MAP_WIDTH-60, MAP_HEIGHT - 20);
 
 
   MapUtils.createDefaultEventDispatcher(this, map);
@@ -172,6 +176,7 @@ void setup() {
 
 
   //---------initialise Graphs--------------------------------------------------
+
     String[] LABELS = new String[] {
       "0-4", "5-9", "10-14", "15-19", "20-24",
       "25-29", "30-34", "35-39", "40-44", "45-49",
@@ -182,6 +187,9 @@ void setup() {
 
   histogram.changeLook(0, 4, FILTER_BLUE);
   histogram2.changeLook(8, 0, FILTER_RED);
+  histogram.getChart().setAxisValuesColour(255);
+  histogram2.getChart().setDecorations(false);
+
   //initialise Line Graph
   initialiseLineGraph();
   frameSpeed = 2;
@@ -204,8 +212,8 @@ void draw() {
   updateRadiusFilter();
 
   map.draw();
-  fill(0,0,0,100);
-  rect(0,0,width,height);
+  fill(0, 0, 0, 100);
+  rect(0, 0, width, height);
   //draw interface background
   fill(50, 150);
   noStroke();
@@ -218,24 +226,32 @@ void draw() {
     line(MAP_WIDTH, 30, width, 30);
     line(MAP_WIDTH, 125, width, 125);
     line(MAP_WIDTH, 215, width, 215);
-
-
+    line(MAP_WIDTH, 440, width, 440);
+    stroke(0);
+    fill(255);
+    textSize(13);
+    int speedY = 480; //variable holds the Y value of all legend items
     if ((isTrajOn) || (isColoursOn) || (isLinesOn)) {
       float inc = 0.001;
-      int colOffset = MAP_WIDTH + 21;
-      fill(0);
-      textSize(10);
-      int speedY = 385; //variable holds the Y value of all speed legend items
-      text("Speed Legend", MAP_WIDTH+20, speedY);
+      int colOffset = MAP_WIDTH + 70;
+
+      text("Speed", MAP_WIDTH+25, speedY + 10);
       for (float i=0; i<1-inc; i+=inc)
       {
         fill(markerColourTable.findColour(i*50));
         stroke(markerColourTable.findColour(i*50));
-        rect(colOffset + 100*i, speedY+5, 50*inc, 20);
+        rect(colOffset + 100*i, speedY-5, 50*inc, 20);
       }
-      fill(0);
-      text("0km/h", MAP_WIDTH+20, speedY + 40);
-      text("50km/h", MAP_WIDTH+100, speedY + 40);
+      fill(255);
+      text("0km/h", MAP_WIDTH+70, speedY + 35);
+      text("50km/h", MAP_WIDTH+130, speedY + 35);
+    }
+    if (isCentroidOn) {
+      text("Centroid", MAP_WIDTH+25, speedY + 80);
+      fill(CENTROID_COLOUR);
+      strokeWeight(1);
+      ellipseMode(RADIUS);
+      ellipse(MAP_WIDTH + 110, speedY + 75, CENTROID_RADIUS, CENTROID_RADIUS);
     }
   }
 
@@ -251,72 +267,77 @@ void draw() {
     if (timeLine < SLIDER_MAX) timeLine ++;
     if (timeLine >= SLIDER_MAX) timeLine = 0;
   }
-
-
-
-//draw inspector if there is a current selection && if is not in filter mode
-if (inspectedTrajectory != null && !isFilterMode) {
-
-  // test and show selected trajectory
-  if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
-    inspectedManager.draw();
+  //----------------CENTROID DISPLAY--------------------------------
+  if (isCentroidOn) {
+    SimplePointMarker centroid = new SimplePointMarker(trajectoryManager.calcAvgLoc(progress));
+    centroid.setRadius(CENTROID_RADIUS);
+    centroid.setColor(CENTROID_COLOUR);
+    centroid.draw(map);
   }
+
+  //draw inspector if there is a current selection && if is not in filter mode
+  if (inspectedTrajectory != null && !isFilterMode) {
+
+    // test and show selected trajectory
+    if (Tools.exploreTrajectory(inspectedTrajectory, inspectedManager, markerColourTable)) {
+      inspectedManager.draw();
+    }
     showInspector();// add coords here
-}
-
-//--------------------------------DRAW POINTS----------------------
-if (!isPtsHidden) trajectoryManager.draw();
-
-
-//--------------------------------DRAW LINES--------------------------
-//draw markers as lines between current and previous pt
-if (isLinesOn) {
-  List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
-  //map.addMarkers(lines);
-  for (Marker l : lines) {
-
-    l.draw(map);
   }
-}
 
-//----------------------COLOUR HANDLING FOR MARKERS------------------------
-trajectoryManager.setAllColor(200);
-fill(255);
-textSize(8);
-
-if (!isFilterMode) {
-  List<Trajectory> empty = new ArrayList<Trajectory>();
-  updateHistogram(trajectoryManager.getMarkers(), empty);
-  trajectoryManager.setStyle(color(255, 255, 255, 0), color(0, 0, 0), 1);
-}
-
-colourMarkers();
-
-//-----------------------DRAW CHARTS--------------------------------------------
-if (isHistogramOn) {
-  histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
-  histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
-}
+  //--------------------------------DRAW POINTS----------------------
+  if (isPtsOn) trajectoryManager.draw();
 
 
+  //--------------------------------DRAW LINES--------------------------
+  //draw markers as lines between current and previous pt
+  if (isLinesOn) {
+    List<Marker> lines = trajectoryManager.getLineCoords(markerColourTable);
+    //map.addMarkers(lines);
+    for (Marker l : lines) {
 
-//scatterChart 
-if (!isFilterMode) {  /* dont run if filter mode is on */
-  List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
-  scatterChart.setData(speedTimeData);
-  scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
-}
+      l.draw(map);
+    }
+  }
 
-lineChart.draw(0, chartY, width-5, chartHeight);
+  //----------------------COLOUR HANDLING FOR MARKERS------------------------
+  trajectoryManager.setAllColor(200);
+  fill(255);
+  textSize(8);
+
+  if (!isFilterMode) {
+    List<Trajectory> empty = new ArrayList<Trajectory>();
+    updateHistogram(trajectoryManager.getMarkers(), empty);
+    trajectoryManager.setStyle(color(255, 255, 255, 0), color(0, 0, 0), 1);
+  }
+
+  colourMarkers();
+
+  //-----------------------DRAW CHARTS--------------------------------------------
+  if (isHistogramOn) {
+    histogram.draw(10, MAP_HEIGHT - 260, 250, 250);
+    histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
+  }
 
 
-filterManager.draw();
-updateLineGraph();
 
-//update zoom levels (leave last in draw)
-previousZoomLevel = currentZoomLevel;
+  //scatterChart 
+  if (!isFilterMode) {  /* dont run if filter mode is on */
+    List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
+    scatterChart.setData(speedTimeData);
+    scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
+  }
+  lineChart.setPointSize(1);
+  lineChart.draw(0, chartY, width-5, chartHeight);
 
-drawIU();
+
+  filterManager.draw();
+  updateLineGraph();
+
+  //update zoom levels (leave last in draw)
+  previousZoomLevel = currentZoomLevel;
+
+  drawIU();
 }
 
 //-----------------------------------------FILTER METHODS----------------------------------------
@@ -445,7 +466,6 @@ public void initialiseLineGraph() {
 
   scatterChart = new XYChart(this);
   scatterChart.setMaxY(LINE_CHART_Y_MAX);
-  //scatterChart.showYAxis(true)
   scatterChart.setPointColour(color(153, 0, 0));
 }
 
@@ -469,8 +489,10 @@ public void updateLineGraph() {
 void initialiseUI() {
   startLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMinX(), lineChart.getMinY()));
   endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
-  controlsColours = new CColor(0xffffffff, 0x55ffffff, 0xffffffff, 0x99ffffff, 
-  0xffffffff);
+
+  controlsColours =new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 0xffffffff);
+  //controlsColours.setCaptionLabel(color(100));
+  controlsColours.setValueLabel(color(0));
 
   int buttonX = MAP_WIDTH + 20;
 
@@ -480,9 +502,21 @@ void initialiseUI() {
   sliderW = (int)(endLineGraph.x - startLineGraph.x);
 
   cp5 = new ControlP5(this);
+  //set tabs sorting
+
 
   cp5.setColor(controlsColours);
   cp5.setFont(createFont("Arial", 10));
+
+  cp5.getTab("Controls")
+    .setColorLabel(color(0))
+      .setLabel("Show Controls")
+        ;
+
+  cp5.getTab("default")
+    .setColorLabel(color(0))
+      .setLabel("Hide Controls")
+        ;
 
   //------------------Animation Controls---------------------------------------
 
@@ -491,8 +525,6 @@ void initialiseUI() {
       .setPosition(sliderX, sliderY)
         .setSize(sliderW, sliderH)
           .setRange(0, SLIDER_MAX)
-            //.showTickMarks(true)
-            //.setNumberOfTickMarks(98)
             .setColor(controlsColours)
               .setLabelVisible(false)
                 .listen(true)
@@ -502,10 +534,8 @@ void initialiseUI() {
     .moveTo("global")
       .setPosition((width / 2) -30, sliderY - 40)
         .setSize(40, 40)
-          //.setRoundedCorners(20)
           .setFont(createFont("fontawesome-webfont.ttf", 25))
             .setFontIcons(#00f04C, #00f04B)
-              //.setScale(0.9, 1)
               .setSwitch(true)
                 .setColorBackground(color(255, 100))
                   .hideBackground()
@@ -536,7 +566,7 @@ void initialiseUI() {
   cp5.addTextlabel("Title")
     .setText("USER CONTROLS")
       .setPosition(buttonX-10, 3)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 20))  
               ; 
@@ -544,7 +574,7 @@ void initialiseUI() {
   cp5.addTextlabel("FilterControls")
     .setText("Chose Amount of Data")
       .setPosition(buttonX, 35)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -552,7 +582,7 @@ void initialiseUI() {
   cp5.addTextlabel("Tools")
     .setText("Filter Tool")
       .setPosition(buttonX, 130)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -560,7 +590,31 @@ void initialiseUI() {
   cp5.addTextlabel("ViewControls")
     .setText("View Controls")
       .setPosition(buttonX, 220)
-        .setColorValue(color(0))
+        .setColorValue(color(255))
+          .moveTo("Controls")
+            .setFont(createFont("Arial", 15))  
+              ; 
+
+  cp5.addTextlabel("MarkerSettings")
+    .setText("Marker Options")
+      .setPosition(buttonX+10, 240)
+        .setColorValue(color(255))
+          .moveTo("Controls")
+            .setFont(createFont("Arial", 13))  
+              ; 
+
+  cp5.addTextlabel("View Options")
+    .setText("View Options")
+      .setPosition(buttonX+10, 360)
+        .setColorValue(color(255))
+          .moveTo("Controls")
+            .setFont(createFont("Arial", 13))  
+              ; 
+
+  cp5.addTextlabel("Legend")
+    .setText("Legend")
+      .setPosition(buttonX, 445)
+        .setColorValue(color(255))
           .moveTo("Controls")
             .setFont(createFont("Arial", 15))  
               ; 
@@ -569,9 +623,8 @@ void initialiseUI() {
   cp5.addToggle("isFilterMode")
     .setPosition(buttonX, 155)
       .setLabel("Activate Filter Mode")
-        .setColorLabel(color(0))
+        .setColorLabel(color(255))
           .moveTo("Controls")
-            //.getCaptionLabel().align(RIGHT,CENTER)
             .getCaptionLabel()
               .getStyle()
                 .setMarginTop(-22)
@@ -581,10 +634,9 @@ void initialiseUI() {
   cp5.addSlider("filterSize")
     .setPosition(buttonX, 190)
       .setRange(FILTER_MIN, FILTER_MAX)
-        //.setColor(controlsColours)
-        .showTickMarks(true)
-          .setNumberOfTickMarks(4)
-            .setColorLabel(color(0))
+        .setColorLabel(color(255))
+          .showTickMarks(true)
+            .setNumberOfTickMarks(4)
               .setLabel("Radius (KM)")
                 .setBroadcast(true)
                   .moveTo("Controls")
@@ -593,12 +645,10 @@ void initialiseUI() {
   radioButton = cp5.addRadioButton("radioButton")
     .setPosition(buttonX, 55)
       .setSize(40, 20)
-        //.setColorForeground(color(120))
-        ////.setColorActive(color(255))
-        .setColorLabel(color(0))
-          .setColor(controlsColours)
-            .setItemsPerRow(1)
-              .setSpacingColumn(50)
+        .setColor(controlsColours)
+          .setItemsPerRow(1)
+            .setSpacingColumn(50)
+              .setColorLabel(color(255))
                 .moveTo("Controls")
                   .addItem("10 day", 1)
                     .addItem("50 days", 2)
@@ -611,72 +661,87 @@ void initialiseUI() {
     t.getCaptionLabel().getStyle().movePadding(7, 0, 0, 3);
   }
 
-  int viewControlY = 245;
-
-  cp5.addToggle("showHistogram")
-    .setLabel("Show Histogram")
-      .setPosition(buttonX, viewControlY)
-        .setValue(false)
-          .moveTo("Controls")
-            .getCaptionLabel()
-              .getStyle()
-                .setMarginTop(-22)
-                  .setMarginLeft(45); 
-
-  cp5.addToggle("showColours")
-    .setLabel("Colour Points by Speed")
-      .setPosition(buttonX, viewControlY + 25)
-        .setValue(false)
-          .moveTo("Controls")
-            .getCaptionLabel()
-              .getStyle()
-                .setMarginTop(-22)
-                  .setMarginLeft(45); 
-
-  cp5.addToggle("showTrajectory")
-    .setLabel("Show Traj with Click")
-      .setPosition(buttonX, viewControlY + 50)
-        .setValue(true)
-          .moveTo("Controls")
-            .getCaptionLabel()
-              .getStyle()
-                .setMarginTop(-22)
-                  .setMarginLeft(45); 
+  int viewControlY = 260; 
 
   cp5.addToggle("showAsLines")
     .setLabel("Show Pts as Lines")
-      .setPosition(buttonX, viewControlY + 75)
+      .setPosition(buttonX, viewControlY)
+
+        .setValue(true)
+          .setColorLabel(color(255))
+            .moveTo("Controls")
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45); 
+
+  cp5.addToggle("showTrajectory")
+    .setLabel("Show Traj with Click")
+      .setPosition(buttonX, viewControlY + 25)
         .setValue(true)
           .moveTo("Controls")
-            .getCaptionLabel()
-              .getStyle()
-                .setMarginTop(-22)
-                  .setMarginLeft(45); 
+            .setColorLabel(color(255))
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45); 
 
-  cp5.addToggle("HidePts")
-    .setLabel("Hide Point Markers")
-      .setPosition(buttonX, viewControlY + 100)
-        .setValue(true)
+  cp5.addToggle("showPts")
+    .setLabel("Show Points as Circles")
+      .setPosition(buttonX, viewControlY + 50)
+        .setValue(false)
+          .setColorLabel(color(255))
+            .moveTo("Controls")
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45)
+                      ; 
+
+  cp5.addToggle("showColours")
+    .setLabel("Colour by Speed")
+      .setPosition(buttonX+10, viewControlY + 75)
+        .setValue(false)
           .moveTo("Controls")
-            .getCaptionLabel()
-              .getStyle()
-                .setMarginTop(-22)
-                  .setMarginLeft(45); 
+            .setColorLabel(color(255))
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45); 
 
-  //set tabs sorting
-  cp5.getTab("Controls")
-    .setColorLabel(color(0))
-      .setLabel("Show Controls")
-        ;
+  cp5.addToggle("showHistogram")
+    .setLabel("Show Histogram")
+      .setPosition(buttonX, viewControlY+125)
+        .setValue(false)
+          .setColorLabel(color(255))
+            .moveTo("Controls")
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45);
 
-  cp5.getTab("default")
-    .setColorLabel(color(0))
-      .setLabel("Hide Controls")
-        ;
+
+  cp5.addToggle("showCentroid")
+    .setLabel("Show Centroid")
+      .setPosition(buttonX, viewControlY + 150)
+        .setValue(false)
+          .setColorLabel(color(255))
+            .moveTo("Controls")
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45)
+                      ;
 }
+
+
 
 void showHistogram(boolean value) {
   isHistogramOn = value;
+}
+
+void showCentroid(boolean value) {
+  isCentroidOn = value;
 }
 
 void showColours(boolean value) {
@@ -691,8 +756,8 @@ void showAsLines(boolean value) {
   isLinesOn = value;
 }
 
-void HidePts(boolean value) {
-  isPtsHidden = value;
+void showPts(boolean value) {
+  isPtsOn= value;
 }
 
 /* update filter size from filter controls */
@@ -736,6 +801,7 @@ void drawIU() {
   int rawHour = int(timeLine / 60) + 8;
   int hour = rawHour;
   String daytime = "am";
+  if (rawHour == 12) daytime = "pm";
   if (rawHour > 12) {
     hour = rawHour - 12;
     daytime = "pm";
@@ -788,5 +854,4 @@ void keyPressed() {
     timeLine++;
   }
 }
-
 

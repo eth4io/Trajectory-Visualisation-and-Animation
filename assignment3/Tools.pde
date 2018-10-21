@@ -261,6 +261,9 @@ static class Histogram {
   public void draw(int x, int y, int w, int h) {
     this.barChart.draw(x, y, w, h);
   }
+  
+  public float[] getBins()  {return bins; }
+  
+  public BarChart getChart() {return this.barChart; }
 
-  public float[] getBins() { return bins; }
 }
