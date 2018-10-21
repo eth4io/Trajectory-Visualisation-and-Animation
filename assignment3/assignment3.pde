@@ -40,7 +40,7 @@ static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 static final int PANEL_WIDTH = 200;
 static final int MAP_WIDTH = WIDTH - PANEL_WIDTH;
-static final int CENTROID_RADIUS = 25;
+static final int CENTROID_SIZE = 5;
 final color CENTROID_COLOUR = color(4, 4, 100, 50);
 
 //-----------------------  Global Variables ------------------------
@@ -58,6 +58,7 @@ TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
 ColourTable markerColourTable;
 
+CentroidMarker centroid;
 
 //----------- UI Variables ----------------
 ControlP5  cp5;
@@ -131,6 +132,8 @@ void setup() {
 
 
   MapUtils.createDefaultEventDispatcher(this, map);
+  
+  centroid = new CentroidMarker(new Location(0,0), CENTROID_COLOUR, CENTROID_SIZE);
 
   //-----Set Filter Variables ------------------------------------  
   FILTER_BLUE = color(252, 141, 89);
@@ -247,8 +250,9 @@ void draw() {
       text("Centroid", MAP_WIDTH+25, speedY + 80);
       fill(CENTROID_COLOUR);
       strokeWeight(1);
-      ellipseMode(RADIUS);
-      ellipse(MAP_WIDTH + 110, speedY + 75, CENTROID_RADIUS, CENTROID_RADIUS);
+      rectMode(RADIUS);
+      rect(MAP_WIDTH + 110, speedY + 75, CENTROID_SIZE, CENTROID_SIZE);
+      rectMode(CORNER);
     }
   }
 
@@ -266,9 +270,10 @@ void draw() {
   }
   //----------------CENTROID DISPLAY--------------------------------
   if (isCentroidOn) {
-    SimplePointMarker centroid = new SimplePointMarker(trajectoryManager.calcAvgLoc(progress));
-    centroid.setRadius(CENTROID_RADIUS);
-    centroid.setColor(CENTROID_COLOUR);
+//    CentroidMarker centroid = new CentroidMarker(trajectoryManager.calcAvgLoc(progress), CENTROID_COLOUR);
+//    centroid.setRadius(CENTROID_RADIUS);
+//    centroid.setColor(CENTROID_COLOUR);
+    centroid.setLocation(trajectoryManager.calcAvgLoc(progress));
     centroid.draw(map);
   }
 
