@@ -1,5 +1,5 @@
 /* Tools file 
- * 
+ *
  * List of Tools:
  * - radius filter 
  * - filter manager
@@ -7,7 +7,7 @@
  *
  * Statics:
  * - explore trajectory
- * 
+ *
  */
 
 import org.gicentre.utils.stat.*;                          /* for charts */
@@ -15,18 +15,18 @@ import de.fhpotsdam.unfolding.utils.GeoUtils.*;
 import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 
 static class Tools {
-  
-/* reads entire positionData file for a trajectory,
- * creates line segments and colours according to speed,
- * and adds to Marker Manager.
- * 
- * precondition marker manager must be initilised 
- * and assigned to an UnfoldingMap
- *
- * returns true if successful, otherwise false
- * 
- * ask Michael for Q&A
- */
+
+  /* reads entire positionData file for a trajectory,
+   * creates line segments and colours according to speed,
+   * and adds to Marker Manager.
+   *
+   * precondition marker manager must be initilised 
+   * and assigned to an UnfoldingMap
+   *
+   * returns true if successful, otherwise false
+   *
+   * ask Michael for Q&A
+   */
   public static boolean exploreTrajectory(Trajectory t, MarkerManager mm, ColourTable ct) 
   {
     if (mm.getMarkers() != null) {                                                  /* clear marker manager if not empty */
@@ -34,18 +34,18 @@ static class Tools {
     }
     for (int i = 0; i < t.getPositionData().size() - 1; i++) {                      /* create line shape while i < n-1 */
       Location a = new Location(                                                    /* set location i */
-          t.getPositionData().get(i).getLat(),                                       
-          t.getPositionData().get(i).getLng());
+      t.getPositionData().get(i).getLat(), 
+      t.getPositionData().get(i).getLng());
       Location b = new Location(                                                    /* set locaiton i + 1 */                                  
-          t.getPositionData().get(i+1).getLat(), 
-          t.getPositionData().get(i+1).getLng());
-          
+      t.getPositionData().get(i+1).getLat(), 
+      t.getPositionData().get(i+1).getLng());
+
       if (GeoUtils.getDistance(a, b) <= 2) {                                        /* check for sample errors > 2km apart */
         SimpleLinesMarker slm = new SimpleLinesMarker(a, b);
         slm.setStrokeWeight(3);
         slm.setColor(ct.findColour(t.getPositionData().get(i+1).getSpeed()));       /* set colour of line segment based on i+1 speed */
-        mm.addMarker(slm);  
-      }                                                  
+        mm.addMarker(slm);
+      }
     }
     return mm.getMarkers().size() > 0 ? true : false;                               /* test if anything loaded */
   }
@@ -57,19 +57,19 @@ static class Tools {
  * 
  * ask Michael for Q&A
  */
-class RadiusFilter extends SimplePointMarker  {
+class RadiusFilter extends SimplePointMarker {
   private float rad_km = 20;
   private boolean placed = false;
-  
+
   public RadiusFilter(color c) 
   {                                       
-    super(new Location(0,0));
+    super(new Location(0, 0));
     //this.setColor(c/*color(255,0,0,50)*/);
     this.setStrokeColor(c);
     this.setStrokeWeight(3);
-    this.setColor(color(255,255,255, 0));
+    this.setColor(color(255, 255, 255, 0));
   }
-  
+
   /* cycle updates for the filter */
   public void update(UnfoldingMap map) 
   {
@@ -77,7 +77,7 @@ class RadiusFilter extends SimplePointMarker  {
       this.setLocation(map.getLocation(mouseX, mouseY));
     }
   }
-  
+
   /* returns list of markers that are within this filter */
   public List<Trajectory> getWithinRadius(UnfoldingMap map, List<Trajectory> markers) 
   {
@@ -85,9 +85,9 @@ class RadiusFilter extends SimplePointMarker  {
     List<Trajectory> found = new ArrayList<Trajectory>();
     double dist = GeoUtils.getDistance(this.getLocation(), 
       GeoUtils.getDestinationLocation(this.getLocation(), 0, rad_km));
-    
+
     for (Trajectory m : markers) {
-      if(!m.isActive())
+      if (!m.isActive())
         continue;
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
@@ -104,68 +104,67 @@ class RadiusFilter extends SimplePointMarker  {
     //println(pfound);
     return found;
   }
-  
+
   public void setFilterRadius(UnfoldingMap map, float kms) 
   {
     this.rad_km = kms;
     Location radPos = GeoUtils.getDestinationLocation(this.getLocation(), 0, kms);
     ScreenPosition radScreen = map.getScreenPosition(radPos);
     ScreenPosition centreScreen = map.getScreenPosition(this.getLocation());
-    
+
     float actualRad = PApplet.dist(radScreen.x, radScreen.y, centreScreen.x, centreScreen.y);
     this.setRadius(actualRad);
-    
   }
-  
+
   public void setPlaced(boolean b) { this.placed = b; }
-  
-  public boolean getPlaced() {return this.placed;}
+
+  public boolean getPlaced() { return this.placed; }
 }
 
 class FilterManager extends MarkerManager {
-  
+
   public FilterManager() {
     super();
   }
-  
+
   public void addFilter(color c)
   {
     this.addMarker(new RadiusFilter(c));
   }
-  
+
   public void setAllHidden(boolean b) 
   {
     List<Marker> temp = this.getMarkers();
-    
+
     for (Marker m : temp) {
       m.setHidden(b);
     }
-    this.setMarkers(temp);  
+    this.setMarkers(temp);
   }
-  
+
   public void updateAll(UnfoldingMap map) {
     List<Marker> temp = this.getMarkers();
-    
+
     for (Marker m : temp) {
       ((RadiusFilter)m).update(map);
     }
-    this.setMarkers(temp); 
+    this.setMarkers(temp);
   }
-  
+
   public void setAllFilterRadius(UnfoldingMap map, float kms)
   {
     List<Marker> temp = this.getMarkers();
-    
+
     for (Marker m : temp) {
       ((RadiusFilter)m).setFilterRadius(map, kms);
     }
     this.setMarkers(temp);
   }
-  
+
   public void placeFilter(UnfoldingMap map) 
   {
     List<Marker> temp = this.getMarkers();
-    
+
     for (Marker m : temp) {
       if (!((RadiusFilter)m).getPlaced()) {
         ((RadiusFilter)m).setPlaced(true);
@@ -173,7 +172,7 @@ class FilterManager extends MarkerManager {
     }
     this.setMarkers(temp);
   }
-  
+
   public List<List<Trajectory>> getAllWithinRadius(UnfoldingMap map, List<Trajectory> markers)
   {
     List<Marker> temp = this.getMarkers();
@@ -191,21 +190,26 @@ class FilterManager extends MarkerManager {
 /* histogram class for displaying data frequency
  * ask Michael for Q&A
  */
-class Histogram {
-   
+static class Histogram {
+
   private float[] bins;
   private float[] values;
   //private float maxValue = 0;
   private String[] labels;
   private BarChart barChart;
+  private static final String[] DEFAULT_LABELS = new String[] {
+    "", "", "", "", "",
+    "", "", "", "", "",
+    ""
+  };
+  public Histogram(float[] bins, List<Float> data, PApplet pObj) {
+    this(bins, data, pObj, DEFAULT_LABELS);
+  }
 
-  
-  public Histogram(float[] bins, float[] data, PApplet PObj) 
-  {
-    labels = new String[bins.length];
+  public Histogram(float[] bins, List<Float> data, PApplet pObj, String[] labels) {
+    this.labels = labels;
     update(bins, data);
-    
-    barChart = new BarChart(PObj);
+    barChart = new BarChart(pObj);
     barChart.setData(this.values);
     barChart.showValueAxis(true);
     barChart.setValueFormat("#.#");
@@ -213,53 +217,46 @@ class Histogram {
     barChart.showCategoryAxis(true);
     //barChart.transposeAxes(true);
     barChart.setMinValue(0);
-    barChart.setMaxValue(20);
-    barChart.setBarGap(3);
-   
+    barChart.setMaxValue(100);
+    barChart.setBarGap(4);
   }
-  
-  public void changeLook(boolean showLabels, float padding, float barGap, color c)
+
+  public void changeLook(float padding, float barGap, color c)
   {
-    barChart.showValueAxis(showLabels);
-    barChart.showCategoryAxis(showLabels);
+    this.labels = labels;
     barChart.setBarColour(c);
     barChart.setBarPadding(padding);
     barChart.setBarGap(barGap);
-    
   }
-  
   /* private update function */
-  private void update(float[]bins, float[] data) {
+  private void update(float[]bins, List<Float> data) {
     this.bins = new float[bins.length];
     this.values = new float[bins.length];
-    
+
     for (int i = 0; i < this.bins.length; i++) {
       this.bins[i] = bins[i];                                /* set bin limits */
       this.values[i] = 0;                                    /* set values to 0 */
     }
-    
-    for (int i = 0; i < data.length; i++) {
-      float a = ceil(data[i]);                               /* round up data i */
-      for (int j = 0; j < this.bins.length; j++) {
-        if (a < this.bins[j]) {                              /* if data i less than limit j */
-          if (j > 0 && a >= this.bins[j-1]) {                /* check if data i more than limit j - 1 */
-            this.values[j] += 1;                             /* if tests passed, add 1 to bin frequency */
-          } else if (j == 0 && a >= 0) {                     /* else if iterator is 0 and data i is greater that 0 */
-            this.values[0] += 1;                             /* data i must be between 0 and first limit */
-          } 
-        }
-      }
+
+    int count = 0;
+    for (int i = 0; i < data.size(); i++) {
+      int index = int(data.get(i)) / 5;
+      if (index > 10)
+        index = 10;
+      this.values[index]++;
     }
-    labels = new String[]{"0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
-                             "30-34", "35-49", "40-44", "45-49"};
+
+    for (int i = 0; i < this.values.length; i++) {
+      this.values[i] = this.values[i] * 100 / data.size();
+    }
   }
 
   /* public updater to be used at runtime */
-  public void update(float[] data) {
+  public void update(List<Float> data) {
     update(this.bins, data);
     barChart.setData(values);
   }
-  
+
   /* draws the histogram at given params */
   public void draw(int x, int y, int w, int h) {
     this.barChart.draw(x, y, w, h);
@@ -268,4 +265,5 @@ class Histogram {
   public float[] getBins()  {return bins; }
   
   public BarChart getChart() {return this.barChart; }
+
 }

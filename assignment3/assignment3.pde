@@ -18,14 +18,14 @@ import org.gicentre.utils.colour.*;
 
 static final String FILE_SEPARATOR = System.getProperty("file.separator");
 static final String DATA_DIR = "data" + FILE_SEPARATOR +
-"Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
+  "Geolife Trajectories 1.3" + FILE_SEPARATOR + "Data" + FILE_SEPARATOR;
 static final int MAX_TESTER_INDEX = 181;
 static final int MAX_LVL = 11;
 static final int MIN_LVL = 13;
 static final int LINE_CHART_Y_MAX = 5;
 
 static final Location BEIJING_CENTRAL =            /* study location */
-new Location(39.907614, 116.397334);
+  new Location(39.907614, 116.397334);
 static final String STUDY_DATE = "20081106";
 static final String STUDY_DATE_FORMAT = "yyyy-MM-dd/HH:mm:ss";
 static final String STUDY_DATE_START_TIME = "2008-11-06/00:00:00";
@@ -84,7 +84,9 @@ Histogram histogram2;
 
 
 static float[] HIST_BINS = new float[] {
-  5, 10, 15, 20, 25, 30, 35, 40, 45, 50
+  5, 10, 15, 20, 25,
+  30, 35, 40, 45, 50,
+  100
 };
 float offsetTest = 3;
 //-----------Chart Variables----------------
@@ -174,16 +176,17 @@ void setup() {
 
 
   //---------initialise Graphs--------------------------------------------------
-  histogram = new Histogram(HIST_BINS, new float[] {
-    0
-  }
-  , this);
-  histogram2 = new Histogram(HIST_BINS, new float[] {
-    0
-  }
-  , this);
-  histogram.changeLook(true, 0, 0, FILTER_BLUE);
-  histogram2.changeLook(true, 4, 0, FILTER_RED);
+
+    String[] LABELS = new String[] {
+      "0-4", "5-9", "10-14", "15-19", "20-24",
+      "25-29", "30-34", "35-39", "40-44", "45-49",
+      ">50"
+    };
+  histogram = new Histogram(HIST_BINS, new ArrayList(), this, LABELS);
+  histogram2 = new Histogram(HIST_BINS, new ArrayList(), this);
+
+  histogram.changeLook(0, 4, FILTER_BLUE);
+  histogram2.changeLook(8, 0, FILTER_RED);
   histogram.getChart().setAxisValuesColour(255);
   histogram2.getChart().setDecorations(false);
 
@@ -406,15 +409,15 @@ void showInspector() {
 void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
   //histogram update and draw
 
-  float[] speeds1 = new float[a.size()];
-  float[] speeds2 = new float[b != null ? b.size() : 0];
+  List<Float> speeds1 = new ArrayList();
+  List<Float> speeds2 = b != null? new ArrayList() : null;
   int i = 0;
 
 
   for (Trajectory m : a) {
     if (!m.isActive())
       continue;
-    speeds1[i++] =  m.getCurrentSpeed();
+    speeds1.add(m.getCurrentSpeed());
   }
 
   histogram.update(speeds1);
@@ -424,7 +427,7 @@ void updateHistogram(List<Trajectory> a, List<Trajectory> b) {
     for (Trajectory m : b) {
       if (!m.isActive())
         continue;
-      speeds2[i++] =  m.getCurrentSpeed();
+      speeds2.add(m.getCurrentSpeed());
     }
     histogram2.update(speeds2);
   }
@@ -663,6 +666,7 @@ void initialiseUI() {
   cp5.addToggle("showAsLines")
     .setLabel("Show Pts as Lines")
       .setPosition(buttonX, viewControlY)
+
         .setValue(true)
           .setColorLabel(color(255))
             .moveTo("Controls")
@@ -670,7 +674,6 @@ void initialiseUI() {
                 .getStyle()
                   .setMarginTop(-22)
                     .setMarginLeft(45); 
-
 
   cp5.addToggle("showTrajectory")
     .setLabel("Show Traj with Click")
@@ -843,6 +846,12 @@ void keyPressed() {
       isPlayIcon.setOff();
     else
       isPlayIcon.setOn();
+  }
+  else if (key == 'h') { // left
+    timeLine--;
+  }
+  else if (key == 'l') { // right
+    timeLine++;
   }
 }
 
