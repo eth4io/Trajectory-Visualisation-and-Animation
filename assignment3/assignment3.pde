@@ -247,11 +247,11 @@ void draw() {
       text("50km/h", MAP_WIDTH+130, speedY + 35);
     }
     if (isCentroidOn) {
-      text("Centroid", MAP_WIDTH+25, speedY + 80);
+      text("Mean Centre", MAP_WIDTH+25, speedY + 65);
       fill(CENTROID_COLOUR);
       strokeWeight(1);
       rectMode(RADIUS);
-      rect(MAP_WIDTH + 110, speedY + 75, CENTROID_SIZE, CENTROID_SIZE);
+      rect(MAP_WIDTH + 130, speedY + 60, CENTROID_SIZE, CENTROID_SIZE);
       rectMode(CORNER);
     }
   }
@@ -270,9 +270,7 @@ void draw() {
   }
   //----------------CENTROID DISPLAY--------------------------------
   if (isCentroidOn) {
-//    CentroidMarker centroid = new CentroidMarker(trajectoryManager.calcAvgLoc(progress), CENTROID_COLOUR);
-//    centroid.setRadius(CENTROID_RADIUS);
-//    centroid.setColor(CENTROID_COLOUR);
+
     centroid.setLocation(trajectoryManager.calcAvgLoc(progress));
     centroid.draw(map);
   }
@@ -724,7 +722,7 @@ void initialiseUI() {
 
 
   cp5.addToggle("showCentroid")
-    .setLabel("Show Centroid")
+    .setLabel("Show Mean Centre")
       .setPosition(buttonX, viewControlY + 150)
         .setValue(false)
           .setColorLabel(color(255))
