@@ -90,7 +90,7 @@ static float[] HIST_BINS = new float[] {
 float offsetTest = 3;
 //-----------Chart Variables----------------
 XYChart lineChart;
-XYChart scatterChart;
+
 
 int timeBreakSize;
 float[] avgSpeeds;
@@ -102,7 +102,7 @@ PVector startLineGraph;
 PVector endLineGraph;
 
 //----------- Radius Filter Variables----------
-//RadiusFilter radiusFilter;
+
 FilterManager filterManager;
 int currentZoomLevel = 0;
 int previousZoomLevel = 0;
@@ -318,14 +318,6 @@ void draw() {
     histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
   }
 
-
-
-  //scatterChart 
-  if (!isFilterMode) {  /* dont run if filter mode is on */
-    List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
-    scatterChart.setData(speedTimeData);
-    scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
-  }
   lineChart.setPointSize(1);
   lineChart.draw(0, chartY, width-5, chartHeight);
 
@@ -444,12 +436,10 @@ public void initialiseLineGraph() {
 
     avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
     times[i]=x;
-    //print("Time: " + x + " avg Speed: " + avgSpeeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
   lineChart.setData(times, avgSpeeds);
-  //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
@@ -463,9 +453,6 @@ public void initialiseLineGraph() {
   lineChart.setPointColour(255);
   lineChart.draw(0, chartY, width-5, chartHeight);
 
-  scatterChart = new XYChart(this);
-  scatterChart.setMaxY(LINE_CHART_Y_MAX);
-  scatterChart.setPointColour(color(153, 0, 0));
 }
 
 public void updateLineGraph() {
@@ -490,7 +477,6 @@ void initialiseUI() {
   endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
 
   controlsColours =new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 0xffffffff);
-  //controlsColours.setCaptionLabel(color(100));
   controlsColours.setValueLabel(color(0));
 
   int buttonX = MAP_WIDTH + 20;
@@ -501,8 +487,6 @@ void initialiseUI() {
   sliderW = (int)(endLineGraph.x - startLineGraph.x);
 
   cp5 = new ControlP5(this);
-  //set tabs sorting
-
 
   cp5.setColor(controlsColours);
   cp5.setFont(createFont("Arial", 10));
