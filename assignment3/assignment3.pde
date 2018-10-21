@@ -660,6 +660,9 @@ void initialiseUI() {
     t.getCaptionLabel().getStyle().movePadding(7, 0, 0, 3);
   }
 
+radioButton.getController("150 days").setValue(1);
+ 
+  
   int viewControlY = 260; 
 
   cp5.addToggle("showAsLines")
