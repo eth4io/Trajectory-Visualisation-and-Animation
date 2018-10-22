@@ -484,7 +484,7 @@ void initialiseUI() {
 
   int buttonX = MAP_WIDTH + 20;
 
-  sliderH=10;
+  sliderH = 10;
   sliderY = height - 130;  
   sliderX =(int) startLineGraph.x;
   sliderW = (int)(endLineGraph.x - startLineGraph.x);
@@ -647,7 +647,7 @@ void initialiseUI() {
     t.getCaptionLabel().getStyle().movePadding(7, 0, 0, 3);
   }
 
-radioButton.getController("150 days").setValue(1);
+  radioButton.getController("150 days").setValue(1);
  
   
   int viewControlY = 260; 
@@ -758,7 +758,7 @@ void showAsLines(boolean value) {
 }
 
 void showPts(boolean value) {
-  isPtsOn= value;
+  isPtsOn = value;
   if (isPtsOn) cp5.getController("showAsLines").setValue(0);
 }
 
@@ -798,7 +798,6 @@ void controlEvent(ControlEvent theEvent) {
 
 
 void drawIU() {
-
 
   int rawHour = int(timeLine / 60) + 8;
   int hour = rawHour;
