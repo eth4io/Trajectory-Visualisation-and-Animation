@@ -91,14 +91,7 @@ class Trajectory extends SimplePointMarker {
     isActive = false;
   }
   
-  public boolean isMoving() {
-    PositionData previousPosition = positionData.get(currentPositionIndex);
-    Location previousLocation = new Location(previousPosition.lat, previousPosition.lng);
-    double distance = this.getDistanceTo(previousLocation);
-    if (distance < 3) return false;
-    else return true;
-  }
-  
+ 
   public boolean isActive() {
     return isActive;
   }

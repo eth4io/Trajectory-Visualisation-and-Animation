@@ -91,7 +91,7 @@ class RadiusFilter extends SimplePointMarker {
         continue;
       double diff = GeoUtils.getDistance(m.getLocation(),
         this.getLocation());
-      if (diff < dist/2 && m.isMoving()) {
+      if (diff < dist/2 && m.isActive()) {
         m.setSelected(true);
         found.add(m);
       } else {
@@ -266,4 +266,25 @@ static class Histogram {
   
   public BarChart getChart() {return this.barChart; }
 
+}
+
+public class CentroidMarker extends SimplePointMarker {
+ 
+  final color CENTROID_COLOUR;
+  final int CENTROID_SIZE;
+  
+  public CentroidMarker(Location location, color c, int size) {
+    super(location);
+    CENTROID_COLOUR = c;
+    CENTROID_SIZE = size;
+  }
+ 
+  public void draw(PGraphics pg, float x, float y) {
+    pg.pushStyle();
+    pg.strokeWeight(1);
+    pg.rectMode(RADIUS);
+    pg.fill(CENTROID_COLOUR);
+    pg.rect(x, y, CENTROID_SIZE, CENTROID_SIZE);
+    pg.popStyle();
+  }
 }

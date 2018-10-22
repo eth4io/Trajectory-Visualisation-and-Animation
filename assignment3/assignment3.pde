@@ -40,7 +40,7 @@ static final int UI_HEIGHT = 170;
 static final int MAP_HEIGHT = HEIGHT - UI_HEIGHT;
 static final int PANEL_WIDTH = 200;
 static final int MAP_WIDTH = WIDTH - PANEL_WIDTH;
-static final int CENTROID_RADIUS = 25;
+static final int CENTROID_SIZE = 5;
 final color CENTROID_COLOUR = color(4, 4, 100, 50);
 
 //-----------------------  Global Variables ------------------------
@@ -58,6 +58,7 @@ TrajectoryManager trajectoryManager;
 List<Trajectory> testTraj;
 ColourTable markerColourTable;
 
+CentroidMarker centroid;
 
 //----------- UI Variables ----------------
 ControlP5  cp5;
@@ -91,7 +92,7 @@ static float[] HIST_BINS = new float[] {
 float offsetTest = 3;
 //-----------Chart Variables----------------
 XYChart lineChart;
-XYChart scatterChart;
+
 
 int timeBreakSize;
 float[] avgSpeeds;
@@ -103,7 +104,7 @@ PVector startLineGraph;
 PVector endLineGraph;
 
 //----------- Radius Filter Variables----------
-//RadiusFilter radiusFilter;
+
 FilterManager filterManager;
 int currentZoomLevel = 0;
 int previousZoomLevel = 0;
@@ -133,6 +134,8 @@ void setup() {
 
 
   MapUtils.createDefaultEventDispatcher(this, map);
+  
+  centroid = new CentroidMarker(new Location(0,0), CENTROID_COLOUR, CENTROID_SIZE);
 
   //-----Set Filter Variables ------------------------------------  
   FILTER_BLUE = color(252, 141, 89);
@@ -247,11 +250,12 @@ void draw() {
       text("50km/h", MAP_WIDTH+130, speedY + 35);
     }
     if (isCentroidOn) {
-      text("Centroid", MAP_WIDTH+25, speedY + 80);
+      text("Mean Centre", MAP_WIDTH+25, speedY + 65);
       fill(CENTROID_COLOUR);
       strokeWeight(1);
-      ellipseMode(RADIUS);
-      ellipse(MAP_WIDTH + 110, speedY + 75, CENTROID_RADIUS, CENTROID_RADIUS);
+      rectMode(RADIUS);
+      rect(MAP_WIDTH + 130, speedY + 60, CENTROID_SIZE, CENTROID_SIZE);
+      rectMode(CORNER);
     }
   }
 
@@ -269,9 +273,7 @@ void draw() {
   }
   //----------------CENTROID DISPLAY--------------------------------
   if (isCentroidOn) {
-    SimplePointMarker centroid = new SimplePointMarker(trajectoryManager.calcAvgLoc(progress));
-    centroid.setRadius(CENTROID_RADIUS);
-    centroid.setColor(CENTROID_COLOUR);
+    centroid.setLocation(trajectoryManager.calcAvgLoc());
     centroid.draw(map);
   }
 
@@ -319,14 +321,6 @@ void draw() {
     histogram2.draw(10, MAP_HEIGHT - 260, 250, 250);
   }
 
-
-
-  //scatterChart 
-  if (!isFilterMode) {  /* dont run if filter mode is on */
-    List<PVector> speedTimeData = trajectoryManager.getSelectedSpeedTime();
-    scatterChart.setData(speedTimeData);
-    scatterChart.draw(startLineGraph.x, chartY, (int)(endLineGraph.x - startLineGraph.x), chartHeight);
-  }
   lineChart.setPointSize(1);
   lineChart.draw(0, chartY, width-5, chartHeight);
 
@@ -445,12 +439,10 @@ public void initialiseLineGraph() {
 
     avgSpeeds[i] = trajectoryManager.calcAvgSpeed((float)x/SLIDER_MAX);
     times[i]=x;
-    //print("Time: " + x + " avg Speed: " + avgSpeeds[i] + "\n");
     i++;
   }
   lineChart = new XYChart(this);
   lineChart.setData(times, avgSpeeds);
-  //lineChart.showXAxis(true); 
   lineChart.showYAxis(true); 
   lineChart.setLineWidth(2);
   lineChart.setMaxX(SLIDER_MAX);
@@ -464,9 +456,6 @@ public void initialiseLineGraph() {
   lineChart.setPointColour(255);
   lineChart.draw(0, chartY, width-5, chartHeight);
 
-  scatterChart = new XYChart(this);
-  scatterChart.setMaxY(LINE_CHART_Y_MAX);
-  scatterChart.setPointColour(color(153, 0, 0));
 }
 
 public void updateLineGraph() {
@@ -491,7 +480,6 @@ void initialiseUI() {
   endLineGraph = lineChart.getDataToScreen( new PVector(lineChart.getMaxX(), lineChart.getMaxY()));
 
   controlsColours =new CColor(0x99ffffff, 0x55ffffff, 0xffffffff, 0xffffffff, 0xffffffff);
-  //controlsColours.setCaptionLabel(color(100));
   controlsColours.setValueLabel(color(0));
 
   int buttonX = MAP_WIDTH + 20;
@@ -502,8 +490,6 @@ void initialiseUI() {
   sliderW = (int)(endLineGraph.x - startLineGraph.x);
 
   cp5 = new ControlP5(this);
-  //set tabs sorting
-
 
   cp5.setColor(controlsColours);
   cp5.setFont(createFont("Arial", 10));
@@ -661,6 +647,9 @@ void initialiseUI() {
     t.getCaptionLabel().getStyle().movePadding(7, 0, 0, 3);
   }
 
+radioButton.getController("150 days").setValue(1);
+ 
+  
   int viewControlY = 260; 
 
   cp5.addToggle("showAsLines")
@@ -701,7 +690,7 @@ void initialiseUI() {
   cp5.addToggle("showColours")
     .setLabel("Colour by Speed")
       .setPosition(buttonX+10, viewControlY + 75)
-        .setValue(false)
+        .setValue(true)
           .moveTo("Controls")
             .setColorLabel(color(255))
               .getCaptionLabel()
@@ -722,7 +711,7 @@ void initialiseUI() {
 
 
   cp5.addToggle("showCentroid")
-    .setLabel("Show Centroid")
+    .setLabel("Show Mean Centre")
       .setPosition(buttonX, viewControlY + 150)
         .setValue(false)
           .setColorLabel(color(255))
@@ -734,6 +723,16 @@ void initialiseUI() {
                       ;
 }
 
+void isFilterMode(boolean value) {
+  if (value) { 
+    cp5.getController("showHistogram").setValue(1);
+    cp5.getController("showCentroid").setValue(0);
+    cp5.getController("showPts").setValue(1);
+    cp5.getController("showAsLines").setValue(0);
+  }
+    
+  isFilterMode = value;
+}
 
 
 void showHistogram(boolean value) {
@@ -742,6 +741,7 @@ void showHistogram(boolean value) {
 
 void showCentroid(boolean value) {
   isCentroidOn = value;
+  if (isCentroidOn) cp5.getController("isFilterMode").setValue(0);
 }
 
 void showColours(boolean value) {
@@ -754,10 +754,12 @@ void showTrajectory(boolean value) {
 
 void showAsLines(boolean value) {
   isLinesOn = value;
+  if (isLinesOn) cp5.getController("showPts").setValue(0);
 }
 
 void showPts(boolean value) {
   isPtsOn= value;
+  if (isPtsOn) cp5.getController("showAsLines").setValue(0);
 }
 
 /* update filter size from filter controls */
@@ -828,7 +830,7 @@ public void colourMarkers() {
   List<Trajectory> t = trajectoryManager.getMarkers();
 
   for (Trajectory m : t) {
-    if (m.isActive() && m.isMoving()) {
+    if (m.isActive()) {
       if ((!isFilterMode)&&(isColoursOn)) {                                              /* do not colour if in filter mode */
         float speed =  m.getCurrentSpeed();
         m.setColor(markerColourTable.findColour(speed));
