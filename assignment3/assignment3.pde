@@ -652,18 +652,6 @@ void initialiseUI() {
   
   int viewControlY = 260; 
 
-  cp5.addToggle("showAsLines")
-    .setLabel("Show Pts as Lines")
-      .setPosition(buttonX, viewControlY)
-
-        .setValue(true)
-          .setColorLabel(color(255))
-            .moveTo("Controls")
-              .getCaptionLabel()
-                .getStyle()
-                  .setMarginTop(-22)
-                    .setMarginLeft(45); 
-
   cp5.addToggle("showTrajectory")
     .setLabel("Show Traj with Click")
       .setPosition(buttonX, viewControlY + 25)
@@ -686,6 +674,17 @@ void initialiseUI() {
                   .setMarginTop(-22)
                     .setMarginLeft(45)
                       ; 
+
+  cp5.addToggle("showAsLines")
+    .setLabel("Show Pts as Lines")
+      .setPosition(buttonX, viewControlY)
+        .setValue(true)
+          .setColorLabel(color(255))
+            .moveTo("Controls")
+              .getCaptionLabel()
+                .getStyle()
+                  .setMarginTop(-22)
+                    .setMarginLeft(45);
 
   cp5.addToggle("showColours")
     .setLabel("Colour by Speed")
